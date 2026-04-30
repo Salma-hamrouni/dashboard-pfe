@@ -1,5 +1,8 @@
-public class AiResponse
+namespace DashboardAPI.Models
 {
-    public List<string> Insights { get; set; }
-    public List<string> Recommendations { get; set; }
+    public class AiResponse
+    {
+        public List<string> Insights        { get; set; } = new();
+        public List<string> Recommendations { get; set; } = new();
+    }
 }

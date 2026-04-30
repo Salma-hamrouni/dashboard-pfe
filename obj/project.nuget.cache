@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "a+1JI3dpKoU=",
+  "dgSpecHash": "NlnhOFX1PxU=",
   "success": true,
   "projectFilePath": "C:\\wamp64\\www\\DashboardAPI\\DashboardAPI.csproj",
   "expectedPackageFiles": [
@@ -91,5 +91,15 @@
     "C:\\Users\\rym.benslimen\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "C:\\Users\\rym.benslimen\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "message": "Une erreur s’est produite lors de l’obtention des données de vulnérabilité du package\u00A0: Impossible de charger l'index de service pour la source https://api.nuget.org/v3/index.json.",
+      "projectPath": "C:\\wamp64\\www\\DashboardAPI\\DashboardAPI.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\wamp64\\www\\DashboardAPI\\DashboardAPI.csproj",
+      "targetGraphs": []
+    }
+  ]
 }

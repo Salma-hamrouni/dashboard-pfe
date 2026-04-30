@@ -4,6 +4,7 @@ using DashboardAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DashboardAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260421150301_AddConfigJsonToWidget")]
+    partial class AddConfigJsonToWidget
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,121 +72,6 @@ namespace DashboardAPI.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Dashboards");
-                });
-
-            modelBuilder.Entity("DashboardAPI.Models.DashboardShare", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("DashboardId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ExpiresAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("Permission")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SharedWithUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DashboardId");
-
-                    b.HasIndex("SharedWithUserId");
-
-                    b.ToTable("DashboardShares");
-                });
-
-            modelBuilder.Entity("DashboardAPI.Models.DashboardVersion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("DashboardId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Label")
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
-
-                    b.Property<string>("SnapshotJson")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DashboardId");
-
-                    b.ToTable("DashboardVersions");
-                });
-
-            modelBuilder.Entity("DashboardAPI.Models.DataSource", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CachedDataJson")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ConnectionParamsJson")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<string>("FilePath")
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<DateTime?>("LastRefreshedAt")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("DataSources");
                 });
 
             modelBuilder.Entity("DashboardAPI.Models.Dataset", b =>
@@ -314,46 +202,6 @@ namespace DashboardAPI.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("DashboardAPI.Models.DashboardShare", b =>
-                {
-                    b.HasOne("DashboardAPI.Models.Dashboard", "Dashboard")
-                        .WithMany()
-                        .HasForeignKey("DashboardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DashboardAPI.Models.User", "SharedWithUser")
-                        .WithMany()
-                        .HasForeignKey("SharedWithUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Dashboard");
-
-                    b.Navigation("SharedWithUser");
-                });
-
-            modelBuilder.Entity("DashboardAPI.Models.DashboardVersion", b =>
-                {
-                    b.HasOne("DashboardAPI.Models.Dashboard", "Dashboard")
-                        .WithMany()
-                        .HasForeignKey("DashboardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Dashboard");
-                });
-
-            modelBuilder.Entity("DashboardAPI.Models.DataSource", b =>
-                {
-                    b.HasOne("DashboardAPI.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DashboardAPI.Models.Dataset", b =>

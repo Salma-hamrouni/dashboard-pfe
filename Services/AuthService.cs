@@ -2,39 +2,39 @@ using DashboardAPI.Data;
 using DashboardAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-public class AuthService
+namespace DashboardAPI.Services
 {
-    private readonly AppDbContext _context;
-
-    public AuthService(AppDbContext context)
+    public class AuthService
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    public async Task<User> Register(string email, string password)
-    {
-        var user = new User
+        public AuthService(AppDbContext context)
         {
-            Email = email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
-            Role = "User",
-            CreatedAt = DateTime.UtcNow
-        };
+            _context = context;
+        }
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        public async Task<User?> GetByEmailAsync(string email)
+            => await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-        return user;
-    }
+        public async Task<User> Register(string email, string password, string role = "Viewer")
+        {
+            var user = new User
+            {
+                Email        = email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
+                Role         = role,
+                CreatedAt    = DateTime.UtcNow
+            };
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
 
-    public async Task<User?> Login(string email, string password)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-
-        if (user == null) return null;
-
-        bool isValid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
-
-        return isValid ? user : null;
+        public async Task<User?> Login(string email, string password)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null) return null;
+            return BCrypt.Net.BCrypt.Verify(password, user.PasswordHash) ? user : null;
+        }
     }
 }

@@ -350,3 +350,4 @@ C:\wamp64\www\DashboardAPI\obj\Debug\net8.0\refint\DashboardAPI.dll
 C:\wamp64\www\DashboardAPI\obj\Debug\net8.0\DashboardAPI.pdb
 C:\wamp64\www\DashboardAPI\obj\Debug\net8.0\DashboardAPI.genruntimeconfig.cache
 C:\wamp64\www\DashboardAPI\obj\Debug\net8.0\ref\DashboardAPI.dll
+C:\wamp64\www\DashboardAPI\obj\Debug\net8.0\DashboardAPI.sourcelink.json
