@@ -3,19 +3,18 @@ using DashboardAPI.Models;
 
 namespace DashboardAPI.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options) { }
 
-        public DbSet<User>            Users           { get; set; }
-        public DbSet<Dataset>         Datasets        { get; set; }
-        public DbSet<Dashboard>       Dashboards      { get; set; }
-        public DbSet<Widget>          Widgets         { get; set; }
-        public DbSet<Insight>         Insights        { get; set; }
-        public DbSet<DataSource>      DataSources     { get; set; }
-        public DbSet<DashboardShare>  DashboardShares { get; set; } 
+        public DbSet<User>             Users             { get; set; }
+        public DbSet<Dataset>          Datasets          { get; set; }
+        public DbSet<Dashboard>        Dashboards        { get; set; }
+        public DbSet<Widget>           Widgets           { get; set; }
+        public DbSet<Insight>          Insights          { get; set; }
+        public DbSet<DataSource>       DataSources       { get; set; }
+        public DbSet<DashboardShare>   DashboardShares   { get; set; }
         public DbSet<DashboardVersion> DashboardVersions { get; set; }
+        public DbSet<AuditLog>         AuditLogs         { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

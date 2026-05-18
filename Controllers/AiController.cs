@@ -1,42 +1,49 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Caching.Memory;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using DashboardAPI.Data;
+using DashboardAPI.Common;
 using DashboardAPI.DTOs;
-using DashboardAPI.Models;
 
 namespace DashboardAPI.Controllers
 {
     [Route("api/ai")]
-    public class AiController : BaseController
+    [EnableRateLimiting("ai-policy")]
+    public class AiController(
+        IConfiguration config,
+        IHttpClientFactory httpFactory,
+        IMemoryCache cache,
+        ILogger<AiController> logger) : BaseController
     {
-        private readonly AppDbContext   _context;
-        private readonly IConfiguration _config;
-        private readonly HttpClient     _http;
+        private readonly HttpClient _http = httpFactory.CreateClient("gemini");
 
-        public AiController(AppDbContext context, IConfiguration config, IHttpClientFactory httpFactory)
+        private static readonly MemoryCacheEntryOptions _cacheOpts = new()
         {
-            _context = context;
-            _config  = config;
-            _http    = httpFactory.CreateClient();
-        }
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1),
+            SlidingExpiration = TimeSpan.FromMinutes(20),
+            Size = 1
+        };
 
         // ── POST api/ai/recommend-chart ───────────────────────────────────────
-        /// <summary>
-        /// Analyse les colonnes d'une source de données et recommande
-        /// le type de graphique le plus adapté avec justification.
-        /// </summary>
+        /// <summary>Recommande le type de graphique le plus adapté aux colonnes fournies.</summary>
         [HttpPost("recommend-chart")]
+        [ProducesResponseType(typeof(ApiResponse<JsonElement>), 200)]
         public async Task<IActionResult> RecommendChart([FromBody] AiColumnRequest request)
         {
-            if (request.Columns == null || !request.Columns.Any())
-                return BadRequest("Aucune colonne fournie.");
+            if (request.Columns == null || request.Columns.Count == 0)
+                return BadRequest(ApiResponse<object>.Fail("Aucune colonne fournie."));
 
-            var columnsDesc = string.Join("\n", request.Columns.Select(c =>
-                $"- {c.Name} (type: {c.Type})"));
+            var cacheKey = BuildCacheKey("recommend-chart", request.Columns);
+            if (cache.TryGetValue(cacheKey, out JsonElement cached))
+            {
+                logger.LogDebug("AI cache hit: recommend-chart ({Key})", cacheKey[^8..]);
+                return Ok(ApiResponse<JsonElement>.Ok(cached, new { source = "cache" }));
+            }
 
-            var prompt = $@"
-Tu es un expert en visualisation de données.
+            var columnsDesc = FormatColumns(request.Columns);
+            var prompt = $@"Tu es un expert en visualisation de données.
 Voici les colonnes d'un dataset :
 {columnsDesc}
 
@@ -48,28 +55,31 @@ Schéma attendu :
   ""alternatives"": [""string""],
   ""xAxis"": ""string"",
   ""yAxis"": ""string""
-}}
-";
+}}";
+
             var result = await CallGeminiAsync(prompt);
-            return Ok(result);
+            cache.Set(cacheKey, result, _cacheOpts);
+            return Ok(ApiResponse<JsonElement>.Ok(result, new { source = "ai" }));
         }
 
         // ── POST api/ai/suggest-kpis ──────────────────────────────────────────
-        /// <summary>
-        /// À partir des colonnes du dataset, propose des KPIs pertinents
-        /// avec leur agrégation et colonne source.
-        /// </summary>
+        /// <summary>Propose des KPIs pertinents à partir des colonnes du dataset.</summary>
         [HttpPost("suggest-kpis")]
+        [ProducesResponseType(typeof(ApiResponse<JsonElement>), 200)]
         public async Task<IActionResult> SuggestKpis([FromBody] AiColumnRequest request)
         {
-            if (request.Columns == null || !request.Columns.Any())
-                return BadRequest("Aucune colonne fournie.");
+            if (request.Columns == null || request.Columns.Count == 0)
+                return BadRequest(ApiResponse<object>.Fail("Aucune colonne fournie."));
 
-            var columnsDesc = string.Join("\n", request.Columns.Select(c =>
-                $"- {c.Name} (type: {c.Type})"));
+            var cacheKey = BuildCacheKey("suggest-kpis", request.Columns);
+            if (cache.TryGetValue(cacheKey, out JsonElement cached))
+            {
+                logger.LogDebug("AI cache hit: suggest-kpis ({Key})", cacheKey[^8..]);
+                return Ok(ApiResponse<JsonElement>.Ok(cached, new { source = "cache" }));
+            }
 
-            var prompt = $@"
-Tu es un expert en business intelligence.
+            var columnsDesc = FormatColumns(request.Columns);
+            var prompt = $@"Tu es un expert en business intelligence.
 Voici les colonnes d'un dataset :
 {columnsDesc}
 
@@ -86,32 +96,40 @@ Schéma attendu :
       ""description"": ""string""
     }}
   ]
-}}
-";
+}}";
+
             var result = await CallGeminiAsync(prompt);
-            return Ok(result);
+            cache.Set(cacheKey, result, _cacheOpts);
+            return Ok(ApiResponse<JsonElement>.Ok(result, new { source = "ai" }));
         }
 
         // ── POST api/ai/analyze ───────────────────────────────────────────────
-        /// <summary>
-        /// Génère un résumé textuel des données :
-        /// tendances, anomalies, et insights automatiques.
-        /// </summary>
+        /// <summary>Génère un résumé textuel : tendances, anomalies, insights automatiques.</summary>
         [HttpPost("analyze")]
+        [ProducesResponseType(typeof(ApiResponse<JsonElement>), 200)]
         public async Task<IActionResult> Analyze([FromBody] AiAnalyzeRequest request)
         {
-            if (request.Columns == null || !request.Columns.Any())
-                return BadRequest("Aucune colonne fournie.");
+            if (request.Columns == null || request.Columns.Count == 0)
+                return BadRequest(ApiResponse<object>.Fail("Aucune colonne fournie."));
 
-            var columnsDesc = string.Join("\n", request.Columns.Select(c =>
-                $"- {c.Name} (type: {c.Type})"));
+            // Analyze includes preview data — cache key includes a hash of first 5 rows too
+            var previewHash = request.Preview != null
+                ? ComputeHash(JsonSerializer.Serialize(request.Preview.Take(5)))
+                : "no-preview";
+            var cacheKey = BuildCacheKey("analyze", request.Columns) + ":" + previewHash;
 
-            var previewDesc = request.Preview != null && request.Preview.Any()
+            if (cache.TryGetValue(cacheKey, out JsonElement cached))
+            {
+                logger.LogDebug("AI cache hit: analyze ({Key})", cacheKey[^8..]);
+                return Ok(ApiResponse<JsonElement>.Ok(cached, new { source = "cache" }));
+            }
+
+            var columnsDesc = FormatColumns(request.Columns);
+            var previewDesc = request.Preview?.Count > 0
                 ? JsonSerializer.Serialize(request.Preview.Take(10))
                 : "Non fourni";
 
-            var prompt = $@"
-Tu es un data analyst expert.
+            var prompt = $@"Tu es un data analyst expert.
 Voici un dataset avec ses colonnes et un aperçu des données :
 
 Colonnes :
@@ -129,31 +147,44 @@ Schéma attendu :
   ""trends"": [""string""],
   ""anomalies"": [""string""],
   ""recommendations"": [""string""]
-}}
-";
+}}";
+
             var result = await CallGeminiAsync(prompt);
-            return Ok(result);
+            cache.Set(cacheKey, result, _cacheOpts);
+            return Ok(ApiResponse<JsonElement>.Ok(result, new { source = "ai" }));
         }
 
         // ── POST api/ai/chat ──────────────────────────────────────────────────
-        /// <summary>
-        /// Assistant conversationnel : l'utilisateur décrit un graphique
-        /// en langage naturel, l'IA retourne une config widget JSON.
-        /// </summary>
+        /// <summary>Assistant conversationnel : décrit un graphique en langage naturel.</summary>
         [HttpPost("chat")]
+        [ProducesResponseType(typeof(ApiResponse<JsonElement>), 200)]
         public async Task<IActionResult> Chat([FromBody] AiChatRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Message))
-                return BadRequest("Message vide.");
+                return BadRequest(ApiResponse<object>.Fail("Message vide."));
 
-            var prompt = $@"
-Tu es un assistant pour générateur de tableaux de bord.
+            // Chat responses depend on free-text input — cache only when columns provided
+            string? cacheKey = null;
+            if (request.Columns?.Count > 0)
+            {
+                var msgHash = ComputeHash(request.Message.Trim().ToLowerInvariant());
+                cacheKey = BuildCacheKey("chat", request.Columns) + ":" + msgHash;
+                if (cache.TryGetValue(cacheKey, out JsonElement cached))
+                {
+                    logger.LogDebug("AI cache hit: chat ({Key})", cacheKey[^8..]);
+                    return Ok(ApiResponse<JsonElement>.Ok(cached, new { source = "cache" }));
+                }
+            }
+
+            var columnsSection = request.Columns?.Count > 0
+                ? $"Colonnes disponibles :\n{FormatColumns(request.Columns)}"
+                : "";
+
+            var prompt = $@"Tu es un assistant pour générateur de tableaux de bord.
 L'utilisateur décrit ce qu'il veut visualiser :
 ""{request.Message}""
 
-{(request.Columns != null && request.Columns.Any()
-    ? $"Colonnes disponibles :\n{string.Join("\n", request.Columns.Select(c => $"- {c.Name} ({c.Type})"))}"
-    : "")}
+{columnsSection}
 
 Génère une configuration de widget JSON.
 Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte avant ou après.
@@ -166,71 +197,80 @@ Schéma attendu :
   ""aggregation"": ""sum | avg | count | none"",
   ""filters"": [""string""],
   ""explanation"": ""string""
-}}
-";
+}}";
+
             var result = await CallGeminiAsync(prompt);
-            return Ok(result);
+            if (cacheKey != null) cache.Set(cacheKey, result, _cacheOpts);
+            return Ok(ApiResponse<JsonElement>.Ok(result, new { source = "ai" }));
         }
 
-        // ── Helper : appel Gemini ─────────────────────────────────────────────
-        private async Task<object> CallGeminiAsync(string prompt)
+        // ── Helpers ───────────────────────────────────────────────────────────
+
+        private async Task<JsonElement> CallGeminiAsync(string prompt)
         {
-            var apiKey = _config["Gemini:ApiKey"]
+            var apiKey = config["Gemini:ApiKey"]
                 ?? throw new InvalidOperationException("Gemini:ApiKey manquant dans appsettings.");
 
             var body = new
             {
-                contents = new[]
-                {
-                    new { parts = new[] { new { text = prompt } } }
-                }
+                contents = new[] { new { parts = new[] { new { text = prompt } } } }
             };
 
-            var httpRequest = new HttpRequestMessage(
+            var req = new HttpRequestMessage(
                 HttpMethod.Post,
-                $"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={apiKey}"
-            );
-            httpRequest.Content = new StringContent(
-                JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
+                $"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={apiKey}");
+            req.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
 
-            var response = await _http.SendAsync(httpRequest);
-            var json     = await response.Content.ReadAsStringAsync();
+            var response = await _http.SendAsync(req);
+            var json = await response.Content.ReadAsStringAsync();
 
-            using var doc  = JsonDocument.Parse(json);
+            using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
 
             if (!root.TryGetProperty("candidates", out var candidates))
-                throw new Exception("Erreur Gemini : " + json);
+                throw new InvalidOperationException("Erreur Gemini : " + json[..Math.Min(300, json.Length)]);
 
             var text = candidates[0]
                 .GetProperty("content")
                 .GetProperty("parts")[0]
                 .GetProperty("text")
-                .GetString() ?? throw new Exception("Réponse IA vide.");
+                .GetString() ?? throw new InvalidOperationException("Réponse IA vide.");
 
-            // Nettoyer les balises markdown si présentes
             text = text.Replace("```json", "").Replace("```", "").Trim();
-
-            // Parser et retourner comme objet dynamique
             return JsonSerializer.Deserialize<JsonElement>(text);
         }
+
+        private static string BuildCacheKey(string endpoint, List<ColumnDto> columns)
+        {
+            var input = endpoint + ":" + string.Join("|", columns.Select(c => $"{c.Name}:{c.Type}"));
+            return $"ai:{endpoint}:{ComputeHash(input)}";
+        }
+
+        private static string ComputeHash(string input)
+        {
+            var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
+            return Convert.ToHexString(bytes)[..16];
+        }
+
+        private static string FormatColumns(List<ColumnDto> columns)
+            => string.Join("\n", columns.Select(c => $"- {c.Name} (type: {c.Type})"));
     }
 
     // ── DTOs ──────────────────────────────────────────────────────────────────
     public class AiColumnRequest
     {
-        public List<ColumnDto> Columns { get; set; } = new();
+        public List<ColumnDto> Columns { get; set; } = [];
     }
 
     public class AiAnalyzeRequest
     {
-        public List<ColumnDto>                       Columns { get; set; } = new();
-        public List<Dictionary<string, object?>>?    Preview { get; set; }
+        public List<ColumnDto> Columns { get; set; } = [];
+        public List<Dictionary<string, object?>>? Preview { get; set; }
     }
 
     public class AiChatRequest
     {
-        public string          Message { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
         public List<ColumnDto>? Columns { get; set; }
     }
 

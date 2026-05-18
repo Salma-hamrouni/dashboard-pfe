@@ -35,6 +35,15 @@ namespace DashboardAPI.Services
             }
         }
 
+        // Mots-clés DDL/DML interdits pour éviter l'injection
+        private static readonly string[] ForbiddenKeywords =
+        [
+            "DROP", "DELETE", "INSERT", "UPDATE", "TRUNCATE",
+            "ALTER", "CREATE", "EXEC", "EXECUTE", "MERGE",
+            "CALL", "REPLACE", "LOAD", "OUTFILE", "DUMPFILE",
+            "--", "/*", "*/", "xp_", "sp_"
+        ];
+
         /// <summary>
         /// Exécute la requête SQL et retourne colonnes + lignes + cache JSON.
         /// </summary>
@@ -43,10 +52,14 @@ namespace DashboardAPI.Services
             await using var conn = BuildConnection(p);
             await conn.OpenAsync();
 
-            // Sécurité minimale : on n'autorise que SELECT
+            // Protection renforcée : SELECT uniquement + aucun mot-clé dangereux
             var trimmed = p.Query.TrimStart().ToUpperInvariant();
-            if (!trimmed.StartsWith("SELECT"))
+            if (!trimmed.StartsWith("SELECT ") && !trimmed.StartsWith("SELECT\t"))
                 throw new InvalidOperationException("Seules les requêtes SELECT sont autorisées.");
+
+            if (ForbiddenKeywords.Any(kw => trimmed.Contains(kw)))
+                throw new InvalidOperationException(
+                    "La requête contient des opérations non autorisées.");
 
             await using var cmd    = new MySqlCommand(p.Query, conn);
             await using var reader = await cmd.ExecuteReaderAsync();

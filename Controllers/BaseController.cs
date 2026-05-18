@@ -21,5 +21,12 @@ namespace DashboardAPI.Controllers
         protected bool IsAdmin()  => GetUserRole() == "Admin";
         protected bool IsEditor() => GetUserRole() is "Admin" or "Editor";
         protected bool IsViewer() => GetUserRole() is "Admin" or "Editor" or "Viewer";
+
+        // Extrait l'IP réelle même derrière un proxy/load-balancer
+        protected string GetClientIp()
+            => HttpContext.Request.Headers["X-Forwarded-For"]
+                   .FirstOrDefault()?.Split(',')[0].Trim()
+               ?? HttpContext.Connection.RemoteIpAddress?.ToString()
+               ?? "unknown";
     }
 }

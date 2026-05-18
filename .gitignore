@@ -1,0 +1,29 @@
+﻿# Build outputs
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+.vs/
+
+# Uploads
+Uploads/
+
+# Secrets - NE JAMAIS COMMITER
+appsettings.Development.json
+appsettings.Production.json
+appsettings.*.json
+!appsettings.json
+
+# Logs
+logs/
+*.log
+
+# Docker secrets
+.env
+.env.*
+
+# Test results
+TestResults/
+coverage/

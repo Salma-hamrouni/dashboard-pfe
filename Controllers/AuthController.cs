@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -7,123 +8,194 @@ using Microsoft.IdentityModel.Tokens;
 using DashboardAPI.Models;
 using DashboardAPI.Services;
 using DashboardAPI.Data;
+using DashboardAPI.DTOs.Auth;
+using DashboardAPI.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace DashboardAPI.Controllers
 {
     [ApiController]
     [Route("api/auth")]
-    public class AuthController : ControllerBase
+    public class AuthController(
+        AuthService authService,
+        IConfiguration config,
+        AppDbContext context,
+        AuditService audit,
+        ILogger<AuthController> logger) : ControllerBase
     {
-        private readonly AuthService    _authService;
-        private readonly IConfiguration _config;
-        private readonly AppDbContext   _context;
-
-        public AuthController(AuthService authService, IConfiguration config, AppDbContext context)
-        {
-            _authService = authService;
-            _config      = config;
-            _context     = context;
-        }
-
+        // ── POST /api/auth/register ───────────────────────────────────────────
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] AuthRequest request)
+        [ProducesResponseType(typeof(ApiResponse<UserInfoDto>), 201)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 409)]
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto dto)
         {
-            var existing = await _authService.GetByEmailAsync(request.Email);
+            var existing = await authService.GetByEmailAsync(dto.Email);
             if (existing != null)
-                return Conflict("Un compte existe déjà avec cet email.");
+                return Conflict(ApiResponse<object>.Fail("Un compte existe déjà avec cet email."));
 
-            // Le rôle par défaut est Viewer, sauf si spécifié (Admin uniquement)
-            var role = nameof(UserRole.Viewer);
-            var user = await _authService.Register(request.Email, request.Password, role);
+            var user = await authService.Register(dto.Email, dto.Password, nameof(UserRole.Viewer));
 
-            return CreatedAtAction(nameof(Register), new { id = user.Id }, new
-            {
-                user.Id,
-                user.Email,
-                user.Role
-            });
+            await audit.LogAsync(user.Id, "USER_REGISTERED", "User", user.Id,
+                $"email={dto.Email}", GetIp());
+
+            logger.LogInformation("Nouvel utilisateur enregistré : {Email}", dto.Email);
+
+            return CreatedAtAction(nameof(Me), new { id = user.Id },
+                ApiResponse<UserInfoDto>.Ok(new UserInfoDto
+                {
+                    Id        = user.Id,
+                    Email     = user.Email,
+                    Role      = user.Role,
+                    CreatedAt = user.CreatedAt
+                }));
         }
 
-        //login 
+        // ── POST /api/auth/login ──────────────────────────────────────────────
+        /// <summary>Limité à 5 tentatives/minute par IP (protection brute-force).</summary>
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] AuthRequest request)
+        [EnableRateLimiting("auth-policy")]
+        [ProducesResponseType(typeof(ApiResponse<AuthResponseDto>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 401)]
+        [ProducesResponseType(429)]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
         {
-            var user = await _authService.Login(request.Email, request.Password);
+            var user = await authService.Login(dto.Email, dto.Password);
             if (user == null)
-                return Unauthorized("Email ou mot de passe incorrect.");
+            {
+                logger.LogWarning("Tentative de connexion échouée pour {Email}", dto.Email);
+
+                // Audit même en cas d'échec (userId=0 = non résolu)
+                var failed = await authService.GetByEmailAsync(dto.Email);
+                if (failed != null)
+                    await audit.LogAsync(failed.Id, "USER_LOGIN_FAILED", "User", failed.Id,
+                        $"email={dto.Email}", GetIp());
+
+                return Unauthorized(ApiResponse<object>.Fail("Email ou mot de passe incorrect."));
+            }
 
             var token = GenerateToken(user);
-            return Ok(new
+
+            await audit.LogAsync(user.Id, "USER_LOGIN", "User", user.Id,
+                $"role={user.Role}", GetIp());
+
+            logger.LogInformation("Connexion réussie : {Email} (rôle: {Role})", user.Email, user.Role);
+
+            return Ok(ApiResponse<AuthResponseDto>.Ok(new AuthResponseDto
             {
-                token,
-                user = new { user.Id, user.Email, user.Role }
-            });
+                Token = token,
+                User  = new UserInfoDto
+                {
+                    Id        = user.Id,
+                    Email     = user.Email,
+                    Role      = user.Role,
+                    CreatedAt = user.CreatedAt
+                }
+            }));
         }
 
+        // ── GET /api/auth/me ──────────────────────────────────────────────────
         [HttpGet("me")]
         [Authorize]
+        [ProducesResponseType(typeof(ApiResponse<UserInfoDto>), 200)]
+        [ProducesResponseType(401)]
         public async Task<IActionResult> Me()
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var user   = await _context.Users.FindAsync(userId);
-            if (user == null) return NotFound();
+            var user   = await context.Users.FindAsync(userId);
+            if (user == null) return NotFound(ApiResponse<object>.Fail("Utilisateur introuvable."));
 
-            return Ok(new { user.Id, user.Email, user.Role, user.CreatedAt });
+            return Ok(ApiResponse<UserInfoDto>.Ok(new UserInfoDto
+            {
+                Id        = user.Id,
+                Email     = user.Email,
+                Role      = user.Role,
+                CreatedAt = user.CreatedAt
+            }));
         }
 
+        // ── GET /api/auth/users ───────────────────────────────────────────────
         [HttpGet("users")]
         [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ApiResponse<List<UserInfoDto>>), 200)]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _context.Users
-                .Select(u => new { u.Id, u.Email, u.Role, u.CreatedAt })
+            var users = await context.Users
+                .AsNoTracking()
+                .OrderBy(u => u.CreatedAt)
+                .Select(u => new UserInfoDto
+                {
+                    Id        = u.Id,
+                    Email     = u.Email,
+                    Role      = u.Role,
+                    CreatedAt = u.CreatedAt
+                })
                 .ToListAsync();
-            return Ok(users);
+
+            return Ok(ApiResponse<List<UserInfoDto>>.Ok(users, new { total = users.Count }));
         }
 
+        // ── PUT /api/auth/users/{id}/role ─────────────────────────────────────
         [HttpPut("users/{id:int}/role")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ChangeRole(int id, [FromBody] ChangeRoleRequest request)
+        [ProducesResponseType(typeof(ApiResponse<UserInfoDto>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 404)]
+        public async Task<IActionResult> ChangeRole(int id, [FromBody] ChangeRoleRequestDto dto)
         {
-            var validRoles = new[] { "Admin", "Editor", "Viewer" };
-            if (!validRoles.Contains(request.Role))
-                return BadRequest($"Rôle invalide. Valeurs acceptées : {string.Join(", ", validRoles)}");
+            var user = await context.Users.FindAsync(id);
+            if (user == null)
+                return NotFound(ApiResponse<object>.Fail("Utilisateur introuvable."));
 
-            var user = await _context.Users.FindAsync(id);
-            if (user == null) return NotFound();
+            var oldRole = user.Role;
+            user.Role   = dto.Role;
+            await context.SaveChangesAsync();
 
-            user.Role = request.Role;
-            await _context.SaveChangesAsync();
+            var adminId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            await audit.LogAsync(adminId, "USER_ROLE_CHANGED", "User", id,
+                $"{oldRole} → {dto.Role}", GetIp());
 
-            return Ok(new { user.Id, user.Email, user.Role });
+            logger.LogInformation("Rôle changé : user {Id} {OldRole} → {NewRole}",
+                id, oldRole, dto.Role);
+
+            return Ok(ApiResponse<UserInfoDto>.Ok(new UserInfoDto
+            {
+                Id        = user.Id,
+                Email     = user.Email,
+                Role      = user.Role,
+                CreatedAt = user.CreatedAt
+            }));
         }
 
+        // ── Helpers ───────────────────────────────────────────────────────────
         private string GenerateToken(User user)
         {
-            var key     = Encoding.UTF8.GetBytes(_config["Jwt:Key"]!);
-            var handler = new JwtSecurityTokenHandler();
+            var key    = Encoding.UTF8.GetBytes(config["Jwt:Key"]!);
+            var expiry = config.GetValue("Jwt:ExpiryHours", 8);
 
             var descriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[]
-                {
+                Subject = new ClaimsIdentity(
+                [
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Email,          user.Email),
                     new Claim(ClaimTypes.Role,           user.Role)
-                }),
-                Expires            = DateTime.UtcNow.AddHours(8),
-                Issuer             = _config["Jwt:Issuer"],
-                Audience           = _config["Jwt:Audience"],
+                ]),
+                Expires            = DateTime.UtcNow.AddHours(expiry),
+                Issuer             = config["Jwt:Issuer"],
+                Audience           = config["Jwt:Audience"],
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature)
             };
 
+            var handler = new JwtSecurityTokenHandler();
             return handler.WriteToken(handler.CreateToken(descriptor));
         }
-    }
 
-    public record AuthRequest(string Email, string Password);
-    public record ChangeRoleRequest(string Role);
+        private string GetIp()
+            => HttpContext.Request.Headers["X-Forwarded-For"]
+                   .FirstOrDefault()?.Split(',')[0].Trim()
+               ?? HttpContext.Connection.RemoteIpAddress?.ToString()
+               ?? "unknown";
+    }
 }

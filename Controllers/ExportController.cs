@@ -1,33 +1,30 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json;
 using DashboardAPI.Data;
 using DashboardAPI.Models;
+using DashboardAPI.Services;
 
 namespace DashboardAPI.Controllers
 {
     [Route("api/export")]
-    public class ExportController : BaseController
+    public class ExportController(AppDbContext context, AuditService audit) : BaseController
     {
-        private readonly AppDbContext _context;
-
-        public ExportController(AppDbContext context)
-        {
-            _context = context;
-        }
+        private static readonly JsonSerializerOptions _indented = new() { WriteIndented = true };
 
         // ── GET api/export/{id}/json ───────────────────────────────────────────
-        /// <summary>
-        /// Exporte la configuration complète d'un dashboard en JSON
-        /// (widgets, layout, datasource) — téléchargeable.
-        /// </summary>
+        /// <summary>Exporte la configuration complète d'un dashboard en JSON téléchargeable.</summary>
         [HttpGet("{id:int}/json")]
+        [EnableRateLimiting("export-policy")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> ExportJson(int id)
         {
             var userId    = GetUserId();
-            var dashboard = await _context.Dashboards
+            var dashboard = await context.Dashboards
+                .AsNoTracking()
                 .Include(d => d.Widgets)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
@@ -48,7 +45,7 @@ namespace DashboardAPI.Controllers
                     columns         = TryDeserialize(dashboard.ColumnsJson),
                     insights        = TryDeserialize(dashboard.InsightsJson),
                     recommendations = TryDeserialize(dashboard.RecommendationsJson),
-                    widgets = dashboard.Widgets.Select(w => new
+                    widgets         = dashboard.Widgets.Select(w => new
                     {
                         w.Id,
                         w.Type,
@@ -58,25 +55,27 @@ namespace DashboardAPI.Controllers
                 }
             };
 
-            var json     = JsonSerializer.Serialize(export, new JsonSerializerOptions { WriteIndented = true });
+            var json     = JsonSerializer.Serialize(export, _indented);
             var bytes    = Encoding.UTF8.GetBytes(json);
             var fileName = $"dashboard_{dashboard.Id}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.json";
+
+            await audit.LogAsync(userId, "EXPORT_JSON", "Dashboard", id,
+                $"name={dashboard.Name}", GetClientIp());
 
             return File(bytes, "application/json", fileName);
         }
 
         // ── POST api/export/import-json ───────────────────────────────────────
-        /// <summary>
-        /// Importe une configuration JSON exportée et recrée le dashboard
-        /// pour l'utilisateur connecté.
-        /// </summary>
+        /// <summary>Importe une configuration JSON exportée et recrée le dashboard.</summary>
         [HttpPost("import-json")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> ImportJson(IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("Fichier JSON vide.");
 
-            if (Path.GetExtension(file.FileName).ToLower() != ".json")
+            if (!Path.GetExtension(file.FileName).Equals(".json", StringComparison.OrdinalIgnoreCase))
                 return BadRequest("Seuls les fichiers .json sont acceptés.");
 
             string json;
@@ -84,74 +83,75 @@ namespace DashboardAPI.Controllers
                 json = await reader.ReadToEndAsync();
 
             JsonElement root;
-            try
-            {
-                root = JsonSerializer.Deserialize<JsonElement>(json);
-            }
-            catch
-            {
-                return BadRequest("JSON invalide.");
-            }
+            try   { root = JsonSerializer.Deserialize<JsonElement>(json); }
+            catch { return BadRequest("JSON invalide."); }
 
             if (!root.TryGetProperty("dashboard", out var dashboardEl))
                 return BadRequest("Format JSON non reconnu. Clé 'dashboard' manquante.");
 
-            // Recréer le dashboard
+            var userId = GetUserId();
+
             var dashboard = new Dashboard
             {
-                Name                = dashboardEl.TryGetProperty("name", out var n) ? n.GetString() ?? "Dashboard importé" : "Dashboard importé",
-                DatasetId           = dashboardEl.TryGetProperty("datasetId", out var did) ? did.GetInt32() : 0,
-                UserId              = GetUserId(),
+                Name                = dashboardEl.TryGetProperty("name",        out var n)   ? n.GetString()   ?? "Dashboard importé" : "Dashboard importé",
+                DatasetId           = dashboardEl.TryGetProperty("datasetId",   out var did) ? did.GetInt32()  : 0,
+                UserId              = userId,
                 IsPublic            = false,
                 ShareToken          = Guid.NewGuid().ToString(),
                 CreatedAt           = DateTime.UtcNow,
-                ColumnsJson         = dashboardEl.TryGetProperty("columns", out var cols) ? cols.GetRawText() : "[]",
-                InsightsJson        = dashboardEl.TryGetProperty("insights", out var ins) ? ins.GetRawText() : "[]",
-                RecommendationsJson = dashboardEl.TryGetProperty("recommendations", out var rec) ? rec.GetRawText() : "[]",
+                ColumnsJson         = dashboardEl.TryGetProperty("columns",         out var cols) ? cols.GetRawText() : "[]",
+                InsightsJson        = dashboardEl.TryGetProperty("insights",        out var ins)  ? ins.GetRawText()  : "[]",
+                RecommendationsJson = dashboardEl.TryGetProperty("recommendations", out var rec)  ? rec.GetRawText()  : "[]",
             };
 
-            _context.Dashboards.Add(dashboard);
-            await _context.SaveChangesAsync();
+            context.Dashboards.Add(dashboard);
+            await context.SaveChangesAsync();
 
-            // Recréer les widgets
             if (dashboardEl.TryGetProperty("widgets", out var widgetsEl))
             {
                 foreach (var w in widgetsEl.EnumerateArray())
                 {
-                    _context.Widgets.Add(new Widget
+                    context.Widgets.Add(new Widget
                     {
                         DashboardId = dashboard.Id,
-                        Type        = w.TryGetProperty("type",  out var t) ? t.GetString() ?? "bar" : "bar",
-                        Title       = w.TryGetProperty("title", out var ti) ? ti.GetString() ?? "" : "",
-                        Data        = w.TryGetProperty("data",  out var d) ? d.GetRawText() : "{}"
+                        Type        = w.TryGetProperty("type",  out var t)  ? t.GetString()  ?? "bar" : "bar",
+                        Title       = w.TryGetProperty("title", out var ti) ? ti.GetString() ?? ""    : "",
+                        Data        = w.TryGetProperty("data",  out var d)  ? d.GetRawText() : "{}"
                     });
                 }
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
+
+            await audit.LogAsync(userId, "IMPORT_JSON", "Dashboard", dashboard.Id,
+                $"name={dashboard.Name}", GetClientIp());
 
             return Ok(new
             {
-                message      = "Dashboard importé avec succès.",
-                dashboardId  = dashboard.Id,
+                message     = "Dashboard importé avec succès.",
+                dashboardId = dashboard.Id,
                 dashboard.Name
             });
         }
 
         // ── GET api/export/{id}/pdf ───────────────────────────────────────────
-        /// <summary>
-        /// Génère un PDF du dashboard côté serveur.
-        /// Retourne un PDF avec les infos du dashboard et la liste des widgets.
-        /// </summary>
+        /// <summary>Génère un PDF du dashboard côté serveur.</summary>
         [HttpGet("{id:int}/pdf")]
+        [EnableRateLimiting("export-policy")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> ExportPdf(int id)
         {
             var userId    = GetUserId();
-            var dashboard = await _context.Dashboards
+            var dashboard = await context.Dashboards
+                .AsNoTracking()
                 .Include(d => d.Widgets)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (dashboard == null) return NotFound("Dashboard introuvable.");
             if (dashboard.UserId != userId && !dashboard.IsPublic) return Forbid();
+
+            await audit.LogAsync(userId, "EXPORT_PDF", "Dashboard", id,
+                $"name={dashboard.Name}", GetClientIp());
 
             var pdf      = GeneratePdf(dashboard);
             var fileName = $"dashboard_{dashboard.Id}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.pdf";
@@ -159,15 +159,10 @@ namespace DashboardAPI.Controllers
             return File(pdf, "application/pdf", fileName);
         }
 
-        // ── Helper : génération PDF minimal sans dépendance externe ──────────
+        // ── PDF minimal sans dépendance externe ───────────────────────────────
         private static byte[] GeneratePdf(Dashboard dashboard)
         {
-            // PDF généré manuellement (format PDF 1.4 minimal)
-            // Pour un PDF riche, intégrer QuestPDF ou DinkToPdf plus tard
-            var sb = new StringBuilder();
-            var now = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm");
-
-            // Contenu texte du PDF
+            var now   = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm");
             var lines = new List<string>
             {
                 $"DASHBOARD : {dashboard.Name}",
@@ -181,29 +176,20 @@ namespace DashboardAPI.Controllers
             };
 
             if (dashboard.Widgets != null)
-            {
                 foreach (var w in dashboard.Widgets)
                 {
                     lines.Add($"  [{w.Type.ToUpper()}] {w.Title}");
                     lines.Add($"  ID: {w.Id}");
                     lines.Add("");
                 }
-            }
 
-            // Construction PDF brut
-            var objects   = new List<string>();
-            var offsets   = new List<int>();
-            var body      = new StringBuilder();
+            var objects = new List<string>();
+            var offsets = new List<int>();
 
-            // Objet 1 : catalog
             objects.Add("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
-            // Objet 2 : pages
             objects.Add("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
-
-            // Objet 4 : font
             objects.Add("4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n");
 
-            // Contenu de la page
             var content = new StringBuilder();
             content.AppendLine("BT");
             content.AppendLine("/F1 14 Tf");
@@ -212,30 +198,21 @@ namespace DashboardAPI.Controllers
 
             foreach (var line in lines)
             {
-                var safe = line
-                    .Replace("\\", "\\\\")
-                    .Replace("(", "\\(")
-                    .Replace(")", "\\)")
-                    .Replace("\r", "")
-                    .Replace("\n", "");
+                var safe = line.Replace("\\", "\\\\").Replace("(", "\\(").Replace(")", "\\)");
                 content.AppendLine($"({safe}) Tj T*");
             }
             content.AppendLine("ET");
 
-            var contentStr  = content.ToString();
-            var contentBytes = Encoding.Latin1.GetBytes(contentStr);
+            var contentStr   = content.ToString();
+            var contentBytes = Encoding.Latin1.GetByteCount(contentStr);
 
-            // Objet 5 : stream contenu
-            objects.Add($"5 0 obj\n<< /Length {contentBytes.Length} >>\nstream\n{contentStr}\nendstream\nendobj\n");
-
-            // Objet 3 : page
+            objects.Add($"5 0 obj\n<< /Length {contentBytes} >>\nstream\n{contentStr}\nendstream\nendobj\n");
             objects.Add("3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 5 0 R /Resources << /Font << /F1 4 0 R >> >> >>\nendobj\n");
 
-            // Assembler le PDF
-            var pdfSb  = new StringBuilder();
+            var pdfSb         = new StringBuilder();
             pdfSb.AppendLine("%PDF-1.4");
-
             var currentOffset = Encoding.Latin1.GetByteCount("%PDF-1.4\n");
+
             foreach (var obj in objects)
             {
                 offsets.Add(currentOffset);
@@ -259,7 +236,6 @@ namespace DashboardAPI.Controllers
             return Encoding.Latin1.GetBytes(pdfSb.ToString());
         }
 
-        // ── Helpers désérialisation ───────────────────────────────────────────
         private static object? TryDeserialize(string? json)
         {
             if (string.IsNullOrEmpty(json)) return new List<string>();

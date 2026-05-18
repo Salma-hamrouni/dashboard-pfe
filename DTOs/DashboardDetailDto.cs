@@ -1,4 +1,4 @@
-using DashboardAPI.Models;
+using WidgetModel = DashboardAPI.Models.Widget;
 
 namespace DashboardAPI.DTOs
 {
@@ -6,11 +6,11 @@ namespace DashboardAPI.DTOs
     {
         public int     Id        { get; set; }
         public string  Name      { get; set; } = string.Empty;
-        public int     DatasetId { get; set; }
+        public int?    DatasetId { get; set; }
 
-        public List<string>? Columns         { get; set; } = new();
-        public List<string>? Insights        { get; set; } = new();
-        public List<string>? Recommendations { get; set; } = new();
-        public List<Widget>? Widgets         { get; set; } = new();
+        public List<string>?      Columns         { get; set; } = [];
+        public List<string>?      Insights        { get; set; } = [];
+        public List<string>?      Recommendations { get; set; } = [];
+        public List<WidgetModel>? Widgets         { get; set; } = [];
     }
 }

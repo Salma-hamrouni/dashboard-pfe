@@ -2,6 +2,7 @@ using DashboardAPI.Data;
 using DashboardAPI.Models;
 using DashboardAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Text.Json;
 
 namespace DashboardAPI.Controllers
@@ -26,6 +27,55 @@ namespace DashboardAPI.Controllers
             _rest = rest;
         }
 
+        private static readonly HashSet<string> _allowedMimeTypes =
+        [
+            "text/csv",
+            "text/plain",
+            "text/tab-separated-values",
+            "application/csv",
+            "application/vnd.ms-excel" // Excel sometimes sends this for .csv
+        ];
+
+        // Known binary file magic bytes — CSV must NOT start with these
+        private static readonly (byte[] Magic, string Label)[] _binarySignatures =
+        [
+            (new byte[] { 0x50, 0x4B }              , "ZIP/Office"),
+            (new byte[] { 0xFF, 0xD8, 0xFF }        , "JPEG"),
+            (new byte[] { 0x89, 0x50, 0x4E, 0x47 }  , "PNG"),
+            (new byte[] { 0x25, 0x50, 0x44, 0x46 }  , "PDF"),
+            (new byte[] { 0x4D, 0x5A }              , "EXE/PE"),
+            (new byte[] { 0x7F, 0x45, 0x4C, 0x46 }  , "ELF"),
+            (new byte[] { 0x47, 0x49, 0x46 }        , "GIF"),
+            (new byte[] { 0x42, 0x4D }              , "BMP"),
+            (new byte[] { 0xD0, 0xCF, 0x11, 0xE0 }  , "OLE/Office"),
+        ];
+
+        private static async Task<string?> ValidateMagicBytesAsync(IFormFile file)
+        {
+            var buffer = new byte[8];
+            using var stream = file.OpenReadStream();
+            var read = await stream.ReadAsync(buffer.AsMemory(0, buffer.Length));
+            if (read == 0) return "Le fichier est vide.";
+
+            foreach (var (magic, label) in _binarySignatures)
+            {
+                if (read >= magic.Length && buffer.AsSpan(0, magic.Length).SequenceEqual(magic))
+                    return $"Fichier binaire détecté ({label}). Seuls les fichiers texte CSV/TSV sont acceptés.";
+            }
+
+            // Reject files with more than 5% non-printable bytes in the first 512 bytes
+            using var fullStream = file.OpenReadStream();
+            var sample = new byte[512];
+            var sampleRead = await fullStream.ReadAsync(sample.AsMemory(0, sample.Length));
+            var nonPrintable = sample.AsSpan(0, sampleRead)
+                .ToArray()
+                .Count(b => b < 0x09 || (b > 0x0D && b < 0x20));
+            if (sampleRead > 0 && (double)nonPrintable / sampleRead > 0.05)
+                return "Le fichier contient des caractères binaires non autorisés.";
+
+            return null;
+        }
+
         // ── GET api/datasource ────────────────────────────────────────────────
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -42,7 +92,8 @@ namespace DashboardAPI.Controllers
 
         // ── POST api/datasource/upload-csv ────────────────────────────────────
         [HttpPost("upload-csv")]
-        [RequestSizeLimit(20 * 1024 * 1024)]
+        [EnableRateLimiting("upload-policy")]
+        [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB max
         public async Task<IActionResult> UploadCsv(
             IFormFile file,
             [FromForm] string name,
@@ -52,9 +103,22 @@ namespace DashboardAPI.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest("Aucun fichier fourni.");
 
+            if (file.Length > 10 * 1024 * 1024)
+                return BadRequest("Le fichier dépasse la taille maximale autorisée (10 Mo).");
+
             var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
             if (ext != ".csv" && ext != ".tsv")
                 return BadRequest("Seuls les fichiers .csv et .tsv sont acceptés.");
+
+            // Validate MIME type declared by client
+            var contentType = file.ContentType.ToLowerInvariant();
+            if (!_allowedMimeTypes.Contains(contentType))
+                return BadRequest($"Type MIME non autorisé : {file.ContentType}");
+
+            // Validate magic bytes — reject binary files masquerading as CSV
+            var magicError = await ValidateMagicBytesAsync(file);
+            if (magicError != null)
+                return BadRequest(magicError);
 
             var filePath    = await _csv.SaveUploadAsync(file);
             var parseResult = _csv.Parse(filePath, delimiter);
