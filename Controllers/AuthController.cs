@@ -34,7 +34,7 @@ namespace DashboardAPI.Controllers
             if (existing != null)
                 return Conflict(ApiResponse<object>.Fail("Un compte existe déjà avec cet email."));
 
-            var user = await authService.Register(dto.Email, dto.Password, nameof(UserRole.Viewer));
+            var user = await authService.Register(dto.Email, dto.Password, nameof(UserRole.Editor));
 
             await audit.LogAsync(user.Id, "USER_REGISTERED", "User", user.Id,
                 $"email={dto.Email}", GetIp());

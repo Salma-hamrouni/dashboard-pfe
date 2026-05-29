@@ -20,10 +20,12 @@ namespace DashboardAPI.Middlewares
             headers.Remove("X-Powered-By");
 
             // Swagger UI needs self-hosted scripts, styles, and inline execution.
+            // 'unsafe-eval' is required by Swagger UI's internal JS bundle (dynamic expression evaluation).
+            // 'connect-src self' allows Swagger UI fetch calls to the same-origin API.
             // All other routes are strict REST — no browser content expected.
             headers["Content-Security-Policy"] = isSwagger
                 ? "default-src 'self'; " +
-                  "script-src 'self' 'unsafe-inline'; " +
+                  "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
                   "style-src 'self' 'unsafe-inline'; " +
                   "img-src 'self' data:; " +
                   "connect-src 'self';"

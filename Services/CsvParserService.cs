@@ -49,58 +49,64 @@ namespace DashboardAPI.Services
         /// <summary>
         /// Parse le fichier CSV : détecte les colonnes, infère les types, retourne un aperçu
         /// et un snapshot JSON complet pour le cache.
+        /// Limite le cache à <see cref="MaxCacheRows"/> lignes pour éviter les crashs mémoire
+        /// sur les gros fichiers ; TotalRows reflète le vrai nombre de lignes.
         /// </summary>
         public CsvParseResult Parse(string filePath, char delimiter = ',')
         {
+            // Hard cap: prevent OOM on large files. 10k rows × 10 cols × avg 20 chars ≈ 2 MB JSON,
+            // well within MySQL max_allowed_packet (default 16–64 MB).
+            const int MaxCacheRows = 10_000;
+
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                Delimiter      = delimiter.ToString(),
-                HasHeaderRecord = true,
+                Delimiter         = delimiter.ToString(),
+                HasHeaderRecord   = true,
                 MissingFieldFound = null,
-                BadDataFound   = null,
+                BadDataFound      = null,
             };
 
-            using var reader = new StreamReader(filePath);
-            using var csv    = new CsvReader(reader, config);
+            string[] headers;
+            var rawRows   = new List<Dictionary<string, string>>();
+            int totalRows = 0;
 
-            // Lire tous les enregistrements comme dictionnaires dynamiques
-            var records = new List<Dictionary<string, string>>();
-            csv.Read();
-            csv.ReadHeader();
-            var headers = csv.HeaderRecord ?? Array.Empty<string>();
-
-            while (csv.Read())
+            // Single pass — collect up to MaxCacheRows, count all rows
+            using (var reader = new StreamReader(filePath))
+            using (var csv = new CsvReader(reader, config))
             {
-                var row = new Dictionary<string, string>();
-                foreach (var h in headers)
-                    row[h] = csv.GetField(h) ?? string.Empty;
-                records.Add(row);
+                csv.Read();
+                csv.ReadHeader();
+                headers = csv.HeaderRecord ?? Array.Empty<string>();
+
+                while (csv.Read())
+                {
+                    totalRows++;
+                    if (rawRows.Count < MaxCacheRows)
+                    {
+                        var row = new Dictionary<string, string>(headers.Length);
+                        foreach (var h in headers)
+                            row[h] = csv.GetField(h) ?? string.Empty;
+                        rawRows.Add(row);
+                    }
+                }
             }
 
-            // Inférer les types colonne par colonne
             var columns = headers.Select((h, i) => new ColumnInfo
             {
                 Name  = h,
                 Index = i,
-                Type  = InferType(records.Select(r => r.TryGetValue(h, out var v) ? v : "").ToList())
+                Type  = InferType(rawRows.Select(r => r.TryGetValue(h, out var v) ? v : "").ToList())
             }).ToList();
 
-            // Convertir les lignes avec types
-            var typedRows = records.Select(r => CastRow(r, columns)).ToList();
+            var typedRows = rawRows.Select(r => CastRow(r, columns)).ToList();
 
-            var result = new CsvParseResult
+            return new CsvParseResult
             {
-                Columns   = columns,
-                Preview   = typedRows.Take(5).ToList(),
-                TotalRows = records.Count,
-                CachedJson = JsonSerializer.Serialize(new
-                {
-                    columns  = columns,
-                    rows     = typedRows
-                })
+                Columns    = columns,
+                Preview    = typedRows.Take(5).ToList(),
+                TotalRows  = totalRows,
+                CachedJson = JsonSerializer.Serialize(new { columns, rows = typedRows })
             };
-
-            return result;
         }
 
         // ──────────────────────────────────────────────────────────────────────

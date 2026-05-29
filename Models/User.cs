@@ -12,7 +12,7 @@ namespace DashboardAPI.Models
         public int      Id           { get; set; }
         public string   Email        { get; set; } = string.Empty;
         public string   PasswordHash { get; set; } = string.Empty;
-        public string   Role         { get; set; } = nameof(UserRole.Viewer); 
+        public string   Role         { get; set; } = nameof(UserRole.Editor);
         public DateTime CreatedAt    { get; set; } = DateTime.UtcNow;
 
         public ICollection<Dataset>   Datasets   { get; set; } = new List<Dataset>();

@@ -10,21 +10,30 @@ namespace DashboardAPI.Controllers
     [Route("api/datasource")]
     public class DataSourceController : BaseController
     {
-        private readonly DataSourceDao       _dao;
-        private readonly CsvParserService    _csv;
-        private readonly SqlConnectorService _sql;
+        private readonly DataSourceDao        _dao;
+        private readonly CsvParserService     _csv;
+        private readonly SqlConnectorService  _sql;
         private readonly RestConnectorService _rest;
+        private readonly ILogger<DataSourceController> _logger;
 
         public DataSourceController(
             DataSourceDao        dao,
             CsvParserService     csv,
             SqlConnectorService  sql,
-            RestConnectorService rest)
+            RestConnectorService rest,
+            ILogger<DataSourceController> logger)
         {
-            _dao  = dao;
-            _csv  = csv;
-            _sql  = sql;
-            _rest = rest;
+            _dao    = dao;
+            _csv    = csv;
+            _sql    = sql;
+            _rest   = rest;
+            _logger = logger;
+        }
+
+        private static void TryDeleteFile(string? path)
+        {
+            if (!string.IsNullOrEmpty(path) && System.IO.File.Exists(path))
+                try { System.IO.File.Delete(path); } catch { /* best-effort cleanup */ }
         }
 
         private static readonly HashSet<string> _allowedMimeTypes =
@@ -33,7 +42,8 @@ namespace DashboardAPI.Controllers
             "text/plain",
             "text/tab-separated-values",
             "application/csv",
-            "application/vnd.ms-excel" // Excel sometimes sends this for .csv
+            "application/vnd.ms-excel",   // Excel / Windows OS pour .csv
+            "application/octet-stream"    // Swagger UI, Postman et certains OS envoient ce type pour .csv
         ];
 
         // Known binary file magic bytes — CSV must NOT start with these
@@ -52,9 +62,13 @@ namespace DashboardAPI.Controllers
 
         private static async Task<string?> ValidateMagicBytesAsync(IFormFile file)
         {
-            var buffer = new byte[8];
-            using var stream = file.OpenReadStream();
-            var read = await stream.ReadAsync(buffer.AsMemory(0, buffer.Length));
+            // Single read of 512 bytes covers both magic-byte check (first 8) and
+            // printable-ratio check — avoids opening the form stream twice.
+            var buffer = new byte[512];
+            int read;
+            using (var stream = file.OpenReadStream())
+                read = await stream.ReadAsync(buffer.AsMemory(0, buffer.Length));
+
             if (read == 0) return "Le fichier est vide.";
 
             foreach (var (magic, label) in _binarySignatures)
@@ -63,14 +77,13 @@ namespace DashboardAPI.Controllers
                     return $"Fichier binaire détecté ({label}). Seuls les fichiers texte CSV/TSV sont acceptés.";
             }
 
-            // Reject files with more than 5% non-printable bytes in the first 512 bytes
-            using var fullStream = file.OpenReadStream();
-            var sample = new byte[512];
-            var sampleRead = await fullStream.ReadAsync(sample.AsMemory(0, sample.Length));
-            var nonPrintable = sample.AsSpan(0, sampleRead)
-                .ToArray()
-                .Count(b => b < 0x09 || (b > 0x0D && b < 0x20));
-            if (sampleRead > 0 && (double)nonPrintable / sampleRead > 0.05)
+            var nonPrintable = 0;
+            for (var i = 0; i < read; i++)
+            {
+                var b = buffer[i];
+                if (b < 0x09 || (b > 0x0D && b < 0x20)) nonPrintable++;
+            }
+            if ((double)nonPrintable / read > 0.05)
                 return "Le fichier contient des caractères binaires non autorisés.";
 
             return null;
@@ -91,55 +104,99 @@ namespace DashboardAPI.Controllers
         }
 
         // ── POST api/datasource/upload-csv ────────────────────────────────────
+        // Solution Swashbuckle : IFormFile + autres champs [FromForm] doivent être
+        // regroupés dans un seul DTO, sinon Swashbuckle crash sur swagger.json.
         [HttpPost("upload-csv")]
         [EnableRateLimiting("upload-policy")]
-        [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB max
-        public async Task<IActionResult> UploadCsv(
-            IFormFile file,
-            [FromForm] string name,
-            [FromForm] string? description,
-            [FromForm] char delimiter = ',')
+        // Kestrel limit = 20MB so the browser can finish sending and receive a proper 400.
+        // If we set it to 10MB, Kestrel closes the socket while the browser is still uploading
+        // → browser never reads the response → "Failed to fetch" instead of a clear error.
+        // The 10MB business rule is enforced below by file.Length check.
+        [RequestSizeLimit(20 * 1024 * 1024)]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(typeof(string), 400)]
+        public async Task<IActionResult> UploadCsv([FromForm] UploadCsvRequest request)
         {
+            var file = request.File;
+
             if (file == null || file.Length == 0)
                 return BadRequest("Aucun fichier fourni.");
 
             if (file.Length > 10 * 1024 * 1024)
                 return BadRequest("Le fichier dépasse la taille maximale autorisée (10 Mo).");
 
+            // Delimiter is already validated by [StringLength(1, MinimumLength = 1)] on the DTO.
+            // Model binding guarantees exactly 1 char here; use ',' as defensive fallback.
+            var delimChar = (request.Delimiter?.Length == 1) ? request.Delimiter[0] : ',';
+
             var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
             if (ext != ".csv" && ext != ".tsv")
                 return BadRequest("Seuls les fichiers .csv et .tsv sont acceptés.");
 
-            // Validate MIME type declared by client
             var contentType = file.ContentType.ToLowerInvariant();
             if (!_allowedMimeTypes.Contains(contentType))
                 return BadRequest($"Type MIME non autorisé : {file.ContentType}");
 
-            // Validate magic bytes — reject binary files masquerading as CSV
             var magicError = await ValidateMagicBytesAsync(file);
             if (magicError != null)
                 return BadRequest(magicError);
 
-            var filePath    = await _csv.SaveUploadAsync(file);
-            var parseResult = _csv.Parse(filePath, delimiter);
+            // ── Save to disk ──────────────────────────────────────────────────
+            string filePath;
+            try
+            {
+                filePath = await _csv.SaveUploadAsync(file);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "CSV SaveUpload failed — file: {FileName}", file.FileName);
+                return StatusCode(500, "Erreur lors de la sauvegarde du fichier.");
+            }
 
+            // ── Parse CSV ─────────────────────────────────────────────────────
+            // Wrapped separately so we can delete the saved file if parsing fails.
+            CsvParseResult parseResult;
+            try
+            {
+                parseResult = _csv.Parse(filePath, delimChar);
+            }
+            catch (Exception ex)
+            {
+                TryDeleteFile(filePath);
+                _logger.LogError(ex, "CSV parse failed — file: {FilePath}", filePath);
+                return BadRequest($"Impossible de parser le fichier CSV : {ex.Message}");
+            }
+
+            // ── Persist to DB ─────────────────────────────────────────────────
             var ds = new DataSource
             {
-                Name        = name,
-                Description = description,
+                Name        = request.Name,
+                Description = request.Description,
                 Type        = DataSourceType.CSV,
                 FilePath    = filePath,
-                CachedDataJson      = parseResult.CachedJson,
-                LastRefreshedAt     = DateTime.UtcNow,
+                CachedDataJson       = parseResult.CachedJson,
+                LastRefreshedAt      = DateTime.UtcNow,
                 ConnectionParamsJson = JsonSerializer.Serialize(new
                 {
                     fileName  = file.FileName,
-                    delimiter = delimiter.ToString()
+                    delimiter = delimChar.ToString()
                 }),
                 UserId = GetUserId()
             };
 
-            var created = await _dao.CreateAsync(ds);
+            DataSource created;
+            try
+            {
+                created = await _dao.CreateAsync(ds);
+            }
+            catch (Exception ex)
+            {
+                TryDeleteFile(filePath);
+                _logger.LogError(ex, "CSV CreateAsync failed — datasource: {Name}", request.Name);
+                return StatusCode(500, "Erreur lors de la sauvegarde en base de données.");
+            }
+
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, new
             {
                 created.Id,
@@ -352,6 +409,32 @@ namespace DashboardAPI.Controllers
     }
 
     // ── DTOs des requêtes ─────────────────────────────────────────────────────
+
+    // Regrouper IFormFile + champs [FromForm] dans un seul DTO
+    // est requis par Swashbuckle pour générer swagger.json sans erreur.
+    public class UploadCsvRequest
+    {
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Le fichier est obligatoire.")]
+        public IFormFile File { get; set; } = null!;
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Le nom est obligatoire.")]
+        [System.ComponentModel.DataAnnotations.StringLength(150, MinimumLength = 1,
+            ErrorMessage = "Le nom doit contenir entre 1 et 150 caractères.")]
+        [System.ComponentModel.DefaultValue("Mon dataset")]
+        public string Name { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.StringLength(500)]
+        public string? Description { get; set; }
+
+        /// <summary>Délimiteur CSV. Exactement 1 caractère. Défaut : virgule.</summary>
+        // [DefaultValue] tells Swashbuckle to set default: "," in the OpenAPI schema so
+        // Swagger UI pre-fills "," instead of the generic "string" placeholder.
+        [System.ComponentModel.DefaultValue(",")]
+        [System.ComponentModel.DataAnnotations.StringLength(1, MinimumLength = 1,
+            ErrorMessage = "Le délimiteur doit être exactement 1 caractère (ex: \",\" ou \";\").")]
+        public string Delimiter { get; set; } = ",";
+    }
+
     public record ConnectSqlRequest(
         string  Name,
         string? Description,

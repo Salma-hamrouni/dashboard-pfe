@@ -17,15 +17,16 @@ namespace DashboardAPI.DTOs.Auth
 
     public class RegisterRequestDto : LoginRequestDto
     {
-        // Role assigné uniquement par un Admin via PUT /users/{id}/role
-        // L'inscription publique est toujours Viewer
+        // Tout nouvel utilisateur est automatiquement Editor.
+        // Viewer est un rôle CONTEXTUEL (accès via lien de partage uniquement), pas assignable à l'inscription.
+        // Pour promouvoir en Admin : PUT /api/auth/users/{id}/role
     }
 
     public class ChangeRoleRequestDto
     {
         [Required]
-        [RegularExpression("^(Admin|Editor|Viewer)$",
-            ErrorMessage = "Rôle invalide. Valeurs: Admin, Editor, Viewer.")]
+        [RegularExpression("^(Admin|Editor)$",
+            ErrorMessage = "Rôle invalide. Valeurs acceptées : Admin, Editor. (Viewer est contextuel — accès par lien de partage uniquement)")]
         public string Role { get; set; } = "";
     }
 

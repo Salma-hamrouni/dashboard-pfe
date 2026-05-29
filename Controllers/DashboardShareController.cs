@@ -51,7 +51,10 @@ namespace DashboardAPI.Controllers
         }
 
         // ── GET api/dashboard-share/access/{token} ────────────────────────────
-        /// <summary>Accède à un dashboard via son token de partage.</summary>
+        /// <summary>
+        /// Accède à un dashboard via son token de partage (sans compte requis).
+        /// Retourne un contexte Viewer temporaire — aucun rôle permanent n'est attribué.
+        /// </summary>
         [HttpGet("access/{token}")]
         [AllowAnonymous]
         public async Task<IActionResult> AccessByToken(string token)
@@ -67,10 +70,22 @@ namespace DashboardAPI.Controllers
             if (share.ExpiresAt.HasValue && share.ExpiresAt < DateTime.UtcNow)
                 return BadRequest("Ce lien de partage a expiré.");
 
+            // Contexte Viewer temporaire : communique au frontend les permissions exactes
+            // sans créer de compte ni attribuer de rôle permanent en base.
+            var viewerContext = new
+            {
+                role        = "Viewer",           // rôle contextuel, non persisté
+                canView     = true,
+                canEdit     = share.Permission == SharePermission.Edit,
+                isTemporary = true,
+                expiresAt   = share.ExpiresAt
+            };
+
             return Ok(new
             {
                 share.Permission,
                 share.ExpiresAt,
+                viewerContext,
                 Dashboard = share.Dashboard
             });
         }

@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using DashboardAPI.Common;
+using DashboardAPI.Data;
 using DashboardAPI.DTOs;
 
 namespace DashboardAPI.Controllers
@@ -15,9 +16,11 @@ namespace DashboardAPI.Controllers
         IConfiguration config,
         IHttpClientFactory httpFactory,
         IMemoryCache cache,
+        DataSourceDao dataSourceDao,
         ILogger<AiController> logger) : BaseController
     {
         private readonly HttpClient _http = httpFactory.CreateClient("gemini");
+        private readonly DataSourceDao _dataSourceDao = dataSourceDao;
 
         private static readonly MemoryCacheEntryOptions _cacheOpts = new()
         {
@@ -26,23 +29,83 @@ namespace DashboardAPI.Controllers
             Size = 1
         };
 
+        // ── Helpers ───────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Resolves columns (and optionally preview rows) from either the request body
+        /// or a datasource looked up by id. Returns null if the datasource is not found
+        /// or does not belong to the current user.
+        /// </summary>
+        private async Task<(List<ColumnDto>? columns, List<Dictionary<string, object?>>? preview, IActionResult? error)>
+            ResolveColumnsAsync(int? dataSourceId, List<ColumnDto>? inlineColumns, bool includePreview = false)
+        {
+            if (inlineColumns?.Count > 0)
+                return (inlineColumns, null, null);
+
+            if (dataSourceId == null)
+                return (null, null, BadRequest(ApiResponse<object>.Fail("Fournissez 'dataSourceId' ou 'columns'.")));
+
+            var ds = await _dataSourceDao.GetByIdAsync(dataSourceId.Value);
+            if (ds == null || ds.UserId != GetUserId())
+                return (null, null, NotFound(ApiResponse<object>.Fail("Source de données introuvable.")));
+
+            if (string.IsNullOrEmpty(ds.CachedDataJson))
+                return (null, null, BadRequest(ApiResponse<object>.Fail("Source de données vide. Effectuez d'abord un refresh.")));
+
+            using var doc = JsonDocument.Parse(ds.CachedDataJson);
+            var root = doc.RootElement;
+
+            var columns = new List<ColumnDto>();
+            if (root.TryGetProperty("columns", out var colsEl))
+                foreach (var c in colsEl.EnumerateArray())
+                    columns.Add(new ColumnDto
+                    {
+                        Name = c.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "",
+                        Type = c.TryGetProperty("type", out var t) ? t.GetString() ?? "string" : "string"
+                    });
+
+            List<Dictionary<string, object?>>? preview = null;
+            if (includePreview && root.TryGetProperty("rows", out var rowsEl))
+            {
+                preview = [];
+                foreach (var row in rowsEl.EnumerateArray().Take(10))
+                {
+                    var dict = new Dictionary<string, object?>();
+                    foreach (var prop in row.EnumerateObject())
+                        dict[prop.Name] = prop.Value.ValueKind switch
+                        {
+                            JsonValueKind.Number => prop.Value.TryGetDouble(out var d) ? (object?)d : null,
+                            JsonValueKind.True   => true,
+                            JsonValueKind.False  => false,
+                            JsonValueKind.Null   => null,
+                            _                    => prop.Value.GetString()
+                        };
+                    preview.Add(dict);
+                }
+            }
+
+            return (columns, preview, null);
+        }
+
         // ── POST api/ai/recommend-chart ───────────────────────────────────────
         /// <summary>Recommande le type de graphique le plus adapté aux colonnes fournies.</summary>
         [HttpPost("recommend-chart")]
         [ProducesResponseType(typeof(ApiResponse<JsonElement>), 200)]
         public async Task<IActionResult> RecommendChart([FromBody] AiColumnRequest request)
         {
-            if (request.Columns == null || request.Columns.Count == 0)
+            var (columns, _, error) = await ResolveColumnsAsync(request.DataSourceId, request.Columns);
+            if (error != null) return error;
+            if (columns == null || columns.Count == 0)
                 return BadRequest(ApiResponse<object>.Fail("Aucune colonne fournie."));
 
-            var cacheKey = BuildCacheKey("recommend-chart", request.Columns);
+            var cacheKey = BuildCacheKey("recommend-chart", columns);
             if (cache.TryGetValue(cacheKey, out JsonElement cached))
             {
                 logger.LogDebug("AI cache hit: recommend-chart ({Key})", cacheKey[^8..]);
                 return Ok(ApiResponse<JsonElement>.Ok(cached, new { source = "cache" }));
             }
 
-            var columnsDesc = FormatColumns(request.Columns);
+            var columnsDesc = FormatColumns(columns);
             var prompt = $@"Tu es un expert en visualisation de données.
 Voici les colonnes d'un dataset :
 {columnsDesc}
@@ -68,17 +131,19 @@ Schéma attendu :
         [ProducesResponseType(typeof(ApiResponse<JsonElement>), 200)]
         public async Task<IActionResult> SuggestKpis([FromBody] AiColumnRequest request)
         {
-            if (request.Columns == null || request.Columns.Count == 0)
+            var (columns, _, error) = await ResolveColumnsAsync(request.DataSourceId, request.Columns);
+            if (error != null) return error;
+            if (columns == null || columns.Count == 0)
                 return BadRequest(ApiResponse<object>.Fail("Aucune colonne fournie."));
 
-            var cacheKey = BuildCacheKey("suggest-kpis", request.Columns);
+            var cacheKey = BuildCacheKey("suggest-kpis", columns);
             if (cache.TryGetValue(cacheKey, out JsonElement cached))
             {
                 logger.LogDebug("AI cache hit: suggest-kpis ({Key})", cacheKey[^8..]);
                 return Ok(ApiResponse<JsonElement>.Ok(cached, new { source = "cache" }));
             }
 
-            var columnsDesc = FormatColumns(request.Columns);
+            var columnsDesc = FormatColumns(columns);
             var prompt = $@"Tu es un expert en business intelligence.
 Voici les colonnes d'un dataset :
 {columnsDesc}
@@ -109,14 +174,18 @@ Schéma attendu :
         [ProducesResponseType(typeof(ApiResponse<JsonElement>), 200)]
         public async Task<IActionResult> Analyze([FromBody] AiAnalyzeRequest request)
         {
-            if (request.Columns == null || request.Columns.Count == 0)
+            var (columns, resolvedPreview, error) = await ResolveColumnsAsync(
+                request.DataSourceId, request.Columns, includePreview: true);
+            if (error != null) return error;
+            if (columns == null || columns.Count == 0)
                 return BadRequest(ApiResponse<object>.Fail("Aucune colonne fournie."));
 
-            // Analyze includes preview data — cache key includes a hash of first 5 rows too
-            var previewHash = request.Preview != null
-                ? ComputeHash(JsonSerializer.Serialize(request.Preview.Take(5)))
+            var preview = request.Preview ?? resolvedPreview;
+
+            var previewHash = preview != null
+                ? ComputeHash(JsonSerializer.Serialize(preview.Take(5)))
                 : "no-preview";
-            var cacheKey = BuildCacheKey("analyze", request.Columns) + ":" + previewHash;
+            var cacheKey = BuildCacheKey("analyze", columns) + ":" + previewHash;
 
             if (cache.TryGetValue(cacheKey, out JsonElement cached))
             {
@@ -124,10 +193,14 @@ Schéma attendu :
                 return Ok(ApiResponse<JsonElement>.Ok(cached, new { source = "cache" }));
             }
 
-            var columnsDesc = FormatColumns(request.Columns);
-            var previewDesc = request.Preview?.Count > 0
-                ? JsonSerializer.Serialize(request.Preview.Take(10))
+            var columnsDesc = FormatColumns(columns);
+            var previewDesc = preview?.Count > 0
+                ? JsonSerializer.Serialize(preview.Take(10))
                 : "Non fourni";
+
+            var questionSection = !string.IsNullOrWhiteSpace(request.Question)
+                ? $"\nQuestion spécifique : {request.Question}\n"
+                : "";
 
             var prompt = $@"Tu es un data analyst expert.
 Voici un dataset avec ses colonnes et un aperçu des données :
@@ -137,7 +210,7 @@ Colonnes :
 
 Aperçu (premières lignes) :
 {previewDesc}
-
+{questionSection}
 Analyse ces données et détecte les tendances, anomalies et insights importants.
 Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte avant ou après.
 Schéma attendu :
@@ -259,11 +332,14 @@ Schéma attendu :
     // ── DTOs ──────────────────────────────────────────────────────────────────
     public class AiColumnRequest
     {
+        public int? DataSourceId { get; set; }
         public List<ColumnDto> Columns { get; set; } = [];
     }
 
     public class AiAnalyzeRequest
     {
+        public int? DataSourceId { get; set; }
+        public string? Question { get; set; }
         public List<ColumnDto> Columns { get; set; } = [];
         public List<Dictionary<string, object?>>? Preview { get; set; }
     }

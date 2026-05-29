@@ -32,6 +32,11 @@ namespace DashboardAPI.Middlewares
                 context.Request.Path,
                 ex.Message);
 
+            // Response already started — headers sent, cannot change status or write body.
+            // Logging above is all we can do; let Kestrel close the connection cleanly.
+            if (context.Response.HasStarted)
+                return;
+
             var (statusCode, message) = ex switch
             {
                 UnauthorizedAccessException => (HttpStatusCode.Unauthorized,  "Accès non autorisé."),

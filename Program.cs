@@ -183,6 +183,11 @@ try
             }
         });
 
+        // Relative server URL — Swagger UI uses the current page's origin for all
+        // API calls, eliminating HTTP/HTTPS mixed-content "Failed to fetch" errors
+        // regardless of which launch profile (http:5144 or https:7065) is active.
+        c.AddServer(new OpenApiServer { Url = "/" });
+
         c.OrderActionsBy(a => a.GroupName);
     });
 
@@ -191,9 +196,12 @@ try
     {
         options.AddPolicy("AllowFrontend", policy =>
             policy.WithOrigins(
-                    "http://localhost:5144",
-                    "http://localhost:3000",
-                    "http://localhost:4200")
+                    "http://localhost:5144",   // API self — Swagger UI (same-origin, harmless to list)
+                    "https://localhost:7065",  // API self — HTTPS profile
+                    "http://localhost:3000",   // React (Create React App)
+                    "http://localhost:5173",   // React (Vite)
+                    "http://localhost:4200"    // Angular
+                )
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials());

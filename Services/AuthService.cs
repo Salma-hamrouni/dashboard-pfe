@@ -16,7 +16,7 @@ namespace DashboardAPI.Services
         public async Task<User?> GetByEmailAsync(string email)
             => await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-        public async Task<User> Register(string email, string password, string role = "Viewer")
+        public async Task<User> Register(string email, string password, string role = "Editor")
         {
             var user = new User
             {
