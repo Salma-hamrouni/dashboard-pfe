@@ -1,0 +1,7 @@
+C:\Users\rym.benslimen\DashboardAPI\obj\Debug\net10.0\DashboardAPI.csproj.AssemblyReference.cache
+C:\Users\rym.benslimen\DashboardAPI\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\rym.benslimen\DashboardAPI\obj\Debug\net10.0\DashboardAPI.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\rym.benslimen\DashboardAPI\obj\Debug\net10.0\DashboardAPI.AssemblyInfoInputs.cache
+C:\Users\rym.benslimen\DashboardAPI\obj\Debug\net10.0\DashboardAPI.AssemblyInfo.cs
+C:\Users\rym.benslimen\DashboardAPI\obj\Debug\net10.0\DashboardAPI.csproj.CoreCompileInputs.cache
+C:\Users\rym.benslimen\DashboardAPI\obj\Debug\net10.0\DashboardAPI.MvcApplicationPartsAssemblyInfo.cache
