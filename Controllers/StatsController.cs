@@ -143,7 +143,7 @@ namespace DashboardAPI.Controllers
 
             var staleSources = await context.DataSources
                 .Where(ds => ds.LastRefreshedAt < DateTime.UtcNow.AddHours(-24))
-                .Select(ds => new { ds.Id, ds.Name, ds.Type, ds.LastRefreshedAt })
+                .Select(ds => new { ds.Id, ds.Name, Type = ds.Type.ToString(), ds.LastRefreshedAt })
                 .ToListAsync();
 
             return Ok(ApiResponse<object>.Ok(new { byType, staleSources }));

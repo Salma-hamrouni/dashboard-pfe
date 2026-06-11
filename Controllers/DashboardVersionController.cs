@@ -52,7 +52,11 @@ namespace DashboardAPI.Controllers
                 },
                 widgets = dashboard.Widgets.Select(w => new
                 {
-                    w.Id, w.Type, w.Title, w.Data, w.DashboardId
+                    id          = w.Id,
+                    type        = w.Type,
+                    title       = w.Title,
+                    data        = w.Data,
+                    dashboardId = w.DashboardId
                 })
             };
 
@@ -169,7 +173,11 @@ namespace DashboardAPI.Controllers
                 },
                 widgets = dashboard.Widgets.Select(w => new
                 {
-                    w.Id, w.Type, w.Title, w.Data, w.DashboardId
+                    id          = w.Id,
+                    type        = w.Type,
+                    title       = w.Title,
+                    data        = w.Data,
+                    dashboardId = w.DashboardId
                 })
             };
 
@@ -204,12 +212,17 @@ namespace DashboardAPI.Controllers
             {
                 foreach (var w in widgets.EnumerateArray())
                 {
+                    // Support PascalCase (ancien snapshot) et camelCase
+                    var type  = (w.TryGetProperty("type",  out var t1)  ? t1 : w.TryGetProperty("Type",  out var t2)  ? t2 : default).GetString()  ?? "bar";
+                    var title = (w.TryGetProperty("title", out var ti1) ? ti1 : w.TryGetProperty("Title", out var ti2) ? ti2 : default).GetString() ?? "";
+                    var data  = (w.TryGetProperty("data",  out var d1)  ? d1 : w.TryGetProperty("Data",  out var d2)  ? d2 : default).GetString()  ?? "{}";
+
                     _context.Widgets.Add(new Widget
                     {
                         DashboardId = dashboardId,
-                        Type        = w.TryGetProperty("type",  out var t)  ? t.GetString()  ?? "bar" : "bar",
-                        Title       = w.TryGetProperty("title", out var ti) ? ti.GetString() ?? ""    : "",
-                        Data        = w.TryGetProperty("data",  out var dt) ? dt.GetString() ?? "{}"  : "{}"
+                        Type        = type,
+                        Title       = title,
+                        Data        = data
                     });
                 }
             }

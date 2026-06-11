@@ -46,6 +46,7 @@ namespace DashboardAPI.Controllers
                 {
                     Id        = user.Id,
                     Email     = user.Email,
+                    Name      = user.Name,
                     Role      = user.Role,
                     CreatedAt = user.CreatedAt
                 }));
@@ -88,6 +89,7 @@ namespace DashboardAPI.Controllers
                 {
                     Id        = user.Id,
                     Email     = user.Email,
+                    Name      = user.Name,
                     Role      = user.Role,
                     CreatedAt = user.CreatedAt
                 }
@@ -127,6 +129,7 @@ namespace DashboardAPI.Controllers
                 {
                     Id        = u.Id,
                     Email     = u.Email,
+                    Name      = u.Name,
                     Role      = u.Role,
                     CreatedAt = u.CreatedAt
                 })
@@ -165,6 +168,29 @@ namespace DashboardAPI.Controllers
                 CreatedAt = user.CreatedAt
             }));
         }
+
+        // ── PUT /api/auth/update-name ────────────────────────────────────────
+        [HttpPut("update-name")]
+        [Authorize]
+        public async Task<IActionResult> UpdateName([FromBody] UpdateNameRequest req)
+        {
+            if (string.IsNullOrWhiteSpace(req.Name))
+                return BadRequest(ApiResponse<object>.Fail("Le nom ne peut pas être vide."));
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var user   = await context.Users.FindAsync(userId);
+            if (user == null) return NotFound(ApiResponse<object>.Fail("Utilisateur introuvable."));
+
+            await context.Users
+                .Where(u => u.Id == userId)
+                .ExecuteUpdateAsync(s => s.SetProperty(u => u.Name, req.Name.Trim()));
+
+            await audit.LogAsync(userId, "NAME_UPDATED", "User", userId, null, GetIp());
+
+            return Ok(ApiResponse<object>.Ok(new { name = req.Name.Trim() }));
+        }
+
+        public record UpdateNameRequest(string Name);
 
         // ── Helpers ───────────────────────────────────────────────────────────
         private string GenerateToken(User user)

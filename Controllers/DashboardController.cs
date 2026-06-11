@@ -183,6 +183,77 @@ namespace DashboardAPI.Controllers
             return NoContent();
         }
 
+        // ── GET api/dashboard/public ──────────────────────────────────────────
+        /// <summary>Retourne tous les dashboards marqués IsPublic=true (lecture pour Viewer).</summary>
+        [HttpGet("public")]
+        [ProducesResponseType(typeof(ApiResponse<PagedResponse<DashboardResponseDto>>), 200)]
+        public async Task<IActionResult> GetPublic(
+            [FromQuery] int     page     = 1,
+            [FromQuery] int     pageSize = 50,
+            [FromQuery] string? search   = null)
+        {
+            page     = Math.Max(1, page);
+            pageSize = Math.Clamp(pageSize, 1, 100);
+
+            var query = context.Dashboards
+                .AsNoTracking()
+                .Include(d => d.Widgets)
+                .Where(d => d.IsPublic);
+
+            if (!string.IsNullOrWhiteSpace(search))
+                query = query.Where(d => d.Name.Contains(search));
+
+            var total = await query.CountAsync();
+
+            var raw = await query
+                .OrderByDescending(d => d.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(d => new
+                {
+                    d.Id,
+                    d.Name,
+                    d.IsPublic,
+                    d.ShareToken,
+                    d.CreatedAt,
+                    d.ColumnsJson,
+                    WidgetCount = d.Widgets.Count,
+                    OwnerName  = context.Users
+                        .Where(u => u.Id == d.UserId)
+                        .Select(u => u.Name ?? u.Email)
+                        .FirstOrDefault(),
+                    OwnerEmail = context.Users
+                        .Where(u => u.Id == d.UserId)
+                        .Select(u => u.Email)
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
+
+            var dashboards = raw.Select(d => new DashboardResponseDto
+            {
+                Id          = d.Id,
+                Name        = d.Name,
+                IsPublic    = d.IsPublic,
+                ShareToken  = d.ShareToken,
+                CreatedAt   = d.CreatedAt,
+                WidgetCount = d.WidgetCount,
+                OwnerName   = d.OwnerName,
+                OwnerEmail  = d.OwnerEmail,
+                Columns         = Deserialize(d.ColumnsJson),
+                Insights        = [],
+                Recommendations = [],
+                Widgets         = []
+            }).ToList();
+
+            return Ok(ApiResponse<PagedResponse<DashboardResponseDto>>.Ok(new PagedResponse<DashboardResponseDto>
+            {
+                Items      = dashboards,
+                TotalCount = total,
+                Page       = page,
+                PageSize   = pageSize
+            }));
+        }
+
         // ── GET api/dashboard/share/{token} ───────────────────────────────────
         /// <summary>Route publique — pas besoin d'être connecté.</summary>
         [HttpGet("share/{token}")]

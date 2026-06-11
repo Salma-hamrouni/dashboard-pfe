@@ -199,7 +199,8 @@ try
                     "http://localhost:5144",   // API self — Swagger UI (same-origin, harmless to list)
                     "https://localhost:7065",  // API self — HTTPS profile
                     "http://localhost:3000",   // React (Create React App)
-                    "http://localhost:5173",   // React (Vite)
+                    "http://localhost:5173",   // Vite
+                    "http://localhost:5174",   // Vite (port alternatif)
                     "http://localhost:4200"    // Angular
                 )
                   .AllowAnyHeader()

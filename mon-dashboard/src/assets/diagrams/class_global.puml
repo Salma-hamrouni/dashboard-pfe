@@ -1,0 +1,116 @@
+@startuml DiagrammeClasses_Global
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam backgroundColor  #FFFFFF
+skinparam defaultFontName  Arial
+skinparam roundCorner      10
+skinparam shadowing        false
+skinparam nodesep          65
+skinparam ranksep          70
+
+skinparam class {
+  BackgroundColor       #EEF3FF
+  BorderColor           #4A6CF7
+  BorderThickness       1.5
+  FontColor             #1a1a2e
+  FontSize              13
+  HeaderBackgroundColor #4A6CF7
+  HeaderFontColor       #FFFFFF
+  HeaderFontSize        14
+}
+skinparam enum {
+  BackgroundColor       #FFFBF0
+  BorderColor           #C9960C
+  BorderThickness       1.5
+  HeaderBackgroundColor #C9960C
+  HeaderFontColor       #FFFFFF
+  FontSize              13
+}
+skinparam ArrowColor     #4A6CF7
+skinparam ArrowFontColor #444477
+skinparam ArrowFontSize  11
+skinparam linetype ortho
+
+title <b>Diagramme de Classes — DashGen</b>
+
+class User {
+  + id : int
+  + email : string
+  + role : string
+}
+
+class Dashboard {
+  + id : int
+  + name : string
+  + isPublic : bool
+}
+
+class Widget {
+  + id : int
+  + type : string
+  + config : string
+}
+
+class Dataset {
+  + id : int
+  + fileName : string
+  + rowCount : int
+}
+
+class DataSource {
+  + id : int
+  + name : string
+  + type : DataSourceType
+}
+
+class DashboardShare {
+  + token : string
+  + permission : SharePermission
+  + expiresAt : DateTime
+}
+
+class Insight {
+  + content : string
+  + generatedAt : DateTime
+}
+
+class AiService <<Service>> {
+  + analyzeDataset()
+  + recommendChartType()
+  + chat()
+}
+
+enum UserRole {
+  Admin
+  Editor
+  Viewer
+}
+
+enum DataSourceType {
+  CSV
+  SQL
+  REST
+}
+
+enum SharePermission {
+  View
+  Edit
+}
+
+User      "1" o-- "0..*" Dashboard        : crée
+User      "1" o-- "0..*" Dataset          : importe
+User      "1" o-- "0..*" DataSource       : configure
+Dataset   "1" o-- "0..*" Dashboard        : alimente
+Dataset   "1" o-- "0..*" Insight          : génère
+
+Dashboard "1" *-- "0..*" Widget           : contient
+Dashboard "1" o-- "0..*" DashboardShare   : partagé via
+
+Dashboard ..> AiService : <<use>>
+Dataset   ..> AiService : <<use>>
+
+User       ..> UserRole        : <<use>>
+DataSource ..> DataSourceType  : <<use>>
+DashboardShare ..> SharePermission : <<use>>
+
+@enduml

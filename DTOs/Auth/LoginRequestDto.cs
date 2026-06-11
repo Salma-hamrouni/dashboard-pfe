@@ -38,9 +38,10 @@ namespace DashboardAPI.DTOs.Auth
 
     public class UserInfoDto
     {
-        public int    Id        { get; init; }
-        public string Email     { get; init; } = "";
-        public string Role      { get; init; } = "";
+        public int     Id        { get; init; }
+        public string  Email     { get; init; } = "";
+        public string? Name      { get; init; }
+        public string  Role      { get; init; } = "";
         public DateTime CreatedAt { get; init; }
     }
 }

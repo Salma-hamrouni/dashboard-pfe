@@ -277,7 +277,111 @@ Schéma attendu :
             return Ok(ApiResponse<JsonElement>.Ok(result, new { source = "ai" }));
         }
 
+        // ── POST api/ai/ask ───────────────────────────────────────────────────
+        /// <summary>Assistant conversationnel libre — répond en texte naturel.</summary>
+        [HttpPost("ask")]
+        [ProducesResponseType(typeof(ApiResponse<object>), 200)]
+        public async Task<IActionResult> Ask([FromBody] AiAskRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Message))
+                return BadRequest(ApiResponse<object>.Fail("Message vide."));
+
+            var prompt = $@"Tu es un assistant analytique expert intégré dans un tableau de bord BI nommé ""{request.DashboardName}"".
+
+Contexte du dashboard :
+{request.Context}
+
+Question de l'utilisateur :
+{request.Message}
+
+Réponds en français, de façon claire, concise et utile.
+- Utilise des puces (•) pour les listes.
+- Utilise **texte** pour mettre en gras les points importants.
+- Sois direct et précis.
+- Ne génère PAS de JSON, réponds uniquement en texte naturel.";
+
+            var result = await CallGeminiRawAsync(prompt);
+            return Ok(ApiResponse<object>.Ok(new { reply = result }));
+        }
+
+        // ── POST api/ai/generate-dashboard ───────────────────────────────────
+        [HttpPost("generate-dashboard")]
+        [ProducesResponseType(typeof(ApiResponse<JsonElement>), 200)]
+        public async Task<IActionResult> GenerateDashboard([FromBody] AiGenerateDashboardRequest request)
+        {
+            if (request.Columns == null || request.Columns.Count == 0)
+                return BadRequest(ApiResponse<object>.Fail("Colonnes requises."));
+
+            var cacheKey = BuildCacheKey("generate-dashboard", request.Columns);
+            if (cache.TryGetValue(cacheKey, out JsonElement cached))
+                return Ok(ApiResponse<JsonElement>.Ok(cached, new { source = "cache" }));
+
+            var previewSection = request.Preview?.Count > 0
+                ? $"\nAperçu des données :\n{JsonSerializer.Serialize(request.Preview.Take(5))}"
+                : "";
+
+            var prompt = $@"Tu es un expert en visualisation de données.
+Voici les colonnes disponibles :
+{FormatColumns(request.Columns)}
+{previewSection}
+
+Génère un plan de dashboard avec 4 à 6 widgets variés et pertinents.
+Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte avant ou après.
+Schéma :
+{{
+  ""widgets"": [
+    {{
+      ""type"": ""bar | line | pie | scatter | kpi | table"",
+      ""title"": ""string"",
+      ""xAxis"": ""string or null"",
+      ""yAxis"": ""string or null"",
+      ""aggregation"": ""sum | avg | count | none"",
+      ""color"": ""#hexcolor"",
+      ""width"": 6,
+      ""height"": 4,
+      ""x"": 0,
+      ""y"": 0
+    }}
+  ]
+}}";
+
+            var result = await CallGeminiAsync(prompt);
+            cache.Set(cacheKey, result, _cacheOpts);
+            return Ok(ApiResponse<JsonElement>.Ok(result, new { source = "ai" }));
+        }
+
         // ── Helpers ───────────────────────────────────────────────────────────
+
+        private async Task<string> CallGeminiRawAsync(string prompt)
+        {
+            var apiKey = config["Gemini:ApiKey"]
+                ?? throw new InvalidOperationException("Gemini:ApiKey manquant dans appsettings.");
+
+            var body = new
+            {
+                contents = new[] { new { parts = new[] { new { text = prompt } } } }
+            };
+
+            var req = new HttpRequestMessage(
+                HttpMethod.Post,
+                $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={apiKey}");
+            req.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
+
+            var response = await _http.SendAsync(req);
+            var json = await response.Content.ReadAsStringAsync();
+
+            using var doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            if (!root.TryGetProperty("candidates", out var candidates))
+                throw new InvalidOperationException("Erreur Gemini : " + json[..Math.Min(300, json.Length)]);
+
+            return candidates[0]
+                .GetProperty("content")
+                .GetProperty("parts")[0]
+                .GetProperty("text")
+                .GetString() ?? "Réponse vide.";
+        }
 
         private async Task<JsonElement> CallGeminiAsync(string prompt)
         {
@@ -291,7 +395,7 @@ Schéma attendu :
 
             var req = new HttpRequestMessage(
                 HttpMethod.Post,
-                $"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={apiKey}");
+                $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={apiKey}");
             req.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
 
             var response = await _http.SendAsync(req);
@@ -354,5 +458,18 @@ Schéma attendu :
     {
         public string Name { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
+    }
+
+    public class AiGenerateDashboardRequest
+    {
+        public List<ColumnDto> Columns { get; set; } = [];
+        public List<Dictionary<string, object?>>? Preview { get; set; }
+    }
+
+    public class AiAskRequest
+    {
+        public string Message       { get; set; } = string.Empty;
+        public string DashboardName { get; set; } = "Dashboard";
+        public string Context       { get; set; } = string.Empty;
     }
 }

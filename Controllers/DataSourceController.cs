@@ -255,17 +255,50 @@ namespace DashboardAPI.Controllers
             });
         }
 
+        // ── POST api/datasource/preview-sql ──────────────────────────────────
+        [HttpPost("preview-sql")]
+        public async Task<IActionResult> PreviewSql([FromBody] SqlConnectionParams p)
+        {
+            var ok = await _sql.TestConnectionAsync(p);
+            if (!ok) return BadRequest("Impossible de se connecter. Vérifiez les paramètres.");
+
+            var result = await _sql.FetchDataAsync(p);
+            return Ok(new
+            {
+                columns   = result.Columns,
+                rows      = result.Rows.Take(200),
+                totalRows = result.TotalRows
+            });
+        }
+
+        // ── POST api/datasource/test-sql ─────────────────────────────────────
+        [HttpPost("test-sql")]
+        public async Task<IActionResult> TestSql([FromBody] SqlConnectionParams p)
+        {
+            var ok = await _sql.TestConnectionAsync(p);
+            if (!ok) return BadRequest("Impossible de se connecter. Vérifiez les paramètres.");
+            return Ok(new { success = true, message = "Connexion réussie." });
+        }
+
         // ── POST api/datasource/connect-rest ─────────────────────────────────
         [HttpPost("connect-rest")]
         public async Task<IActionResult> ConnectRest([FromBody] ConnectRestRequest request)
         {
+            Console.WriteLine($"[connect-rest] name={request.Name} endpoint={request.Endpoint} method={request.Method}");
+
             if (string.IsNullOrWhiteSpace(request.Name))
                 return BadRequest("Le nom est obligatoire.");
+
+            if (string.IsNullOrWhiteSpace(request.Endpoint))
+                return BadRequest("L'URL endpoint est obligatoire.");
+
+            if (!Uri.TryCreate(request.Endpoint, UriKind.Absolute, out _))
+                return BadRequest("L'URL endpoint n'est pas valide.");
 
             var p = new RestConnectionParams
             {
                 Endpoint = request.Endpoint,
-                Method   = request.Method,
+                Method   = string.IsNullOrWhiteSpace(request.Method) ? "GET" : request.Method.ToUpperInvariant(),
                 Headers  = request.Headers ?? new Dictionary<string, string>(),
                 Body     = request.Body,
                 DataPath = request.DataPath
@@ -278,7 +311,8 @@ namespace DashboardAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Erreur lors de l'appel REST : {ex.Message}");
+                Console.WriteLine($"[connect-rest] EXCEPTION: {ex.GetType().Name} — {ex.Message}");
+                return BadRequest(new { error = ex.Message, type = ex.GetType().Name, endpoint = p.Endpoint });
             }
 
             var ds = new DataSource
@@ -446,13 +480,27 @@ namespace DashboardAPI.Controllers
         int     Port = 3306
     );
 
-    public record ConnectRestRequest(
-        string  Name,
-        string? Description,
-        string  Endpoint,
-        string  Method,
-        Dictionary<string, string>? Headers,
-        string? Body,
-        string? DataPath
-    );
+    public class ConnectRestRequest
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        public string Name { get; set; } = "";
+
+        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        public string? Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("endpoint")]
+        public string Endpoint { get; set; } = "";
+
+        [System.Text.Json.Serialization.JsonPropertyName("method")]
+        public string Method { get; set; } = "GET";
+
+        [System.Text.Json.Serialization.JsonPropertyName("headers")]
+        public Dictionary<string, string>? Headers { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("body")]
+        public string? Body { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("dataPath")]
+        public string? DataPath { get; set; }
+    }
 }

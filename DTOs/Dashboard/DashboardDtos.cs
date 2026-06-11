@@ -63,6 +63,8 @@ namespace DashboardAPI.DTOs.Dashboard
         public string?  ShareToken      { get; init; }
         public DateTime CreatedAt       { get; init; }
         public int      WidgetCount     { get; init; }
+        public string?  OwnerName       { get; init; }
+        public string?  OwnerEmail      { get; init; }
 
         public List<string> Columns         { get; init; } = [];
         public List<string> Insights        { get; init; } = [];
