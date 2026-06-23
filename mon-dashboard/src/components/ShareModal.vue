@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <teleport to="body">
     <transition name="sm-fade">
       <div v-if="modelValue" class="sm-overlay" @click.self="close">
@@ -502,7 +502,7 @@ function close() {
 }
 .sm-pub-link-input {
   flex: 1; min-width: 0;
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 7px;
   padding: 6px 10px;
@@ -514,13 +514,13 @@ function close() {
   flex-shrink: 0;
   width: 28px; height: 28px;
   border-radius: 7px; border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.06);
+  background: rgba(27,107,58,0.06);
   color: rgba(255,255,255,0.5);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; transition: background .15s, color .15s;
 }
 .sm-pub-copy-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
-.sm-pub-copy-btn.copied { background: rgba(16,185,129,0.15); color: #10b981; border-color: rgba(16,185,129,0.3); }
+.sm-pub-copy-btn.copied { background: rgba(27,107,58,0.15); color: #1B6B3A; border-color: rgba(27,107,58,0.3); }
 
 .sm-pub-link-slide-enter-active { transition: all .25s ease; }
 .sm-pub-link-slide-leave-active { transition: all .2s ease; }
@@ -583,17 +583,17 @@ function close() {
   display: flex; flex-direction: column; align-items: center;
   gap: 12px; text-align: center;
   padding: 16px; border-radius: 12px;
-  background: rgba(16,185,129,0.06);
-  border: 1px solid rgba(16,185,129,0.2);
+  background: rgba(27,107,58,0.06);
+  border: 1px solid rgba(27,107,58,0.2);
 }
-.sm-result-icon { font-size: 28px; color: #10b981; }
+.sm-result-icon { font-size: 28px; color: #1B6B3A; }
 .sm-result-label { margin: 0; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); }
 
 .sm-link-row {
   display: flex; gap: 8px; width: 100%;
 }
 .sm-link-input {
-  flex: 1; background: rgba(255,255,255,0.06);
+  flex: 1; background: rgba(27,107,58,0.06);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 8px; padding: 8px 12px;
   font-size: 11px; color: rgba(255,255,255,0.75);
@@ -607,7 +607,7 @@ function close() {
   cursor: pointer; white-space: nowrap; transition: background .2s;
   flex-shrink: 0;
 }
-.sm-copy-btn.copied { background: #10b981; }
+.sm-copy-btn.copied { background: #1B6B3A; }
 .sm-copy-btn:hover  { opacity: .85; }
 
 .sm-result-meta { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
@@ -617,7 +617,7 @@ function close() {
 }
 .perm-view  { background: rgba(74,108,247,0.15); color: #7a9cf9;  border: 1px solid rgba(74,108,247,0.25); }
 .perm-edit  { background: rgba(245,158,11,0.12); color: #fbbf24;  border: 1px solid rgba(245,158,11,0.22); }
-.expiry     { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); }
+.expiry     { background: rgba(27,107,58,0.06); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); }
 
 .sm-new-btn {
   background: none; border: 1px solid rgba(255,255,255,0.12);
@@ -669,7 +669,7 @@ function close() {
 }
 .sm-date-input {
   width: 100%; padding: 8px 10px 8px 32px; border-radius: 8px;
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(27,107,58,0.06); border: 1px solid rgba(255,255,255,0.1);
   color: rgba(255,255,255,0.8); font-size: 12px; outline: none;
   transition: border-color .2s;
   color-scheme: dark;
@@ -682,16 +682,16 @@ function close() {
   font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.4);
   letter-spacing: .05em; text-transform: uppercase;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(27,107,58,0.06);
 }
 .sm-share-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
 .sm-share-item {
   display: flex; align-items: center; justify-content: space-between;
   padding: 8px 10px; border-radius: 8px;
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(27,107,58,0.06);
   transition: background .15s;
 }
-.sm-share-item:hover { background: rgba(255,255,255,0.06); }
+.sm-share-item:hover { background: rgba(27,107,58,0.06); }
 .sm-share-item.expired { opacity: .45; }
 
 .sm-share-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
@@ -715,7 +715,7 @@ function close() {
 .sm-share-actions { display: flex; gap: 4px; flex-shrink: 0; }
 .sm-icon-btn {
   width: 26px; height: 26px; border-radius: 6px; border: none;
-  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);
+  background: rgba(27,107,58,0.06); color: rgba(255,255,255,0.5);
   cursor: pointer; display: flex; align-items: center; justify-content: center;
   font-size: 11px; transition: background .15s, color .15s;
 }
@@ -737,7 +737,7 @@ function close() {
 }
 .sm-btn-ghost {
   padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(27,107,58,0.06); border: 1px solid rgba(255,255,255,0.1);
   color: rgba(255,255,255,0.6); cursor: pointer; transition: opacity .15s;
 }
 .sm-btn-ghost:hover { opacity: .8; }
@@ -761,3 +761,5 @@ function close() {
 .sm-result-slide-enter-active { transition: all .3s ease; }
 .sm-result-slide-enter-from   { opacity: 0; transform: translateY(-8px); }
 </style>
+
+

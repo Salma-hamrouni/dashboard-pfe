@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="funnel-wrap">
     <!-- Empty state -->
     <div v-if="!hasData" class="funnel-empty">
@@ -207,3 +207,6 @@ function barMidY(i: number): number {
   opacity: 0.85;
 }
 </style>
+
+
+

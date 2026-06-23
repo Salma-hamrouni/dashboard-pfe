@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="scatter-widget" ref="rootEl">
     <!-- Empty state -->
     <div v-if="!hasData" class="scatter-empty">
@@ -80,7 +80,7 @@
           :r="dotR"
           :fill="resolvedColor"
           :opacity="hoveredIdx !== null && hoveredIdx !== i ? 0.2 : 0.82"
-          stroke="rgba(255,255,255,0.3)" stroke-width="0.8"
+          stroke="#94A99A" stroke-width="0.8"
           @mouseenter="hoveredIdx = i"
         />
       </g>
@@ -257,7 +257,7 @@ function truncate(s: string, max: number) {
 /* Empty */
 .scatter-empty {
   display: flex; flex-direction: column; align-items: center;
-  gap: 8px; color: var(--color-text-muted, rgba(255,255,255,0.3));
+  gap: 8px; color: var(--color-text-muted, #94A99A);
   font-size: 11px; text-align: center; padding: 16px;
 }
 
@@ -276,7 +276,7 @@ function truncate(s: string, max: number) {
 }
 .axis-label {
   font-size: 8px;
-  fill: rgba(255,255,255,0.3);
+  fill: #94A99A;
   font-family: var(--font-sans, sans-serif);
   letter-spacing: 0.03em;
 }
@@ -284,7 +284,7 @@ function truncate(s: string, max: number) {
 /* Tooltip (HTML inside foreignObject) */
 .scatter-tt {
   background: rgba(10, 16, 28, 0.97);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(17,23,20,0.10);
   border-radius: 8px;
   padding: 5px 10px 6px;
   display: flex; align-items: flex-start; gap: 7px;
@@ -313,3 +313,7 @@ function truncate(s: string, max: number) {
 }
 .tt-xy b { color: rgba(255,255,255,0.4); font-weight: 400; font-size: 10px; }
 </style>
+
+
+
+

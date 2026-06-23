@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="sql-overlay" @click.self="$emit('close')">
     <div class="sql-modal">
 
@@ -347,7 +347,7 @@ function formatCell(val: unknown): string {
 
 /* ── Modal container ──────────────────────────────────────────── */
 .sql-modal {
-  background: var(--color-surface, #0a1f1a);
+  background: var(--color-surface, #EEF7F1);
   border: 1px solid var(--color-border, rgba(255,255,255,0.1));
   border-radius: 16px;
   width: 100%;
@@ -371,8 +371,8 @@ function formatCell(val: unknown): string {
 .sql-header-icon {
   width: 38px; height: 38px;
   border-radius: 10px;
-  background: rgba(var(--primary-color-rgb, 16,185,129), 0.15);
-  color: var(--primary-color, #10b981);
+  background: rgba(var(--primary-color-rgb, 27, 107, 58), 0.15);
+  color: var(--primary-color, #1B6B3A);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
@@ -387,13 +387,13 @@ function formatCell(val: unknown): string {
 .sql-header-sub {
   margin: 2px 0 0;
   font-size: 11px;
-  color: var(--color-text-muted, rgba(240,253,249,0.4));
+  color: var(--color-text-muted, #94A99A);
 }
 
 .sql-close {
   margin-left: auto;
   background: none; border: none; cursor: pointer;
-  color: var(--color-text-muted, rgba(240,253,249,0.4));
+  color: var(--color-text-muted, #94A99A);
   font-size: 14px; padding: 4px;
   border-radius: 6px;
   transition: color .15s, background .15s;
@@ -428,26 +428,26 @@ function formatCell(val: unknown): string {
   width: 24px; height: 24px;
   border-radius: 50%;
   border: 2px solid var(--color-border, rgba(255,255,255,0.15));
-  background: var(--color-surface, #0a1f1a);
+  background: var(--color-surface, #EEF7F1);
   display: flex; align-items: center; justify-content: center;
   font-size: 10px; font-weight: 700;
-  color: var(--color-text-muted, rgba(240,253,249,0.4));
+  color: var(--color-text-muted, #94A99A);
   transition: all .2s;
   flex-shrink: 0;
 }
 .sql-step.active .step-dot {
-  border-color: var(--primary-color, #10b981);
-  color: var(--primary-color, #10b981);
-  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb,16,185,129),.2);
+  border-color: var(--primary-color, #1B6B3A);
+  color: var(--primary-color, #1B6B3A);
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb,27, 107, 58),.2);
 }
 .sql-step.done .step-dot {
-  border-color: var(--primary-color, #10b981);
-  background: var(--primary-color, #10b981);
+  border-color: var(--primary-color, #1B6B3A);
+  background: var(--primary-color, #1B6B3A);
   color: #000;
 }
 .sql-step span {
   font-size: 11px;
-  color: var(--color-text-muted, rgba(240,253,249,0.4));
+  color: var(--color-text-muted, #94A99A);
 }
 .sql-step.active span, .sql-step.done span {
   color: var(--color-text, #f0fdf9);
@@ -473,14 +473,14 @@ function formatCell(val: unknown): string {
 label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--color-text-secondary, rgba(240,253,249,0.6));
+  color: var(--color-text-secondary, #4B5E52);
   letter-spacing: .03em;
   text-transform: uppercase;
 }
-.req { color: var(--primary-color, #10b981); }
+.req { color: var(--primary-color, #1B6B3A); }
 
 .sql-input {
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   border: 1px solid var(--color-border, rgba(255,255,255,0.1));
   border-radius: 8px;
   padding: 8px 12px;
@@ -492,8 +492,8 @@ label {
   box-sizing: border-box;
 }
 .sql-input:focus {
-  border-color: var(--primary-color, #10b981);
-  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb,16,185,129),.15);
+  border-color: var(--primary-color, #1B6B3A);
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb,27, 107, 58),.15);
 }
 
 .sql-pw-wrap { position: relative; }
@@ -501,7 +501,7 @@ label {
 .sql-pw-toggle {
   position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
   background: none; border: none; cursor: pointer;
-  color: var(--color-text-muted, rgba(240,253,249,0.4));
+  color: var(--color-text-muted, #94A99A);
   font-size: 13px;
 }
 .sql-pw-toggle:hover { color: var(--color-text, #f0fdf9); }
@@ -517,7 +517,7 @@ label {
   font-weight: 500;
   margin-top: 14px;
 }
-.sql-conn-status.ok      { background: rgba(16,185,129,.12); color: #10b981; border: 1px solid rgba(16,185,129,.3); }
+.sql-conn-status.ok      { background: rgba(27,107,58,.12); color: #1B6B3A; border: 1px solid rgba(27,107,58,.3); }
 .sql-conn-status.error   { background: rgba(239,68,68,.1);   color: #ef4444; border: 1px solid rgba(239,68,68,.25); }
 .sql-conn-status.testing { background: rgba(245,158,11,.1);  color: #f59e0b; border: 1px solid rgba(245,158,11,.25); }
 
@@ -539,13 +539,13 @@ label {
   width: 100%;
   box-sizing: border-box;
 }
-.sql-editor:focus { border-color: var(--primary-color, #10b981); }
+.sql-editor:focus { border-color: var(--primary-color, #1B6B3A); }
 
 .sql-quick-btns {
   display: flex; gap: 6px; flex-wrap: wrap;
 }
 .sql-quick {
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 5px;
   padding: 3px 9px;
@@ -559,7 +559,7 @@ label {
 
 .sql-hint {
   font-size: 10px;
-  color: var(--color-text-muted, rgba(240,253,249,0.4));
+  color: var(--color-text-muted, #94A99A);
   margin: 2px 0 0;
   display: flex; align-items: center; gap: 4px;
 }
@@ -584,12 +584,12 @@ label {
 .sql-preview-title {
   font-size: 11px;
   font-weight: 600;
-  color: var(--color-text-secondary, rgba(240,253,249,0.6));
+  color: var(--color-text-secondary, #4B5E52);
 }
 .sql-preview-cols {
   font-size: 10px;
-  background: rgba(var(--primary-color-rgb,16,185,129),.1);
-  color: var(--primary-color, #10b981);
+  background: rgba(var(--primary-color-rgb,27, 107, 58),.1);
+  color: var(--primary-color, #1B6B3A);
   border-radius: 10px;
   padding: 2px 8px;
 }
@@ -610,7 +610,7 @@ label {
   background: rgba(255,255,255,0.04);
   padding: 7px 10px;
   text-align: left;
-  color: var(--color-text-secondary, rgba(240,253,249,0.6));
+  color: var(--color-text-secondary, #4B5E52);
   font-weight: 600;
   white-space: nowrap;
   position: sticky; top: 0;
@@ -629,7 +629,7 @@ label {
 .sql-table tr:hover td { background: rgba(255,255,255,0.03); }
 
 .th-type { margin-right: 4px; font-size: 9px; }
-.th-type--number  { color: #10b981; }
+.th-type--number  { color: #1B6B3A; }
 .th-type--date    { color: #3b82f6; }
 .th-type--boolean { color: #8b5cf6; }
 
@@ -668,7 +668,7 @@ label {
 .sql-btn:disabled { opacity: .4; cursor: not-allowed; }
 
 .sql-btn--ghost {
-  background: rgba(255,255,255,0.06);
+  background: rgba(27,107,58,0.06);
   color: var(--color-text-muted, rgba(240,253,249,0.5));
 }
 .sql-btn--ghost:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: var(--color-text, #f0fdf9); }
@@ -681,9 +681,12 @@ label {
 .sql-btn--test:hover:not(:disabled) { background: rgba(245,158,11,0.2); }
 
 .sql-btn--primary {
-  background: var(--primary-color, #10b981);
+  background: var(--primary-color, #1B6B3A);
   color: #000;
   font-weight: 700;
 }
 .sql-btn--primary:hover:not(:disabled) { filter: brightness(1.1); }
 </style>
+
+
+

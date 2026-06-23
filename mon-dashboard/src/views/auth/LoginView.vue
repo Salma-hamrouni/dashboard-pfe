@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="login-page">
     <!-- Animated background grid -->
     <div class="bg-grid"></div>
@@ -15,21 +15,21 @@
         <div class="brand-content">
           <div class="logo-mark">
             <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <rect x="4" y="24" width="8" height="16" rx="2" fill="#6EE7B7" />
-              <rect x="16" y="16" width="8" height="24" rx="2" fill="#34D399" />
-              <rect x="28" y="8" width="8" height="32" rx="2" fill="#10B981" />
-              <rect x="40" y="18" width="8" height="22" rx="2" fill="#059669" />
+              <rect x="4" y="24" width="8" height="16" rx="2" fill="#1B6B3A" />
+              <rect x="16" y="16" width="8" height="24" rx="2" fill="#1B6B3A" />
+              <rect x="28" y="8" width="8" height="32" rx="2" fill="#1B6B3A" />
+              <rect x="40" y="18" width="8" height="22" rx="2" fill="#134E2A" />
               <path
                 d="M6 20 L20 12 L32 18 L44 10"
-                stroke="#6EE7B7"
+                stroke="#1B6B3A"
                 stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
               />
-              <circle cx="6" cy="20" r="2.5" fill="#6EE7B7" />
-              <circle cx="20" cy="12" r="2.5" fill="#34D399" />
-              <circle cx="32" cy="18" r="2.5" fill="#10B981" />
-              <circle cx="44" cy="10" r="2.5" fill="#6EE7B7" />
+              <circle cx="6" cy="20" r="2.5" fill="#1B6B3A" />
+              <circle cx="20" cy="12" r="2.5" fill="#1B6B3A" />
+              <circle cx="32" cy="18" r="2.5" fill="#1B6B3A" />
+              <circle cx="44" cy="10" r="2.5" fill="#1B6B3A" />
             </svg>
           </div>
           <h1 class="brand-title">Dash<span class="accent">Gen</span></h1>
@@ -513,7 +513,7 @@ async function handleLogin() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #050d0d;
+  background: #F5F6F5;
   font-family: 'DM Sans', sans-serif;
   overflow: hidden;
   position: relative;
@@ -525,8 +525,8 @@ async function handleLogin() {
   inset: 0;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(16, 185, 129, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16, 185, 129, 0.06) 1px, transparent 1px);
+    linear-gradient(rgba(27, 107, 58, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27, 107, 58, 0.06) 1px, transparent 1px);
   background-size: 40px 40px;
   mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
 }
@@ -536,7 +536,7 @@ async function handleLogin() {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 60% 50% at 25% 50%, rgba(16, 185, 129, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 25% 50%, rgba(27, 107, 58, 0.12) 0%, transparent 60%),
     radial-gradient(ellipse 40% 40% at 75% 50%, rgba(6, 182, 212, 0.08) 0%, transparent 60%);
 }
 
@@ -552,7 +552,7 @@ async function handleLogin() {
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: #10b981;
+  background: #1B6B3A;
   opacity: 0;
   animation: floatParticle linear infinite;
 }
@@ -594,7 +594,7 @@ async function handleLogin() {
   overflow: hidden;
   box-shadow:
     0 40px 120px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(16, 185, 129, 0.15);
+    0 0 0 1px rgba(27, 107, 58, 0.15);
   animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -612,8 +612,8 @@ async function handleLogin() {
 /* Brand panel */
 .brand-panel {
   flex: 1.1;
-  background: linear-gradient(145deg, #0a1f1a 0%, #071512 50%, #050f0d 100%);
-  border-right: 1px solid rgba(16, 185, 129, 0.12);
+  background: linear-gradient(145deg, #EEF7F1 0%, #F5F6F5 50%, #FFFFFF 100%);
+  border-right: 1px solid rgba(27, 107, 58, 0.12);
   padding: 48px 40px;
   display: flex;
   align-items: center;
@@ -628,7 +628,7 @@ async function handleLogin() {
   right: -60px;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(27, 107, 58, 0.15) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -655,8 +655,8 @@ async function handleLogin() {
   justify-content: center;
   width: 64px;
   height: 64px;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: rgba(27, 107, 58, 0.1);
+  border: 1px solid rgba(27, 107, 58, 0.25);
   border-radius: 16px;
   margin-bottom: 20px;
 }
@@ -665,19 +665,19 @@ async function handleLogin() {
   font-family: 'Syne', sans-serif;
   font-size: 42px;
   font-weight: 800;
-  color: #f0fdf9;
+  color: #111714;
   letter-spacing: -1px;
   line-height: 1;
   margin-bottom: 10px;
 }
 
 .brand-title .accent {
-  color: #10b981;
+  color: #1B6B3A;
 }
 
 .brand-subtitle {
   font-size: 14px;
-  color: rgba(240, 253, 249, 0.45);
+  color: #4B5E52;
   line-height: 1.5;
   margin-bottom: 36px;
   max-width: 260px;
@@ -695,7 +695,7 @@ async function handleLogin() {
   align-items: center;
   gap: 12px;
   font-size: 13.5px;
-  color: rgba(240, 253, 249, 0.65);
+  color: #4B5E52;
   animation: fadeInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -717,7 +717,7 @@ async function handleLogin() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(16, 185, 129, 0.08);
+  background: rgba(27, 107, 58, 0.08);
   border-radius: 8px;
   flex-shrink: 0;
 }
@@ -726,7 +726,7 @@ async function handleLogin() {
   display: flex;
   gap: 24px;
   padding-top: 28px;
-  border-top: 1px solid rgba(16, 185, 129, 0.1);
+  border-top: 1px solid rgba(27, 107, 58, 0.1);
 }
 
 .stat {
@@ -739,12 +739,12 @@ async function handleLogin() {
   font-family: 'Syne', sans-serif;
   font-size: 22px;
   font-weight: 700;
-  color: #10b981;
+  color: #1B6B3A;
 }
 
 .stat-label {
   font-size: 11px;
-  color: rgba(240, 253, 249, 0.35);
+  color: #94A99A;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -752,7 +752,7 @@ async function handleLogin() {
 /* Form panel */
 .form-panel {
   flex: 1;
-  background: #060f0e;
+  background: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -772,13 +772,13 @@ async function handleLogin() {
   font-family: 'Syne', sans-serif;
   font-size: 28px;
   font-weight: 700;
-  color: #f0fdf9;
+  color: #111714;
   margin-bottom: 6px;
 }
 
 .form-header p {
   font-size: 13.5px;
-  color: rgba(240, 253, 249, 0.4);
+  color: #94A99A;
 }
 
 .form-body {
@@ -803,7 +803,7 @@ async function handleLogin() {
 }
 
 .field-group.focused label {
-  color: #10b981;
+  color: #1B6B3A;
 }
 .field-group.error label {
   color: #f87171;
@@ -818,13 +818,13 @@ async function handleLogin() {
 .input-icon {
   position: absolute;
   left: 14px;
-  color: rgba(240, 253, 249, 0.25);
+  color: #C4CFC7;
   pointer-events: none;
   transition: color 0.2s;
 }
 
 .field-group.focused .input-icon {
-  color: #10b981;
+  color: #1B6B3A;
 }
 .field-group.error .input-icon {
   color: #f87171;
@@ -836,7 +836,7 @@ async function handleLogin() {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  color: #f0fdf9;
+  color: #111714;
   font-size: 14px;
   font-family: 'DM Sans', sans-serif;
   outline: none;
@@ -848,9 +848,9 @@ async function handleLogin() {
 }
 
 .input-wrap input:focus {
-  border-color: rgba(16, 185, 129, 0.45);
-  background: rgba(16, 185, 129, 0.05);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.08);
+  border-color: rgba(27, 107, 58, 0.45);
+  background: rgba(27, 107, 58, 0.05);
+  box-shadow: 0 0 0 3px rgba(27, 107, 58, 0.08);
 }
 
 .field-group.error input {
@@ -864,7 +864,7 @@ async function handleLogin() {
   background: none;
   border: none;
   cursor: pointer;
-  color: rgba(240, 253, 249, 0.3);
+  color: #94A99A;
   display: flex;
   align-items: center;
   transition: color 0.2s;
@@ -872,7 +872,7 @@ async function handleLogin() {
 }
 
 .toggle-pwd:hover {
-  color: rgba(240, 253, 249, 0.65);
+  color: #4B5E52;
 }
 
 .error-msg {
@@ -895,7 +895,7 @@ async function handleLogin() {
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: rgba(240, 253, 249, 0.4);
+  color: #94A99A;
   cursor: pointer;
   user-select: none;
 }
@@ -915,8 +915,8 @@ async function handleLogin() {
 }
 
 .remember-me input:checked ~ .checkmark {
-  background: #10b981;
-  border-color: #10b981;
+  background: #1B6B3A;
+  border-color: #1B6B3A;
 }
 
 .remember-me input:checked ~ .checkmark::after {
@@ -933,20 +933,20 @@ async function handleLogin() {
 
 .forgot-link {
   font-size: 13px;
-  color: rgba(16, 185, 129, 0.8);
+  color: rgba(27, 107, 58, 0.8);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .forgot-link:hover {
-  color: #10b981;
+  color: #1B6B3A;
 }
 
 .submit-btn {
   position: relative;
   margin-top: 12px;
   padding: 14px;
-  background: #10b981;
+  background: #1B6B3A;
   border: none;
   border-radius: 14px;
   color: #fff;
@@ -972,7 +972,7 @@ async function handleLogin() {
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 12px 24px rgba(27, 107, 58, 0.3);
 }
 
 .btn-content,
@@ -1015,11 +1015,11 @@ async function handleLogin() {
   margin-top: 32px;
   text-align: center;
   font-size: 13px;
-  color: rgba(240, 253, 249, 0.3);
+  color: #94A99A;
 }
 
 .form-footer a {
-  color: #10b981;
+  color: #1B6B3A;
   text-decoration: none;
   font-weight: 500;
 }
@@ -1056,7 +1056,7 @@ async function handleLogin() {
 .forgot-modal {
   position: relative;
   background: #0d1f1c;
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(27, 107, 58, 0.2);
   border-radius: 20px;
   padding: 36px 32px;
   width: 100%;
@@ -1074,7 +1074,7 @@ async function handleLogin() {
   right: 16px;
   background: none;
   border: none;
-  color: rgba(240, 253, 249, 0.3);
+  color: #94A99A;
   font-size: 14px;
   cursor: pointer;
   padding: 4px 6px;
@@ -1082,7 +1082,7 @@ async function handleLogin() {
   transition: all 0.15s;
 }
 .forgot-close:hover {
-  color: #f0fdf9;
+  color: #111714;
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -1095,20 +1095,20 @@ async function handleLogin() {
   font-family: 'Syne', sans-serif;
   font-size: 20px;
   font-weight: 700;
-  color: #f0fdf9;
+  color: #111714;
   margin: 0;
   text-align: center;
 }
 
 .forgot-sub {
   font-size: 13px;
-  color: rgba(240, 253, 249, 0.45);
+  color: #4B5E52;
   text-align: center;
   line-height: 1.6;
   margin: 0;
 }
 .forgot-sub strong {
-  color: #10b981;
+  color: #1B6B3A;
 }
 
 .forgot-input {
@@ -1117,7 +1117,7 @@ async function handleLogin() {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  color: #f0fdf9;
+  color: #111714;
   font-size: 14px;
   font-family: 'DM Sans', sans-serif;
   outline: none;
@@ -1125,9 +1125,9 @@ async function handleLogin() {
   box-sizing: border-box;
 }
 .forgot-input:focus {
-  border-color: rgba(16, 185, 129, 0.45);
-  background: rgba(16, 185, 129, 0.05);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.08);
+  border-color: rgba(27, 107, 58, 0.45);
+  background: rgba(27, 107, 58, 0.05);
+  box-shadow: 0 0 0 3px rgba(27, 107, 58, 0.08);
 }
 .contact-textarea {
   padding: 13px 14px;
@@ -1139,7 +1139,7 @@ async function handleLogin() {
 .forgot-submit {
   margin-top: 4px;
   padding: 13px;
-  background: #10b981;
+  background: #1B6B3A;
   border: none;
   border-radius: 12px;
   color: #fff;
@@ -1155,10 +1155,12 @@ async function handleLogin() {
 }
 .forgot-submit:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 8px 20px rgba(27, 107, 58, 0.3);
 }
 .forgot-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 </style>
+
+

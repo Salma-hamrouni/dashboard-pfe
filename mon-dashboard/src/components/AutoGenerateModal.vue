@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <teleport to="body">
     <transition name="agm-fade">
       <div v-if="modelValue" class="agm-overlay" @click.self="onOverlayClick">
@@ -145,7 +145,7 @@ function onOverlayClick() {
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
   transition: border-color 0.3s;
 }
-.agm-card--done  { border-color: rgba(16, 185, 129, 0.5); }
+.agm-card--done  { border-color: rgba(27, 107, 58, 0.5); }
 .agm-card--error { border-color: rgba(239, 68, 68, 0.5); }
 
 /* Header */
@@ -167,7 +167,7 @@ function onOverlayClick() {
   flex-shrink: 0;
   transition: background 0.3s, border-color 0.3s, color 0.3s;
 }
-.agm-card--done  .agm-icon-wrap { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.3); color: #10b981; }
+.agm-card--done  .agm-icon-wrap { background: rgba(27,107,58,0.15); border-color: rgba(27,107,58,0.3); color: #1B6B3A; }
 .agm-card--error .agm-icon-wrap { background: rgba(239,68,68,0.15);  border-color: rgba(239,68,68,0.3);  color: #ef4444; }
 
 .agm-icon-wrap.spin { animation: agm-rotate 2s linear infinite; }
@@ -193,7 +193,7 @@ function onOverlayClick() {
   transition: background 0.3s, border-color 0.3s;
 }
 .agm-step--active  { background: rgba(74,108,247,0.1); border-color: rgba(74,108,247,0.25); }
-.agm-step--done    { background: rgba(16,185,129,0.06); }
+.agm-step--done    { background: rgba(27,107,58,0.06); }
 .agm-step--pending { opacity: 0.4; }
 
 .agm-step-icon {
@@ -205,11 +205,11 @@ function onOverlayClick() {
   justify-content: center;
   font-size: 13px;
   flex-shrink: 0;
-  background: rgba(255,255,255,0.06);
+  background: rgba(27,107,58,0.06);
   color: rgba(255,255,255,0.6);
   transition: background 0.3s, color 0.3s;
 }
-.agm-step--done  .agm-step-icon { background: rgba(16,185,129,0.2); color: #10b981; }
+.agm-step--done  .agm-step-icon { background: rgba(27,107,58,0.2); color: #1B6B3A; }
 .agm-step--active .agm-step-icon { background: rgba(74,108,247,0.2); color: #4A6CF7; }
 
 .agm-step-num  { font-size: 11px; font-weight: 700; }
@@ -230,7 +230,7 @@ function onOverlayClick() {
   border-radius: 4px;
   transition: width 0.5s ease;
 }
-.agm-card--done .agm-progress-bar { background: linear-gradient(90deg, #10b981, #06b6d4); }
+.agm-card--done .agm-progress-bar { background: linear-gradient(90deg, #1B6B3A, #06b6d4); }
 
 /* Warning */
 .agm-warning {
@@ -265,7 +265,7 @@ function onOverlayClick() {
 .agm-btn:hover   { opacity: 0.85; }
 .agm-btn:active  { transform: scale(0.97); }
 .agm-btn--primary { background: #4A6CF7; color: #fff; }
-.agm-card--done .agm-btn--primary { background: #10b981; }
+.agm-card--done .agm-btn--primary { background: #1B6B3A; }
 .agm-card--error .agm-btn--primary { background: #ef4444; }
 .agm-btn--ghost { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.12); }
 
@@ -277,3 +277,5 @@ function onOverlayClick() {
 .agm-fade-enter-from .agm-card,
 .agm-fade-leave-to  .agm-card  { transform: scale(0.94) translateY(8px); }
 </style>
+
+

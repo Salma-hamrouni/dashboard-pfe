@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="text-widget" :style="wrapStyle">
     <!-- Empty/placeholder -->
     <div v-if="!trimmed" class="text-placeholder">
@@ -70,7 +70,7 @@ const wrapStyle = computed(() => ({
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: rgba(255,255,255,0.25);
+  color: #C4CFC7;
   font-size: 11px;
   text-align: center;
 }
@@ -83,3 +83,7 @@ const wrapStyle = computed(() => ({
   word-break: break-word;
 }
 </style>
+
+
+
+

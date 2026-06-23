@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <AppLayout>
     <div class="profile-page">
 
@@ -300,7 +300,7 @@ function formatDate(iso?: string) {
   font-weight: var(--weight-bold); text-transform: uppercase; letter-spacing: .05em;
 }
 .role-badge.admin  { background: rgba(239,68,68,.15);  color: #f87171; border: 1px solid rgba(239,68,68,.25); }
-.role-badge.editor { background: rgba(16,185,129,.15); color: #34d399; border: 1px solid rgba(16,185,129,.25); }
+.role-badge.editor { background: rgba(27,107,58,.15); color: #1B6B3A; border: 1px solid rgba(27,107,58,.25); }
 .role-badge.viewer { background: rgba(99,102,241,.15); color: #818cf8; border: 1px solid rgba(99,102,241,.25); }
 
 /* Grid */
@@ -356,7 +356,7 @@ function formatDate(iso?: string) {
 /* Alerts */
 .alert { padding: 10px 14px; border-radius: var(--radius-md); font-size: var(--text-sm); }
 .alert-error   { background: rgba(239,68,68,.1);  color: #f87171; border: 1px solid rgba(239,68,68,.2); }
-.alert-success { background: rgba(16,185,129,.1); color: #34d399; border: 1px solid rgba(16,185,129,.2); }
+.alert-success { background: rgba(27,107,58,.1); color: #1B6B3A; border: 1px solid rgba(27,107,58,.2); }
 
 /* Strength bar */
 .strength-bar {
@@ -372,7 +372,7 @@ function formatDate(iso?: string) {
 .strength-fill.weak   { background: #ef4444; }
 .strength-fill.fair   { background: #f59e0b; }
 .strength-fill.good   { background: #3b82f6; }
-.strength-fill.strong { background: #10b981; }
+.strength-fill.strong { background: #1B6B3A; }
 .strength-label {
   position: absolute; right: 0; font-size: 10px; font-weight: 600;
   background: var(--color-surface-2); padding: 0 6px;
@@ -380,7 +380,7 @@ function formatDate(iso?: string) {
 .strength-label.weak   { color: #ef4444; }
 .strength-label.fair   { color: #f59e0b; }
 .strength-label.good   { color: #3b82f6; }
-.strength-label.strong { color: #10b981; }
+.strength-label.strong { color: #1B6B3A; }
 
 /* Stats */
 .stats-grid { display: flex; gap: var(--space-5); }
@@ -402,3 +402,5 @@ function formatDate(iso?: string) {
   .profile-page { padding: var(--space-5); }
 }
 </style>
+
+

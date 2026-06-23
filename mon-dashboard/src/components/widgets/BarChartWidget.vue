@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="bar-chart" :class="{ 'bar-horizontal': orientation === 'horizontal' }" ref="container">
     <!-- Empty state -->
     <div v-if="!hasData" class="bar-empty">
@@ -375,7 +375,7 @@ function truncate(str: string, max: number) {
   left: 50%;
   transform: translateX(-50%);
   background: rgba(10, 16, 28, 0.96);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(17,23,20,0.10);
   border-radius: 8px;
   padding: 5px 10px 6px;
   white-space: nowrap;
@@ -395,14 +395,14 @@ function truncate(str: string, max: number) {
   left: 50%;
   transform: translateX(-50%);
   border: 5px solid transparent;
-  border-top-color: rgba(255,255,255,0.1);
+  border-top-color: rgba(17,23,20,0.10);
 }
 .bar-tooltip.tt-right { left: 0; transform: none; }
 .bar-tooltip.tt-right::after { left: 16px; }
 
-.tt-label { font-size: 9px; color: rgba(255,255,255,0.45); }
-.tt-value { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.92); letter-spacing: -0.02em; }
-.tt-pct   { font-size: 9px; color: rgba(255,255,255,0.3); }
+.tt-label { font-size: 9px; color: #94A99A; }
+.tt-value { font-size: 12px; font-weight: 700; color: #111714; letter-spacing: -0.02em; }
+.tt-pct   { font-size: 9px; color: #94A99A; }
 
 .bar-track {
   width: 100%;
@@ -416,7 +416,7 @@ function truncate(str: string, max: number) {
   position: absolute;
   left: 0; right: 0;
   height: 1px;
-  background: rgba(255,255,255,0.25);
+  background: #C4CFC7;
   pointer-events: none;
   z-index: 2;
 }
@@ -456,7 +456,7 @@ function truncate(str: string, max: number) {
   transition: color 0.2s;
 }
 .x-label.x-active {
-  color: rgba(255, 255, 255, 0.75);
+  color: #4B5E52;
   font-weight: 600;
 }
 
@@ -489,7 +489,7 @@ function truncate(str: string, max: number) {
   transition: color 0.2s;
 }
 .horiz-label.x-active {
-  color: rgba(255, 255, 255, 0.75);
+  color: #4B5E52;
   font-weight: 600;
 }
 
@@ -535,3 +535,7 @@ function truncate(str: string, max: number) {
 .bar-tooltip.tt-right.tt-enter-from,
 .bar-tooltip.tt-right.tt-leave-to { transform: translateY(5px); }
 </style>
+
+
+
+

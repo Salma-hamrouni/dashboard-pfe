@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <AppLayout>
     <div class="dashboard-list">
 
@@ -501,7 +501,7 @@ const isViewer = computed(() => authStore.user?.role === 'Viewer')
 
 // ── Visual palette ────────────────────────────────────
 const GRADIENTS = [
-  'linear-gradient(135deg, #0d2b1f 0%, #1a4a35 100%)',
+  'linear-gradient(135deg, #EEF7F1 0%, #1a4a35 100%)',
   'linear-gradient(135deg, #1a1f2e 0%, #2a3a5c 100%)',
   'linear-gradient(135deg, #1f1a0d 0%, #3d3210 100%)',
   'linear-gradient(135deg, #1f0d1a 0%, #3d1030 100%)',
@@ -509,7 +509,7 @@ const GRADIENTS = [
   'linear-gradient(135deg, #0d1f1a 0%, #1a3d35 100%)',
   'linear-gradient(135deg, #1a0d2b 0%, #2d1a4a 100%)',
 ]
-const ACCENTS = ['#2dd4a0', '#60a5fa', '#fbbf24', '#f472b6', '#a78bfa', '#34d399', '#fb923c']
+const ACCENTS = ['#2dd4a0', '#60a5fa', '#fbbf24', '#f472b6', '#a78bfa', '#1B6B3A', '#fb923c']
 
 // ── Extended type ──────────────────────────────────────
 interface DashboardView extends DashboardDetailDto {
@@ -1021,7 +1021,7 @@ async function deleteDashboard() {
   background-repeat: no-repeat;
   background-position: right .55rem center;
 }
-.sort-select option { background: #0f1c14; }
+.sort-select option { background: #F5F6F5; }
 
 .view-toggle {
   display: flex;
@@ -1051,8 +1051,8 @@ async function deleteDashboard() {
   align-items: center;
   gap: .5rem;
   padding: .6rem 1.25rem;
-  background: linear-gradient(135deg, #2dd4a0, #10b981);
-  color: #0a1f16;
+  background: linear-gradient(135deg, #2dd4a0, #1B6B3A);
+  color: #134E2A;
   border: none;
   border-radius: 10px;
   font-size: .875rem;
@@ -1294,9 +1294,9 @@ async function deleteDashboard() {
   align-items: center;
   gap: 5px;
   font-size: .72rem;
-  color: var(--color-primary, #10b981);
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.15);
+  color: var(--color-primary, #1B6B3A);
+  background: rgba(27, 107, 58, 0.08);
+  border: 1px solid rgba(27, 107, 58, 0.15);
   border-radius: 999px;
   padding: 2px 9px 2px 6px;
   margin: 0 0 .55rem;
@@ -1305,7 +1305,7 @@ async function deleteDashboard() {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.card-owner svg { flex-shrink: 0; color: var(--color-primary, #10b981); }
+.card-owner svg { flex-shrink: 0; color: var(--color-primary, #1B6B3A); }
 
 .card-desc {
   font-size: .78rem;
@@ -1501,7 +1501,7 @@ async function deleteDashboard() {
 .modal-enter-active, .modal-leave-active { transition: opacity .22s ease; }
 
 .modal {
-  background: #0c1810;
+  background: #F0F7F2;
   border: 1px solid rgba(45, 212, 160, .18);
   border-radius: 18px;
   width: 100%;
@@ -1633,7 +1633,7 @@ async function deleteDashboard() {
   width: 14px;
   height: 14px;
   border: 2px solid rgba(10,31,22,.4);
-  border-top-color: #0a1f16;
+  border-top-color: #134E2A;
   border-radius: 50%;
   animation: spin .7s linear infinite;
 }
@@ -1655,3 +1655,5 @@ async function deleteDashboard() {
   .list-row > div:last-child { display: none; }
 }
 </style>
+
+

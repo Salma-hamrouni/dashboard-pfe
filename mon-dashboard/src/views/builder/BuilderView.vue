@@ -1,13 +1,19 @@
-<template>
+﻿<template>
   <div class="builder-layout">
     <!-- Sidebar LEFT -->
-    <aside class="sidebar">
+    <aside class="sidebar" :style="{ width: sidebarWidth + 'px' }">
+      <div class="sidebar-resize-handle" @mousedown="startSidebarResize"></div>
       <div class="sidebar-header">
         <div class="logo">
+          <button class="back-admin-btn" @click="goBackToAdmin" title="Retour au panneau admin">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15,18 9,12 15,6"/>
+            </svg>
+          </button>
           <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
-            <rect x="4"  y="24" width="8"  height="16" rx="2" fill="var(--primary-color)" opacity="0.6"/>
-            <rect x="16" y="16" width="8"  height="24" rx="2" fill="var(--primary-color)" opacity="0.8"/>
-            <rect x="28" y="8"  width="8"  height="32" rx="2" fill="var(--primary-color)"/>
+            <rect x="4"  y="24" width="8"  height="16" rx="2" fill="#1B6B3A" opacity="0.6"/>
+            <rect x="16" y="16" width="8"  height="24" rx="2" fill="#1B6B3A" opacity="0.8"/>
+            <rect x="28" y="8"  width="8"  height="32" rx="2" fill="#1B6B3A"/>
           </svg>
           <span class="logo-text">DashGen</span>
         </div>
@@ -93,87 +99,87 @@
               <div class="palette-preview">
                 <!-- Mini SVG chart preview per type -->
                 <svg v-if="type.id === 'bar'" viewBox="0 0 36 20" class="mini-chart">
-                  <rect x="2" y="10" width="5" height="10" rx="1" fill="var(--primary-color)" opacity="0.9"/>
-                  <rect x="10" y="5"  width="5" height="15" rx="1" fill="var(--primary-color)" opacity="0.7"/>
-                  <rect x="18" y="12" width="5" height="8"  rx="1" fill="var(--primary-color)" opacity="0.8"/>
-                  <rect x="26" y="2"  width="5" height="18" rx="1" fill="var(--primary-color)" opacity="0.6"/>
+                  <rect x="2" y="10" width="5" height="10" rx="1" fill="#1B6B3A" opacity="0.9"/>
+                  <rect x="10" y="5"  width="5" height="15" rx="1" fill="#1B6B3A" opacity="0.7"/>
+                  <rect x="18" y="12" width="5" height="8"  rx="1" fill="#1B6B3A" opacity="0.8"/>
+                  <rect x="26" y="2"  width="5" height="18" rx="1" fill="#1B6B3A" opacity="0.6"/>
                 </svg>
                 <svg v-else-if="type.id === 'line'" viewBox="0 0 36 20" class="mini-chart">
-                  <polyline points="2,16 10,8 18,12 26,4 34,7" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <polyline points="2,16 10,8 18,12 26,4 34,7" fill="none" stroke="var(--primary-color)" stroke-width="6" opacity="0.08"/>
+                  <polyline points="2,16 10,8 18,12 26,4 34,7" fill="none" stroke="#1B6B3A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polyline points="2,16 10,8 18,12 26,4 34,7" fill="none" stroke="#1B6B3A" stroke-width="6" opacity="0.08"/>
                 </svg>
                 <svg v-else-if="['pie','doughnut'].includes(type.id)" viewBox="0 0 36 36" class="mini-chart">
-                  <circle cx="18" cy="18" r="14" fill="none" stroke="var(--primary-color)" stroke-width="14" stroke-dasharray="44 44" stroke-dashoffset="11"/>
+                  <circle cx="18" cy="18" r="14" fill="none" stroke="#1B6B3A" stroke-width="14" stroke-dasharray="44 44" stroke-dashoffset="11"/>
                   <circle cx="18" cy="18" r="14" fill="none" stroke="#3b82f6" stroke-width="14" stroke-dasharray="22 66" stroke-dashoffset="-33"/>
-                  <circle cx="18" cy="18" r="7" fill="var(--card-bg, #0a1f1a)" v-if="type.id==='doughnut'"/>
+                  <circle cx="18" cy="18" r="7" fill="var(--card-bg, #FFFFFF)" v-if="type.id==='doughnut'"/>
                 </svg>
                 <svg v-else-if="type.id === 'area'" viewBox="0 0 36 20" class="mini-chart">
-                  <path d="M2,16 L10,8 L18,12 L26,4 L34,7 L34,20 L2,20 Z" fill="var(--primary-color)" opacity="0.25"/>
-                  <polyline points="2,16 10,8 18,12 26,4 34,7" fill="none" stroke="var(--primary-color)" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M2,16 L10,8 L18,12 L26,4 L34,7 L34,20 L2,20 Z" fill="#1B6B3A" opacity="0.25"/>
+                  <polyline points="2,16 10,8 18,12 26,4 34,7" fill="none" stroke="#1B6B3A" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
                 <svg v-else-if="type.id === 'kpi'" viewBox="0 0 36 20" class="mini-chart">
-                  <text x="18" y="15" text-anchor="middle" font-size="13" font-weight="700" fill="var(--primary-color)">42K</text>
+                  <text x="18" y="15" text-anchor="middle" font-size="13" font-weight="700" fill="#1B6B3A">42K</text>
                 </svg>
                 <svg v-else-if="type.id === 'scatter'" viewBox="0 0 36 20" class="mini-chart">
-                  <circle cx="6"  cy="14" r="2" fill="var(--primary-color)" opacity="0.8"/>
-                  <circle cx="12" cy="8"  r="2" fill="var(--primary-color)" opacity="0.7"/>
-                  <circle cx="20" cy="11" r="2" fill="var(--primary-color)" opacity="0.9"/>
-                  <circle cx="28" cy="5"  r="2" fill="var(--primary-color)" opacity="0.6"/>
-                  <circle cx="32" cy="14" r="2" fill="var(--primary-color)" opacity="0.75"/>
+                  <circle cx="6"  cy="14" r="2" fill="#1B6B3A" opacity="0.8"/>
+                  <circle cx="12" cy="8"  r="2" fill="#1B6B3A" opacity="0.7"/>
+                  <circle cx="20" cy="11" r="2" fill="#1B6B3A" opacity="0.9"/>
+                  <circle cx="28" cy="5"  r="2" fill="#1B6B3A" opacity="0.6"/>
+                  <circle cx="32" cy="14" r="2" fill="#1B6B3A" opacity="0.75"/>
                 </svg>
                 <svg v-else-if="type.id === 'radar'" viewBox="0 0 36 36" class="mini-chart">
-                  <polygon points="18,4 30,13 26,28 10,28 6,13" fill="var(--primary-color)" opacity="0.15" stroke="var(--primary-color)" stroke-width="1.2"/>
-                  <polygon points="18,9 25,15 23,24 13,24 11,15" fill="var(--primary-color)" opacity="0.4"/>
+                  <polygon points="18,4 30,13 26,28 10,28 6,13" fill="#1B6B3A" opacity="0.15" stroke="#1B6B3A" stroke-width="1.2"/>
+                  <polygon points="18,9 25,15 23,24 13,24 11,15" fill="#1B6B3A" opacity="0.4"/>
                 </svg>
                 <svg v-else-if="type.id === 'table'" viewBox="0 0 36 20" class="mini-chart">
-                  <rect x="1" y="1" width="34" height="4"  rx="1" fill="var(--primary-color)" opacity="0.4"/>
-                  <rect x="1" y="7" width="34" height="3"  rx="1" fill="var(--primary-color)" opacity="0.2"/>
-                  <rect x="1" y="12" width="34" height="3" rx="1" fill="var(--primary-color)" opacity="0.15"/>
-                  <rect x="1" y="17" width="34" height="3" rx="1" fill="var(--primary-color)" opacity="0.1"/>
+                  <rect x="1" y="1" width="34" height="4"  rx="1" fill="#1B6B3A" opacity="0.4"/>
+                  <rect x="1" y="7" width="34" height="3"  rx="1" fill="#1B6B3A" opacity="0.2"/>
+                  <rect x="1" y="12" width="34" height="3" rx="1" fill="#1B6B3A" opacity="0.15"/>
+                  <rect x="1" y="17" width="34" height="3" rx="1" fill="#1B6B3A" opacity="0.1"/>
                 </svg>
                 <!-- Gauge mini preview -->
                 <svg v-else-if="type.id === 'gauge'" viewBox="0 0 36 24" class="mini-chart">
                   <path d="M4,20 A14,14 0 0,1 32,20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4" stroke-linecap="round"/>
-                  <path d="M4,20 A14,14 0 0,1 24,9"  fill="none" :stroke="'var(--primary-color)'" stroke-width="4" stroke-linecap="round"/>
-                  <circle cx="18" cy="20" r="2.5" fill="var(--primary-color)"/>
+                  <path d="M4,20 A14,14 0 0,1 24,9"  fill="none" :stroke="'#1B6B3A'" stroke-width="4" stroke-linecap="round"/>
+                  <circle cx="18" cy="20" r="2.5" fill="#1B6B3A"/>
                 </svg>
                 <!-- Funnel mini preview -->
                 <svg v-else-if="type.id === 'funnel'" viewBox="0 0 36 24" class="mini-chart">
-                  <polygon points="4,2 32,2 26,9 10,9"   :fill="'var(--primary-color)'" opacity="0.85"/>
-                  <polygon points="10,11 26,11 22,17 14,17" :fill="'var(--primary-color)'" opacity="0.65"/>
-                  <polygon points="14,19 22,19 20,24 16,24" :fill="'var(--primary-color)'" opacity="0.45"/>
+                  <polygon points="4,2 32,2 26,9 10,9"   :fill="'#1B6B3A'" opacity="0.85"/>
+                  <polygon points="10,11 26,11 22,17 14,17" :fill="'#1B6B3A'" opacity="0.65"/>
+                  <polygon points="14,19 22,19 20,24 16,24" :fill="'#1B6B3A'" opacity="0.45"/>
                 </svg>
                 <!-- Text mini preview -->
                 <svg v-else-if="type.id === 'text'" viewBox="0 0 36 20" class="mini-chart">
-                  <rect x="2"  y="3"  width="32" height="3" rx="1.5" fill="var(--primary-color)" opacity="0.8"/>
-                  <rect x="2"  y="9"  width="26" height="2.5" rx="1.2" fill="var(--primary-color)" opacity="0.5"/>
-                  <rect x="2"  y="14" width="20" height="2.5" rx="1.2" fill="var(--primary-color)" opacity="0.35"/>
+                  <rect x="2"  y="3"  width="32" height="3" rx="1.5" fill="#1B6B3A" opacity="0.8"/>
+                  <rect x="2"  y="9"  width="26" height="2.5" rx="1.2" fill="#1B6B3A" opacity="0.5"/>
+                  <rect x="2"  y="14" width="20" height="2.5" rx="1.2" fill="#1B6B3A" opacity="0.35"/>
                 </svg>
                 <!-- Box plot mini preview -->
                 <svg v-else-if="type.id === 'boxplot'" viewBox="0 0 36 28" class="mini-chart">
                   <!-- groupe 1 -->
-                  <line x1="7"  y1="4"  x2="7"  y2="8"  stroke="var(--primary-color)" stroke-width="1.4" opacity="0.7"/>
-                  <line x1="5"  y1="4"  x2="9"  y2="4"  stroke="var(--primary-color)" stroke-width="1.4"/>
-                  <rect x="4"  y="8"  width="6" height="8" rx="1" fill="var(--primary-color)" opacity="0.25" stroke="var(--primary-color)" stroke-width="1.4"/>
-                  <line x1="4"  y1="12" x2="10" y2="12" stroke="var(--primary-color)" stroke-width="2"/>
-                  <line x1="7"  y1="16" x2="7"  y2="21" stroke="var(--primary-color)" stroke-width="1.4" opacity="0.7"/>
-                  <line x1="5"  y1="21" x2="9"  y2="21" stroke="var(--primary-color)" stroke-width="1.4"/>
+                  <line x1="7"  y1="4"  x2="7"  y2="8"  stroke="#1B6B3A" stroke-width="1.4" opacity="0.7"/>
+                  <line x1="5"  y1="4"  x2="9"  y2="4"  stroke="#1B6B3A" stroke-width="1.4"/>
+                  <rect x="4"  y="8"  width="6" height="8" rx="1" fill="#1B6B3A" opacity="0.25" stroke="#1B6B3A" stroke-width="1.4"/>
+                  <line x1="4"  y1="12" x2="10" y2="12" stroke="#1B6B3A" stroke-width="2"/>
+                  <line x1="7"  y1="16" x2="7"  y2="21" stroke="#1B6B3A" stroke-width="1.4" opacity="0.7"/>
+                  <line x1="5"  y1="21" x2="9"  y2="21" stroke="#1B6B3A" stroke-width="1.4"/>
                   <!-- groupe 2 -->
-                  <line x1="18" y1="6"  x2="18" y2="10" stroke="var(--primary-color)" stroke-width="1.4" opacity="0.7"/>
-                  <line x1="16" y1="6"  x2="20" y2="6"  stroke="var(--primary-color)" stroke-width="1.4"/>
-                  <rect x="15" y="10" width="6" height="10" rx="1" fill="var(--primary-color)" opacity="0.25" stroke="var(--primary-color)" stroke-width="1.4"/>
-                  <line x1="15" y1="14" x2="21" y2="14" stroke="var(--primary-color)" stroke-width="2"/>
-                  <line x1="18" y1="20" x2="18" y2="24" stroke="var(--primary-color)" stroke-width="1.4" opacity="0.7"/>
-                  <line x1="16" y1="24" x2="20" y2="24" stroke="var(--primary-color)" stroke-width="1.4"/>
+                  <line x1="18" y1="6"  x2="18" y2="10" stroke="#1B6B3A" stroke-width="1.4" opacity="0.7"/>
+                  <line x1="16" y1="6"  x2="20" y2="6"  stroke="#1B6B3A" stroke-width="1.4"/>
+                  <rect x="15" y="10" width="6" height="10" rx="1" fill="#1B6B3A" opacity="0.25" stroke="#1B6B3A" stroke-width="1.4"/>
+                  <line x1="15" y1="14" x2="21" y2="14" stroke="#1B6B3A" stroke-width="2"/>
+                  <line x1="18" y1="20" x2="18" y2="24" stroke="#1B6B3A" stroke-width="1.4" opacity="0.7"/>
+                  <line x1="16" y1="24" x2="20" y2="24" stroke="#1B6B3A" stroke-width="1.4"/>
                   <!-- groupe 3 -->
-                  <line x1="29" y1="3"  x2="29" y2="7"  stroke="var(--primary-color)" stroke-width="1.4" opacity="0.7"/>
-                  <line x1="27" y1="3"  x2="31" y2="3"  stroke="var(--primary-color)" stroke-width="1.4"/>
-                  <rect x="26" y="7"  width="6" height="12" rx="1" fill="var(--primary-color)" opacity="0.25" stroke="var(--primary-color)" stroke-width="1.4"/>
-                  <line x1="26" y1="11" x2="32" y2="11" stroke="var(--primary-color)" stroke-width="2"/>
-                  <line x1="29" y1="19" x2="29" y2="23" stroke="var(--primary-color)" stroke-width="1.4" opacity="0.7"/>
-                  <line x1="27" y1="23" x2="31" y2="23" stroke="var(--primary-color)" stroke-width="1.4"/>
+                  <line x1="29" y1="3"  x2="29" y2="7"  stroke="#1B6B3A" stroke-width="1.4" opacity="0.7"/>
+                  <line x1="27" y1="3"  x2="31" y2="3"  stroke="#1B6B3A" stroke-width="1.4"/>
+                  <rect x="26" y="7"  width="6" height="12" rx="1" fill="#1B6B3A" opacity="0.25" stroke="#1B6B3A" stroke-width="1.4"/>
+                  <line x1="26" y1="11" x2="32" y2="11" stroke="#1B6B3A" stroke-width="2"/>
+                  <line x1="29" y1="19" x2="29" y2="23" stroke="#1B6B3A" stroke-width="1.4" opacity="0.7"/>
+                  <line x1="27" y1="23" x2="31" y2="23" stroke="#1B6B3A" stroke-width="1.4"/>
                 </svg>
-                <i v-else :class="type.icon" style="font-size:16px;color:var(--primary-color)"></i>
+                <i v-else :class="type.icon" style="font-size:16px;color:#1B6B3A"></i>
               </div>
               <span class="palette-label">{{ type.label }}</span>
               <span class="palette-add-hint">+ clic / drag</span>
@@ -217,7 +223,7 @@
               {{ datasetStore.currentDataset ? datasetStore.currentDataset.fileName : 'Pas de dataset' }}
             </span>
             <span v-if="lastSaved" class="header-meta-item">
-              <i class="pi pi-check-circle" style="font-size:10px;color:#10b981"></i>
+              <i class="pi pi-check-circle" style="font-size:10px;color:#1B6B3A"></i>
               Sauvegardé {{ lastSaved }}
             </span>
           </div>
@@ -267,6 +273,41 @@
             </svg>
             <span>Historique</span>
           </button>
+          <div class="header-sep"/>
+          <!-- Undo -->
+          <button class="icon-btn" @click="undo" :disabled="undoStack.length === 0" title="Annuler (Ctrl+Z)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.9"/>
+            </svg>
+          </button>
+          <!-- Templates -->
+          <button class="icon-btn" @click="showTemplatesModal = true" title="Templates pré-configurés">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+            </svg>
+          </button>
+          <!-- Mobile preview -->
+          <button class="icon-btn" :class="{ active: mobilePreview }" @click="mobilePreview = !mobilePreview" title="Prévisualisation mobile">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="7" y="2" width="10" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/>
+            </svg>
+          </button>
+          <!-- Auto-refresh -->
+          <div style="position:relative">
+            <button class="icon-btn" :class="{ active: autoRefreshInterval > 0 }" @click="showAutoRefreshMenu = !showAutoRefreshMenu" title="Auto-refresh">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+              </svg>
+              <span v-if="autoRefreshInterval > 0" style="font-size:9px;font-weight:700;color:#1B6B3A">{{ autoRefreshInterval }}s</span>
+            </button>
+            <div v-if="showAutoRefreshMenu" class="auto-refresh-menu">
+              <div class="arm-title">Auto-refresh</div>
+              <button v-for="opt in [0,15,30,60,300]" :key="opt" class="arm-opt" :class="{ active: autoRefreshInterval === opt }" @click="autoRefreshInterval = opt; showAutoRefreshMenu = false">
+                {{ opt === 0 ? 'Désactivé' : opt < 60 ? opt + ' sec' : (opt/60) + ' min' }}
+              </button>
+            </div>
+          </div>
           <div class="header-sep"/>
           <button class="icon-btn" @click="showDashSettings = !showDashSettings" title="Paramètres" :class="{ active: showDashSettings }">
             <i class="pi pi-sliders-h"></i>
@@ -351,12 +392,13 @@
       <div
         ref="canvasGridRef"
         class="canvas-grid"
+        :class="{ 'canvas-grid--mobile': mobilePreview }"
         :style="{
           gap: dashSettings.gridGap + 'px',
           backgroundImage: dashSettings.showGridDots
-            ? 'radial-gradient(rgba(var(--primary-color-rgb, 16,185,129), 0.1) 1px, transparent 1px)'
-            : 'none',
-          backgroundSize: dashSettings.showGridDots ? '40px 40px' : 'unset',
+            ? 'radial-gradient(circle, rgba(0,0,0,0.12) 1px, transparent 1px)'
+            : 'radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px)',
+          backgroundSize: dashSettings.showGridDots ? '28px 28px' : '28px 28px',
         }"
         @dragover.prevent
         @drop="handleDrop"
@@ -423,7 +465,7 @@
               :title="widget.title"
               :value="getKpiValue(widget)"
               :trend="getWidgetCfg(widget).kpiShowTrend ? getWidgetCfg(widget).kpiTrendValue : undefined"
-              :color="getWidgetCfg(widget).color || 'var(--primary-color)'"
+              :color="getWidgetCfg(widget).color || '#1B6B3A'"
               :icon="getWidgetCfg(widget).kpiIcon"
               :prefix="getWidgetCfg(widget).valuePrefix || ''"
               :suffix="getWidgetCfg(widget).kpiSuffix || getWidgetCfg(widget).valueSuffix || ''"
@@ -450,7 +492,7 @@
             <BarChartWidget
               v-else-if="widget.type === 'bar'"
               :data="getWidgetData(widget)"
-              :color="getWidgetCfg(widget).color || 'var(--primary-color)'"
+              :color="getWidgetCfg(widget).color || '#1B6B3A'"
               :orientation="getWidgetCfg(widget).barOrientation || 'vertical'"
               :show-values="!!getWidgetCfg(widget).barShowValues"
               :border-radius="getWidgetCfg(widget).barBorderRadius ?? 3"
@@ -463,7 +505,7 @@
             <LineChartWidget
               v-else-if="['line','area'].includes(widget.type)"
               :data="getWidgetData(widget)"
-              :color="getWidgetCfg(widget).color || 'var(--primary-color)'"
+              :color="getWidgetCfg(widget).color || '#1B6B3A'"
               :smooth="!!getWidgetCfg(widget).lineSmooth"
               :fill="getWidgetCfg(widget).lineFill !== false"
               :show-dots="getWidgetCfg(widget).lineShowDots !== false"
@@ -479,7 +521,7 @@
               :value="getKpiValue(widget)"
               :min="getWidgetCfg(widget).gaugeMin ?? 0"
               :max="getWidgetCfg(widget).gaugeMax ?? 100"
-              :color="getWidgetCfg(widget).color || 'var(--primary-color)'"
+              :color="getWidgetCfg(widget).color || '#1B6B3A'"
               :prefix="getWidgetCfg(widget).valuePrefix || ''"
               :suffix="getWidgetCfg(widget).valueSuffix || ''"
               :label="getWidgetCfg(widget).yAxisLabel || getWidgetCfg(widget).yAxis || ''"
@@ -507,7 +549,7 @@
             <ScatterWidget
               v-else-if="widget.type === 'scatter'"
               :data="getWidgetData(widget)"
-              :color="getWidgetCfg(widget).color || 'var(--primary-color)'"
+              :color="getWidgetCfg(widget).color || '#1B6B3A'"
               :dot-size="getWidgetCfg(widget).scatterDotSize ?? 4"
               :x-axis-label="getWidgetCfg(widget).xAxis || ''"
               :y-axis-label="getWidgetCfg(widget).yAxis || ''"
@@ -527,10 +569,10 @@
               v-else-if="widget.type === 'radar'"
               :type="widget.type"
               :data="getWidgetData(widget)"
-              :color="getWidgetCfg(widget).color || 'var(--primary-color)'"
+              :color="getWidgetCfg(widget).color || '#1B6B3A'"
               :theme="currentTheme"
               :text-color="themes.find((t) => t.name === currentTheme)?.text"
-              :muted-color="currentTheme === 'white' ? 'rgba(10,31,26,0.5)' : 'rgba(240,253,249,0.4)'"
+              :muted-color="currentTheme === 'white' ? 'rgba(10,31,26,0.5)' : '#94A99A'"
             />
 
             <TableWidget
@@ -612,12 +654,12 @@
         <div v-if="dashboardStore.currentWidgets.length === 0" class="empty-state">
           <div class="empty-state-visual">
             <svg viewBox="0 0 120 80" width="120" height="80" fill="none">
-              <rect x="5" y="5" width="50" height="35" rx="6" stroke="var(--primary-color)" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.4"/>
-              <rect x="65" y="5" width="50" height="35" rx="6" stroke="var(--primary-color)" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.4"/>
-              <rect x="5" y="47" width="110" height="28" rx="6" stroke="var(--primary-color)" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.4"/>
-              <text x="30" y="27" text-anchor="middle" font-size="16" fill="var(--primary-color)" opacity="0.3">+</text>
-              <text x="90" y="27" text-anchor="middle" font-size="16" fill="var(--primary-color)" opacity="0.3">+</text>
-              <text x="60" y="65" text-anchor="middle" font-size="16" fill="var(--primary-color)" opacity="0.3">+</text>
+              <rect x="5" y="5" width="50" height="35" rx="6" stroke="#1B6B3A" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.4"/>
+              <rect x="65" y="5" width="50" height="35" rx="6" stroke="#1B6B3A" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.4"/>
+              <rect x="5" y="47" width="110" height="28" rx="6" stroke="#1B6B3A" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.4"/>
+              <text x="30" y="27" text-anchor="middle" font-size="16" fill="#1B6B3A" opacity="0.3">+</text>
+              <text x="90" y="27" text-anchor="middle" font-size="16" fill="#1B6B3A" opacity="0.3">+</text>
+              <text x="60" y="65" text-anchor="middle" font-size="16" fill="#1B6B3A" opacity="0.3">+</text>
             </svg>
           </div>
           <h3>Votre dashboard est vide</h3>
@@ -689,7 +731,7 @@
           </button>
         </div>
         <div v-else class="pp-header pp-header--idle">
-          <i class="pi pi-database" style="color:rgba(16,185,129,0.6);font-size:14px"></i>
+          <i class="pi pi-database" style="color:rgba(27,107,58,0.6);font-size:14px"></i>
           <span class="pp-idle-title">Propriétés</span>
           <button class="fields-import-btn" @click="showSqlModal = true" title="Connexion SQL" style="margin-right:4px">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -1116,12 +1158,12 @@
                 <div class="cfg-palette" style="margin-top:10px">
                   <button v-for="c in BG_PALETTE" :key="c" class="cfg-pal-dot cfg-pal-bg"
                     :class="{ active: widgetConfig.backgroundColor === c }"
-                    :style="{ background: c, border: '1px solid rgba(255,255,255,0.15)' }"
+                    :style="{ background: c, border: '1px solid rgba(17,23,20,0.12)' }"
                     @click="widgetConfig.backgroundColor = c">
                     <i v-if="widgetConfig.backgroundColor === c" class="pi pi-check"></i>
                   </button>
                   <label class="cfg-pal-dot cfg-pal-custom" title="Personnalisée">
-                    <input type="color" :value="widgetConfig.backgroundColor || '#0a1f1a'"
+                    <input type="color" :value="widgetConfig.backgroundColor || '#FFFFFF'"
                       @input="(e: Event) => widgetConfig.backgroundColor = (e.target as HTMLInputElement).value" />
                     <i class="pi pi-palette"></i>
                   </label>
@@ -1948,7 +1990,7 @@
         <div class="cfg-header">
           <div class="cfg-header-left">
             <div class="cfg-type-badge"><i class="pi pi-sliders-h"></i></div>
-            <span style="font-weight:600;font-size:14px;color:rgba(255,255,255,0.9)">Paramètres</span>
+            <span style="font-weight:600;font-size:14px;color:#111714">Paramètres</span>
           </div>
           <button class="cfg-close" @click="showDashSettings = false">
             <i class="pi pi-times"></i>
@@ -2179,11 +2221,40 @@
       :existing-count="dashboardStore.currentWidgets.length"
       @cancel="cancelAutoGenerate"
     />
+
+    <!-- Templates Modal -->
+    <div v-if="showTemplatesModal" class="modal-overlay" @click.self="showTemplatesModal = false">
+      <div class="modal-content tpl-modal">
+        <div class="tpl-header">
+          <h3>Templates pré-configurés</h3>
+          <p class="tpl-sub">Choisissez un template pour pré-remplir votre dashboard avec des widgets. Configurez ensuite les axes selon votre dataset.</p>
+          <button class="tpl-close" @click="showTemplatesModal = false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="tpl-grid">
+          <div v-for="tpl in DASHBOARD_TEMPLATES" :key="tpl.name" class="tpl-card" @click="applyTemplate(tpl)">
+            <div class="tpl-name">{{ tpl.name }}</div>
+            <div class="tpl-desc">{{ tpl.desc }}</div>
+            <div class="tpl-chips">
+              <span v-for="w in tpl.widgets" :key="w.title" class="tpl-chip">{{ w.type }}</span>
+            </div>
+            <button class="tpl-apply-btn">Appliquer ce template</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile preview banner -->
+    <div v-if="mobilePreview" class="mobile-preview-banner">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+      Prévisualisation mobile (390px) — <button @click="mobilePreview = false" style="background:none;border:none;color:#1B6B3A;cursor:pointer;font-weight:600;padding:0">Quitter</button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive, computed, watch, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, reactive, computed, watch, nextTick } from 'vue'
 import domtoimage from 'dom-to-image-more'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -2191,6 +2262,7 @@ import { useDashboardStore, type DashboardDetailDto as Dashboard, type Widget } 
 import { useDatasetStore, type ColumnProfile, type CustomMeasure } from '@/stores/dataset'
 import { widgetService } from '@/services/widgetService'
 import { dashboardService } from '@/services/dashboardService'
+import api from '@/services/api'
 
 // Import widget components
 import KpiCardWidget   from '@/components/widgets/KpiCardWidget.vue'
@@ -2245,12 +2317,155 @@ const showSqlModal  = ref(false)
 const showRestModal = ref(false)
 const newDashName = ref('')
 
+// ── Undo history ──────────────────────────────────────────────
+const undoStack = ref<Widget[][]>([])
+function pushUndo() {
+  undoStack.value.push(JSON.parse(JSON.stringify(dashboardStore.currentWidgets)))
+  if (undoStack.value.length > 30) undoStack.value.shift()
+}
+function undo() {
+  const prev = undoStack.value.pop()
+  if (prev) { dashboardStore.currentWidgets = prev; showToast('success', 'Action annulée') }
+}
+
+// ── Mobile preview ────────────────────────────────────────────
+const mobilePreview = ref(false)
+
+// ── Auto-refresh ──────────────────────────────────────────────
+const autoRefreshInterval = ref(0)
+const showAutoRefreshMenu = ref(false)
+const refreshKey = ref(0)
+let autoRefreshTimer: ReturnType<typeof setInterval> | null = null
+watch(autoRefreshInterval, (val) => {
+  if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null }
+  if (val > 0) autoRefreshTimer = setInterval(() => { refreshKey.value++ }, val * 1000)
+})
+
+// ── Templates ─────────────────────────────────────────────────
+const showTemplatesModal = ref(false)
+const DASHBOARD_TEMPLATES = [
+  {
+    name: '📊 Rapport Ventes',
+    desc: 'KPIs + graphique barres + courbe tendance + camembert répartition',
+    widgets: [
+      { type: 'kpi', title: 'Chiffre d\'affaires', width: 3, height: 2 },
+      { type: 'kpi', title: 'Nombre de ventes', width: 3, height: 2 },
+      { type: 'kpi', title: 'Panier moyen', width: 3, height: 2 },
+      { type: 'kpi', title: 'Taux conversion', width: 3, height: 2 },
+      { type: 'bar', title: 'Ventes par mois', width: 8, height: 4 },
+      { type: 'pie', title: 'Répartition produits', width: 4, height: 4 },
+      { type: 'line', title: 'Tendance CA', width: 12, height: 4 },
+    ],
+  },
+  {
+    name: '👥 RH & Équipes',
+    desc: 'Effectifs, turnover, performance par département',
+    widgets: [
+      { type: 'kpi', title: 'Effectif total', width: 3, height: 2 },
+      { type: 'kpi', title: 'Taux présence', width: 3, height: 2 },
+      { type: 'kpi', title: 'Nouvelles recrues', width: 3, height: 2 },
+      { type: 'kpi', title: 'Turnover %', width: 3, height: 2 },
+      { type: 'bar', title: 'Effectifs par département', width: 6, height: 4 },
+      { type: 'doughnut', title: 'Répartition par genre', width: 6, height: 4 },
+      { type: 'line', title: 'Évolution effectifs', width: 12, height: 4 },
+    ],
+  },
+  {
+    name: '🛒 E-Commerce',
+    desc: 'Commandes, panier, acquisition, satisfaction client',
+    widgets: [
+      { type: 'kpi', title: 'Commandes', width: 3, height: 2 },
+      { type: 'kpi', title: 'Revenu total', width: 3, height: 2 },
+      { type: 'kpi', title: 'NPS client', width: 3, height: 2 },
+      { type: 'kpi', title: 'Abandons panier', width: 3, height: 2 },
+      { type: 'funnel', title: 'Tunnel conversion', width: 5, height: 5 },
+      { type: 'bar', title: 'Commandes par catégorie', width: 7, height: 5 },
+      { type: 'line', title: 'Revenus quotidiens', width: 12, height: 4 },
+    ],
+  },
+  {
+    name: '📈 Marketing',
+    desc: 'Trafic, campagnes, ROI, canaux d\'acquisition',
+    widgets: [
+      { type: 'kpi', title: 'Visiteurs', width: 3, height: 2 },
+      { type: 'kpi', title: 'Leads générés', width: 3, height: 2 },
+      { type: 'kpi', title: 'Coût / lead', width: 3, height: 2 },
+      { type: 'kpi', title: 'ROI campagnes', width: 3, height: 2 },
+      { type: 'area', title: 'Trafic web', width: 8, height: 4 },
+      { type: 'pie', title: 'Canaux acquisition', width: 4, height: 4 },
+      { type: 'bar', title: 'Performance campagnes', width: 12, height: 4 },
+    ],
+  },
+  {
+    name: '⚙️ Opérations',
+    desc: 'SLA, incidents, capacité, qualité de service',
+    widgets: [
+      { type: 'gauge', title: 'SLA global', width: 3, height: 3 },
+      { type: 'kpi', title: 'Incidents ouverts', width: 3, height: 2 },
+      { type: 'kpi', title: 'Temps résolution', width: 3, height: 2 },
+      { type: 'kpi', title: 'Satisfaction %', width: 3, height: 2 },
+      { type: 'line', title: 'Incidents / semaine', width: 9, height: 4 },
+      { type: 'bar', title: 'Tickets par catégorie', width: 6, height: 4 },
+      { type: 'table', title: 'Incidents récents', width: 6, height: 4 },
+    ],
+  },
+]
+async function applyTemplate(tpl: typeof DASHBOARD_TEMPLATES[0]) {
+  if (!dashboardStore.currentDashboard) return
+  pushUndo()
+  dashboardStore.currentWidgets = tpl.widgets.map((w, i) => ({
+    id: Date.now() + i * 1000 + Math.floor(Math.random() * 999),
+    type: w.type,
+    title: w.title,
+    dashboardId: dashboardStore.currentDashboard!.id,
+    width: w.width,
+    height: w.height,
+    x: 0, y: i * (w.height ?? 4),
+    data_config: JSON.stringify({ color: '#1B6B3A', isDefaultColor: true }),
+  }))
+  showTemplatesModal.value = false
+  showToast('success', `Template « ${tpl.name} » appliqué — configurez les axes de chaque widget`)
+}
+
+// ── Keyboard shortcuts ────────────────────────────────────────
+function handleKeyboard(e: KeyboardEvent) {
+  const tag = (e.target as HTMLElement).tagName
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo() }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'd' && selectedWidget.value) { e.preventDefault(); pushUndo(); duplicateWidget(selectedWidget.value) }
+  if (e.key === 'Delete' && selectedWidget.value) { pushUndo(); removeWidget(selectedWidget.value.id); showConfigPanel.value = false; selectedWidget.value = null }
+  if (e.key === 'Escape') { showConfigPanel.value = false; selectedWidget.value = null; showAutoRefreshMenu.value = false; showTemplatesModal.value = false }
+}
+
 // Themes State
 const currentTheme = ref('dark')
-const currentThemeObj = ref({ name: 'dark', label: 'Émeraude', primary: '#10B981', bg: '#050d0d', text: '#f0fdf9', sidebar: '#071a14', card: '#0a1f1a' })
+
+// ── Back to admin ──────────────────────────────────────────────
+function goBackToAdmin() {
+  router.push('/admin')
+}
+
+// ── Sidebar resize ─────────────────────────────────────────────
+const sidebarWidth = ref(280)
+function startSidebarResize(e: MouseEvent) {
+  e.preventDefault()
+  const startX = e.clientX
+  const startW = sidebarWidth.value
+  const onMove = (ev: MouseEvent) => {
+    const delta = ev.clientX - startX
+    sidebarWidth.value = Math.min(480, Math.max(180, startW + delta))
+  }
+  const onUp = () => {
+    window.removeEventListener('mousemove', onMove)
+    window.removeEventListener('mouseup', onUp)
+  }
+  window.addEventListener('mousemove', onMove)
+  window.addEventListener('mouseup', onUp)
+}
+const currentThemeObj = ref({ name: 'dark', label: 'Émeraude', primary: '#1B6B3A', bg: '#F5F6F5', text: '#111714', sidebar: '#FFFFFF', card: '#FFFFFF' })
 const themes = [
-  { name: 'dark',    label: 'Émeraude', primary: '#10B981', bg: '#050d0d', text: '#f0fdf9', sidebar: '#071a14', card: '#0a1f1a'  },
-  { name: 'white',   label: 'Clair',    primary: '#059669', bg: '#f8fafc', text: '#0f172a', sidebar: '#ffffff', card: '#ffffff'   },
+  { name: 'dark',    label: 'Émeraude', primary: '#1B6B3A', bg: '#F5F6F5', text: '#111714', sidebar: '#FFFFFF', card: '#FFFFFF'  },
+  { name: 'white',   label: 'Clair',    primary: '#134E2A', bg: '#f8fafc', text: '#0f172a', sidebar: '#ffffff', card: '#ffffff'   },
   { name: 'blue',    label: 'Saphir',   primary: '#3b82f6', bg: '#0b1322', text: '#f1f5f9', sidebar: '#111d30', card: '#1e293b'  },
   { name: 'purple',  label: 'Violet',   primary: '#8b5cf6', bg: '#0d0a1a', text: '#f5f3ff', sidebar: '#14102b', card: '#1c1535'  },
   { name: 'rose',    label: 'Rose',     primary: '#ec4899', bg: '#130a10', text: '#fdf2f8', sidebar: '#1a0d15', card: '#1f0d18'  },
@@ -2295,23 +2510,23 @@ function setTheme(themeName: string) {
     root.style.setProperty('--on-surface-sec',    isLight ? 'rgba(15,23,42,0.65)'  : 'rgba(255,255,255,0.65)')
     root.style.setProperty('--on-surface-muted',  isLight ? 'rgba(15,23,42,0.42)'  : 'rgba(255,255,255,0.42)')
     root.style.setProperty('--on-surface-dim',    isLight ? 'rgba(15,23,42,0.25)'  : 'rgba(255,255,255,0.25)')
-    root.style.setProperty('--surface-border',    isLight ? 'rgba(15,23,42,0.12)'  : 'rgba(255,255,255,0.08)')
-    root.style.setProperty('--surface-border-md', isLight ? 'rgba(15,23,42,0.18)'  : 'rgba(255,255,255,0.14)')
-    root.style.setProperty('--surface-hover',     isLight ? 'rgba(15,23,42,0.05)'  : 'rgba(255,255,255,0.05)')
-    root.style.setProperty('--input-bg',          isLight ? 'rgba(15,23,42,0.05)'  : 'rgba(255,255,255,0.05)')
-    root.style.setProperty('--input-bg-focus',    isLight ? 'rgba(15,23,42,0.08)'  : 'rgba(255,255,255,0.08)')
-    root.style.setProperty('--overlay-bg',        isLight ? '#f8fafc'              : '#060f0e')
-    root.style.setProperty('--overlay-border',    isLight ? 'rgba(15,23,42,0.12)'  : 'rgba(255,255,255,0.08)')
+    root.style.setProperty('--surface-border',    isLight ? 'rgba(15,23,42,0.12)'  : 'rgba(17,23,20,0.08)')
+    root.style.setProperty('--surface-border-md', isLight ? 'rgba(15,23,42,0.18)'  : 'rgba(17,23,20,0.10)')
+    root.style.setProperty('--surface-hover',     isLight ? 'rgba(15,23,42,0.05)'  : 'rgba(27,107,58,0.06)')
+    root.style.setProperty('--input-bg',          isLight ? 'rgba(15,23,42,0.05)'  : 'rgba(27,107,58,0.06)')
+    root.style.setProperty('--input-bg-focus',    isLight ? 'rgba(15,23,42,0.08)'  : 'rgba(17,23,20,0.08)')
+    root.style.setProperty('--overlay-bg',        isLight ? '#f8fafc'              : '#FFFFFF')
+    root.style.setProperty('--overlay-border',    isLight ? 'rgba(15,23,42,0.12)'  : 'rgba(17,23,20,0.08)')
 
     // Add muted text color based on theme
-    const mutedColor = isLight ? 'rgba(10, 31, 26, 0.5)' : 'rgba(240, 253, 249, 0.4)'
+    const mutedColor = isLight ? 'rgba(10, 31, 26, 0.5)' : 'rgba(17, 23, 20, 0.4)'
     root.style.setProperty('--text-muted', mutedColor)
 
     // Update widget colors if they are using the default primary
     dashboardStore.currentWidgets.forEach((w) => {
       const config = JSON.parse(w.data_config || '{}')
       if (config.isDefaultColor !== false) {
-        config.color = 'var(--primary-color)'
+        config.color = '#1B6B3A'
         config.isDefaultColor = true
         w.data_config = JSON.stringify(config)
       }
@@ -2569,11 +2784,11 @@ const VALUE_PRESETS: { label: string; value: string; prefix?: string }[] = [
 ]
 
 const COLOR_PALETTE = [
-  '#10b981','#3b82f6','#f59e0b','#ef4444','#8b5cf6',
+  '#1B6B3A','#3b82f6','#f59e0b','#ef4444','#8b5cf6',
   '#06b6d4','#ec4899','#84cc16','#f97316','#a78bfa',
 ]
 const BG_PALETTE = [
-  '#0a1f1a','#111827','#0f172a','#1e1b4b','#1a1a2e',
+  '#EEF7F1','#111827','#0f172a','#1e1b4b','#1a1a2e',
   '#1f2937','#1c1917','#052e16','#0c0a09','#18181b',
 ]
 const CARD_STYLES = [
@@ -2597,11 +2812,11 @@ function getStylePreview(style: string, color: string) {
   const g = parseInt(color.slice(3,5)||'b9',16)
   const b = parseInt(color.slice(5,7)||'81',16)
   const rgb = `${r},${g},${b}`
-  if (style === 'glass')         return { background: 'rgba(255,255,255,0.06)', border: `1px solid rgba(${rgb},0.4)` }
+  if (style === 'glass')         return { background: 'rgba(27,107,58,0.06)', border: `1px solid rgba(${rgb},0.4)` }
   if (style === 'gradient-mesh') return { background: `radial-gradient(circle at 0% 0%, rgba(${rgb},0.3), transparent 60%), radial-gradient(circle at 100% 100%, rgba(${rgb},0.2), transparent 60%)` }
   if (style === 'soft-glow')     return { background: `linear-gradient(180deg,rgba(${rgb},0.15) 0%,transparent 100%)`, boxShadow: `0 0 12px rgba(${rgb},0.3)` }
-  if (style === 'modern-lines')  return { backgroundImage: `repeating-linear-gradient(45deg,rgba(255,255,255,0.05) 0px,rgba(255,255,255,0.05) 1px,transparent 1px,transparent 8px)` }
-  return { background: 'rgba(255,255,255,0.03)' }
+  if (style === 'modern-lines')  return { backgroundImage: `repeating-linear-gradient(45deg,rgba(27,107,58,0.06) 0px,rgba(27,107,58,0.06) 1px,transparent 1px,transparent 8px)` }
+  return { background: 'rgba(17,23,20,0.02)' }
 }
 
 // ── Widget Configuration State ────────────────────────────────────────────
@@ -2619,7 +2834,7 @@ const widgetConfig = reactive({
   sortBy: 'value',
   sortDir: 'desc',
   // Appearance
-  color: '#10b981',
+  color: '#1B6B3A',
   backgroundColor: '',
   backgroundType: 'none',
   width: 6,
@@ -2938,7 +3153,13 @@ const widgetTypes: WidgetType[] = [
   { id: 'map',      label: 'Carte géographique', icon: 'pi pi-map-marker'  },
 ]
 
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyboard)
+  if (autoRefreshTimer) clearInterval(autoRefreshTimer)
+})
+
 onMounted(async () => {
+  window.addEventListener('keydown', handleKeyboard)
   await dashboardStore.fetchDashboards()
   setTheme('dark')
 
@@ -2969,6 +3190,25 @@ async function selectDashboard(dash: Dashboard) {
   dashSettings.name        = dash.name
   dashSettings.isPublic    = dash.isPublic
   dashSettings.shareToken  = dash.shareToken
+
+  // Auto-load linked datasource so the AI assistant is unlocked.
+  // The list endpoint doesn't include datasetId — fetch full details to get it.
+  if (!datasetStore.currentDataset) {
+    try {
+      const full = await dashboardService.getById(dash.id)
+      const dsId = (full as any).datasetId
+      if (dsId) {
+        const res = await api.post(`/datasource/${dsId}/preview`)
+        const raw = res.data as any
+        const cols = (raw.columns ?? []).map((c: any) => ({
+          name: c.name ?? c.Name ?? '',
+          type: c.type ?? c.Type ?? 'string',
+        }))
+        const rows = (raw.preview ?? raw.rows ?? []) as Record<string, string>[]
+        datasetStore.setDataset(raw.name ?? `Dataset #${dsId}`, cols, rows, raw.dataSourceId ?? dsId)
+      }
+    } catch { /* ignore — AI assistant stays disabled */ }
+  }
 }
 
 async function createNewDashboard() {
@@ -3791,7 +4031,7 @@ function openWidgetConfig(widget: Widget) {
   widgetConfig.sortBy           = cfg.sortBy       || 'value'
   widgetConfig.sortDir          = cfg.sortDir      || 'desc'
   // Appearance
-  widgetConfig.color            = cfg.color || '#10b981'
+  widgetConfig.color            = cfg.color || '#1B6B3A'
   widgetConfig.backgroundType   = cfg.backgroundType || 'none'
   const rawBg = cfg.backgroundColor || ''
   widgetConfig.backgroundColor  = rawBg.startsWith('#') ? rawBg : ''
@@ -4051,6 +4291,7 @@ function handleDrop(event: DragEvent) {
 }
 
 function removeWidget(id: number) {
+  pushUndo()
   dashboardStore.currentWidgets = dashboardStore.currentWidgets.filter((w) => w.id !== id)
 }
 
@@ -4080,6 +4321,7 @@ function widgetLabelsOn(widget: Widget): boolean {
 }
 
 function duplicateWidget(w: Widget) {
+  pushUndo()
   const copy: Widget = {
     ...w,
     id:    Date.now() + Math.floor(Math.random() * 1_000_000),
@@ -4094,7 +4336,7 @@ function duplicateWidget(w: Widget) {
 /** Click sur un item de la palette → ajoute directement sans drag */
 /** Config initiale selon le type de widget — libellés activés par défaut */
 function defaultConfig(typeId: string): Record<string, unknown> {
-  const base: Record<string, unknown> = { color: 'var(--primary-color)', isDefaultColor: true }
+  const base: Record<string, unknown> = { color: '#1B6B3A', isDefaultColor: true }
   if (typeId === 'bar') {
     return { ...base, barShowValues: true, barBorderRadius: 3, barOrientation: 'vertical' }
   }
@@ -4416,7 +4658,7 @@ async function autoGenerate() {
         xAxis:       w.xAxis       || undefined,
         yAxis:       w.yAxis       || undefined,
         aggregation: w.aggregation || 'sum',
-        color:       w.color       || 'var(--primary-color)',
+        color:       w.color       || '#1B6B3A',
         isDefaultColor: !w.color,
         ...(w.type === 'kpi' ? {
           kpiColumn:      w.yAxis || w.xAxis || '',
@@ -4834,7 +5076,7 @@ async function exportToPdf() {
       scale:           2,              // 2× qualité retina
       useCORS:         true,
       allowTaint:      true,
-      backgroundColor: currentThemeObj.value.bg || '#0d1117',
+      backgroundColor: currentThemeObj.value.bg || '#F5F6F5',
       logging:         false,
       // Dimensions fixes = EXPORT_W × hauteur réelle après reflow
       width:        fullW,
@@ -5227,7 +5469,7 @@ function getWidgetStyle(widget: Widget) {
     position: 'relative' as const,
     display: 'flex',
     flexDirection: 'column' as const,
-    background: config.backgroundColor || 'var(--card-bg, #0a1f1a)',
+    background: config.backgroundColor || 'var(--card-bg, #FFFFFF)',
   }
 
   // Handle patterns/designs
@@ -5251,7 +5493,7 @@ function getWidgetStyle(widget: Widget) {
       style.boxShadow = `0 0 30px rgba(${primaryRgb}, 0.15)`
       style.background = `linear-gradient(180deg, rgba(${primaryRgb}, 0.05) 0%, transparent 100%)`
     } else if (p === 'modern-lines') {
-      const lineCol = theme.name === 'white' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.03)'
+      const lineCol = theme.name === 'white' ? 'rgba(0,0,0,0.05)' : 'rgba(17,23,20,0.02)'
       style.backgroundImage = `repeating-linear-gradient(45deg, ${lineCol} 0px, ${lineCol} 1px, transparent 1px, transparent 10px)`
     }
   }
@@ -5360,32 +5602,76 @@ function getWidgetCaption(widget: Widget): string {
 .builder-layout {
   display: flex;
   height: 100vh;
-  background: var(--bg-color, #050d0d);
-  color: var(--text-color, #f0fdf9);
+  background: var(--bg-color, #F5F6F5);
+  color: var(--text-color, #111714);
   font-family: 'DM Sans', sans-serif;
   transition: background 0.4s, color 0.3s;
+  --radius-card: 16px;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.06);
+  --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.06), 0 16px 40px rgba(0,0,0,0.1);
 }
 
 /* ── Sidebar (left) ─────────────────────────────────────────── */
 .sidebar {
-  width: 280px;
   flex-shrink: 0;
-  background: var(--sidebar-bg, #071a14);
-  border-right: 1px solid rgba(var(--primary-color-rgb, 16, 185, 129), 0.12);
+  background: #FFFFFF;
+  border-right: 1px solid #E4E8E4;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   transition: background 0.4s;
+  position: relative;
+  min-width: 180px;
+  max-width: 480px;
+  box-shadow: 2px 0 12px rgba(17,23,20,0.05);
+}
+
+.sidebar-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 20;
+  background: transparent;
+  transition: background 0.15s;
+}
+.sidebar-resize-handle:hover,
+.sidebar-resize-handle:active {
+  background: rgba(27, 107, 58, 0.25);
+  border-radius: 3px;
+}
+
+.back-admin-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid #E4E8E4;
+  background: #F5F6F5;
+  color: #4B5E52;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.back-admin-btn:hover {
+  background: #EEF7F1;
+  border-color: rgba(27,107,58,0.3);
+  color: #1B6B3A;
 }
 
 .sidebar-header {
-  padding: 18px 20px 14px;
-  border-bottom: 1px solid rgba(var(--primary-color-rgb, 16,185,129), 0.08);
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid #E4E8E4;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   flex-shrink: 0;
+  background: linear-gradient(180deg, rgba(27,107,58,0.03) 0%, transparent 100%);
 }
 
 .logo {
@@ -5396,10 +5682,10 @@ function getWidgetCaption(widget: Widget): string {
 
 .logo-text {
   font-family: 'Syne', sans-serif;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
-  letter-spacing: -0.5px;
-  color: var(--text-color);
+  letter-spacing: -0.6px;
+  color: #111714;
 }
 
 /* Theme dots in sidebar header */
@@ -5419,14 +5705,14 @@ function getWidgetCaption(widget: Widget): string {
   flex-shrink: 0;
 }
 .theme-dot:hover { transform: scale(1.2); }
-.theme-dot.active { border-color: rgba(255,255,255,0.8); box-shadow: 0 0 0 1px rgba(0,0,0,0.4); }
+.theme-dot.active { border-color: #111714; box-shadow: 0 0 0 1px rgba(0,0,0,0.3); }
 
 /* Dataset status bar */
 .sidebar-dataset-status {
-  margin: 12px 14px;
+  margin: 12px 12px;
   padding: 10px 12px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: #F5F6F5;
+  border: 1px solid #E4E8E4;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -5435,58 +5721,57 @@ function getWidgetCaption(widget: Widget): string {
   flex-shrink: 0;
 }
 .sidebar-dataset-status.loaded {
-  border-color: rgba(var(--primary-color-rgb,16,185,129), 0.25);
-  background: rgba(var(--primary-color-rgb,16,185,129), 0.05);
+  border-color: rgba(27,107,58,0.25);
+  background: #EEF7F1;
 }
 .ds-icon {
   font-size: 14px;
-  color: rgba(var(--primary-color-rgb,16,185,129), 0.5);
+  color: #94A99A;
   flex-shrink: 0;
 }
-.loaded .ds-icon { color: var(--primary-color); }
+.loaded .ds-icon { color: #1B6B3A; }
 .ds-info { flex: 1; min-width: 0; }
 .ds-name {
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-color);
-  opacity: 0.7;
+  color: #4B5E52;
   display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.loaded .ds-name { opacity: 1; color: var(--primary-color); }
+.loaded .ds-name { color: #1B6B3A; }
 .ds-meta {
   font-size: 9px;
-  color: var(--text-muted);
+  color: #94A99A;
   display: block;
   margin-top: 1px;
 }
 .ds-import-btn {
   width: 22px; height: 22px;
-  background: rgba(var(--primary-color-rgb,16,185,129), 0.1);
-  border: 1px solid rgba(var(--primary-color-rgb,16,185,129), 0.3);
+  background: rgba(27,107,58,0.08);
+  border: 1px solid rgba(27,107,58,0.2);
   border-radius: 6px;
-  color: var(--primary-color);
+  color: #1B6B3A;
   font-size: 10px;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   transition: all 0.15s;
 }
-.ds-import-btn:hover { background: rgba(var(--primary-color-rgb,16,185,129), 0.2); }
+.ds-import-btn:hover { background: rgba(27,107,58,0.15); }
 .ds-import-btn--sql {
-  background: rgba(59,130,246,0.1);
-  border-color: rgba(59,130,246,0.3);
-  color: #3b82f6;
+  background: rgba(29,78,216,0.08);
+  border-color: rgba(29,78,216,0.2);
+  color: #1D4ED8;
 }
-.ds-import-btn--sql:hover { background: rgba(59,130,246,0.2); }
+.ds-import-btn--sql:hover { background: rgba(29,78,216,0.15); }
 .ds-import-btn--rest {
-  background: rgba(124,58,237,0.1);
-  border-color: rgba(124,58,237,0.3);
-  color: #7c3aed;
+  background: rgba(109,40,217,0.08);
+  border-color: rgba(109,40,217,0.2);
+  color: #6D28D9;
 }
-.ds-import-btn--rest:hover { background: rgba(124,58,237,0.2); }
+.ds-import-btn--rest:hover { background: rgba(109,40,217,0.15); }
 .fields-import-btn--rest {
   background: rgba(124,58,237,0.1);
   border-color: rgba(124,58,237,0.3);
@@ -5504,12 +5789,13 @@ function getWidgetCaption(widget: Widget): string {
 }
 
 .section-title {
-  padding: 0 24px;
-  font-size: 11px;
+  padding: 0 20px;
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  color: rgba(240, 253, 249, 0.3);
-  margin-bottom: 12px;
+  letter-spacing: 1.2px;
+  color: #94A99A;
+  font-weight: 700;
+  margin-bottom: 6px;
 }
 
 .dashboard-list {
@@ -5519,15 +5805,16 @@ function getWidgetCaption(widget: Widget): string {
 }
 
 .dashboard-item {
-  padding: 12px 24px;
+  padding: 8px 12px;
+  margin: 0 8px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 14px;
-  color: var(--text-color);
-  opacity: 0.6;
+  transition: all 0.18s;
+  font-size: 13px;
+  color: #4B5E52;
 }
 
 .dash-name {
@@ -5540,7 +5827,7 @@ function getWidgetCaption(widget: Widget): string {
 .delete-dash-btn {
   background: none;
   border: none;
-  color: rgba(248, 113, 113, 0.4);
+  color: rgba(185,28,28,0.35);
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -5554,39 +5841,42 @@ function getWidgetCaption(widget: Widget): string {
 
 .delete-dash-btn:hover {
   color: #f87171;
-  background: rgba(248, 113, 113, 0.1);
+  background: rgba(248, 113, 113, 0.15);
 }
 
 .dashboard-item:hover {
-  background: rgba(var(--primary-color-rgb, 16, 185, 129), 0.05);
-  color: var(--primary-color);
+  background: #EEF7F1;
+  color: #1B6B3A;
 }
 
 .dashboard-item.active {
-  background: rgba(var(--primary-color-rgb, 16, 185, 129), 0.1);
-  color: var(--primary-color);
-  border-left: 3px solid var(--primary-color);
-  padding-left: 21px;
+  background: #EEF7F1;
+  color: #1B6B3A;
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 #1B6B3A;
 }
 
 .add-dash-btn {
-  margin: 12px 24px;
-  padding: 10px;
-  background: rgba(var(--primary-color-rgb, 16, 185, 129), 0.1);
-  border: 1px dashed rgba(var(--primary-color-rgb, 16, 185, 129), 0.3);
-  border-radius: 8px;
-  color: var(--primary-color);
-  font-size: 13px;
+  margin: 6px 16px;
+  padding: 9px;
+  background: rgba(27,107,58,0.04);
+  border: 1.5px dashed rgba(27,107,58,0.25);
+  border-radius: 10px;
+  color: #1B6B3A;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 7px;
+  transition: all 0.18s;
 }
 
 .add-dash-btn:hover {
-  background: rgba(var(--primary-color-rgb, 16, 185, 129), 0.15);
-  border-color: rgba(var(--primary-color-rgb, 16, 185, 129), 0.5);
+  background: #EEF7F1;
+  border-color: rgba(27,107,58,0.5);
+  transform: translateY(-1px);
 }
 
 /* dataset status bar is in sidebar header now — see .sidebar-dataset-status */
@@ -5602,8 +5892,8 @@ function getWidgetCaption(widget: Widget): string {
 
 .palette-item {
   padding: 10px 8px 8px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(var(--primary-color-rgb, 16, 185, 129), 0.12);
+  background: #FAFAFA;
+  border: 1px solid #E4E8E4;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -5616,10 +5906,10 @@ function getWidgetCaption(widget: Widget): string {
 }
 
 .palette-item:hover {
-  background: rgba(var(--primary-color-rgb, 16, 185, 129), 0.07);
-  border-color: rgba(var(--primary-color-rgb, 16, 185, 129), 0.4);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  background: #EEF7F1;
+  border-color: rgba(27,107,58,0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(27,107,58,0.12);
 }
 .palette-item:active { transform: scale(0.97); }
 
@@ -5635,7 +5925,7 @@ function getWidgetCaption(widget: Widget): string {
 .palette-label {
   font-size: 10px;
   font-weight: 600;
-  color: rgba(var(--text-color-rgb, 240,253,249), 0.7);
+  color: #4B5E52;
   text-align: center;
   line-height: 1.2;
   white-space: nowrap;
@@ -5646,18 +5936,19 @@ function getWidgetCaption(widget: Widget): string {
 
 .palette-add-hint {
   font-size: 8px;
-  color: rgba(var(--primary-color-rgb, 16,185,129), 0.5);
+  color: rgba(var(--primary-color-rgb, 27, 107, 58), 0.5);
   opacity: 0;
   transition: opacity 0.15s;
 }
 .palette-item:hover .palette-add-hint { opacity: 1; }
 
 .sidebar-footer {
-  padding: 20px;
-  border-top: 1px solid rgba(16, 185, 129, 0.05);
+  padding: 14px 16px;
+  border-top: 1px solid #E4E8E4;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: #FAFAFA;
 }
 
 .user-info {
@@ -5667,15 +5958,18 @@ function getWidgetCaption(widget: Widget): string {
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
-  background: #10b981;
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, #1B6B3A 0%, #15803D 100%);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: #050d0d;
+  font-size: 13px;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(27,107,58,0.35);
+  letter-spacing: 0.5px;
 }
 
 .details {
@@ -5686,16 +5980,17 @@ function getWidgetCaption(widget: Widget): string {
 .name {
   font-size: 13px;
   font-weight: 600;
+  color: #111714;
 }
 .email {
   font-size: 11px;
-  color: rgba(240, 253, 249, 0.3);
+  color: #94A99A;
 }
 
 .logout-btn {
   background: none;
   border: none;
-  color: rgba(240, 253, 249, 0.3);
+  color: #94A99A;
   cursor: pointer;
   padding: 8px;
   transition: color 0.2s;
@@ -5711,22 +6006,26 @@ function getWidgetCaption(widget: Widget): string {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  background: var(--bg-color, #060f0e);
+  background: var(--bg-color, #F2F4F2);
   overflow: hidden;
   transition: background 0.4s;
 }
 
 .canvas-header {
   padding: 10px 20px;
-  background: rgba(var(--bg-color-rgb, 5,13,13), 0.7);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(var(--primary-color-rgb, 16,185,129), 0.08);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0,0,0,0.07);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   flex-shrink: 0;
   overflow: hidden;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 4px 20px rgba(0,0,0,0.05);
+  position: relative;
+  z-index: 10;
 }
 
 .header-info { flex-shrink: 0; }
@@ -5735,10 +6034,11 @@ function getWidgetCaption(widget: Widget): string {
 .header-title-row { display: flex; align-items: center; gap: 8px; }
 .header-info h1 {
   font-family: 'Syne', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   margin: 0;
-  color: var(--text-color);
+  color: #0f172a;
+  letter-spacing: -0.4px;
 }
 .status-badge {
   display: inline-flex;
@@ -5746,17 +6046,18 @@ function getWidgetCaption(widget: Widget): string {
   gap: 5px;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--primary-color);
-  background: rgba(var(--primary-color-rgb,16,185,129), 0.1);
-  border: 1px solid rgba(var(--primary-color-rgb,16,185,129), 0.2);
-  padding: 3px 10px;
-  border-radius: 20px;
+  color: #15803d;
+  background: rgba(21,128,61,0.08);
+  border: 1px solid rgba(21,128,61,0.2);
+  padding: 4px 11px;
+  border-radius: 100px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
 }
 .status-dot {
   width: 5px; height: 5px; border-radius: 50%;
-  background: var(--primary-color);
+  background: #1B6B3A;
   animation: pulse-dot 2s infinite;
 }
 @keyframes pulse-dot {
@@ -5775,18 +6076,20 @@ function getWidgetCaption(widget: Widget): string {
   font-size: 11px;
   color: rgba(var(--text-color-rgb,240,253,249), 0.35);
 }
-.header-meta-item.meta-ok { color: var(--primary-color); opacity: 0.8; }
+.header-meta-item.meta-ok { color: #1B6B3A; opacity: 0.8; }
 
 /* Filters Toolbar */
 .filters-toolbar {
-  margin: 0 32px 24px 32px;
-  padding: 16px 24px;
-  background: rgba(10, 31, 26, 0.4);
-  border: 1px dashed rgba(var(--primary-color-rgb, 16, 185, 129), 0.3);
-  border-radius: 20px;
+  margin: 0 24px 20px 24px;
+  padding: 12px 20px;
+  background: rgba(255,255,255,0.8);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 14px;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  backdrop-filter: blur(8px);
 }
 
 .filters-label {
@@ -5794,7 +6097,7 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   gap: 10px;
   font-size: 13px;
-  color: rgba(240, 253, 249, 0.4);
+  color: #4B5E52;
 }
 
 .filter-tags {
@@ -5808,18 +6111,18 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  background: rgba(var(--primary-color-rgb, 16, 185, 129), 0.05);
-  border: 1px solid rgba(var(--primary-color-rgb, 16, 185, 129), 0.3);
+  background: rgba(var(--primary-color-rgb, 27, 107, 58), 0.05);
+  border: 1px solid rgba(var(--primary-color-rgb, 27, 107, 58), 0.3);
   border-radius: 30px;
-  color: var(--primary-color);
+  color: #1B6B3A;
   font-size: 12px;
   font-weight: 500;
   transition: all 0.2s;
 }
 
 .filter-tag:hover {
-  background: rgba(var(--primary-color-rgb, 16, 185, 129), 0.1);
-  border-color: var(--primary-color);
+  background: rgba(var(--primary-color-rgb, 27, 107, 58), 0.1);
+  border-color: #1B6B3A;
 }
 
 .remove-filter {
@@ -5841,7 +6144,7 @@ function getWidgetCaption(widget: Widget): string {
   margin-left: auto;
   background: none;
   border: none;
-  color: rgba(240, 253, 249, 0.3);
+  color: rgba(17, 23, 20, 0.3);
   font-size: 12px;
   cursor: pointer;
   text-decoration: underline;
@@ -5853,8 +6156,8 @@ function getWidgetCaption(widget: Widget): string {
 
 .add-filter-btn {
   background: transparent;
-  border: 1px dashed rgba(240, 253, 249, 0.2);
-  color: rgba(240, 253, 249, 0.4);
+  border: 1px dashed rgba(17, 23, 20, 0.2);
+  color: rgba(17, 23, 20, 0.4);
   padding: 8px 16px;
   border-radius: 30px;
   display: flex;
@@ -5865,37 +6168,41 @@ function getWidgetCaption(widget: Widget): string {
 }
 
 .add-filter-btn:hover {
-  border-color: var(--primary-color);
-  color: var(--primary-color);
+  border-color: #1B6B3A;
+  color: #1B6B3A;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   flex-shrink: 1;
   min-width: 0;
   overflow-x: auto;
-  /* cache la scrollbar tout en permettant le scroll */
   scrollbar-width: none;
   -ms-overflow-style: none;
+  background: rgba(0,0,0,0.025);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 12px;
+  padding: 4px 6px;
 }
 .header-actions::-webkit-scrollbar { display: none; }
 
 /* ── Auto-generate button ─────────────────────────────────── */
 .autogen-btn {
   display: flex; align-items: center; gap: 5px;
-  padding: 6px 11px; border: none; border-radius: 8px;
+  padding: 7px 13px; border: none; border-radius: 9px;
   background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-  color: #fff; font-size: 12px; font-weight: 600; cursor: pointer;
-  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.35);
+  color: #fff; font-size: 12px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
   transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
   font-family: var(--font-sans, sans-serif);
   white-space: nowrap;
+  letter-spacing: 0.1px;
 }
 .autogen-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(245,158,11,0.5);
+  box-shadow: 0 6px 20px rgba(245,158,11,0.55);
 }
 .autogen-btn:disabled {
   opacity: 0.45;
@@ -5907,16 +6214,17 @@ function getWidgetCaption(widget: Widget): string {
 /* ── Share topbar button ──────────────────────────────────── */
 .share-topbar-btn {
   display: flex; align-items: center; gap: 5px;
-  padding: 6px 11px; border: 1.5px solid rgba(74,108,247,0.4); border-radius: 8px;
-  background: rgba(74,108,247,0.1);
-  color: #7a9cf9; font-size: 12px; font-weight: 600; cursor: pointer;
+  padding: 7px 13px; border: 1.5px solid rgba(74,108,247,0.35); border-radius: 9px;
+  background: rgba(74,108,247,0.08);
+  color: #7a9cf9; font-size: 12px; font-weight: 700; cursor: pointer;
   transition: transform 0.15s, background 0.15s, border-color 0.15s, color 0.15s;
   font-family: var(--font-sans, sans-serif);
   white-space: nowrap;
+  letter-spacing: 0.1px;
 }
 .share-topbar-btn:hover:not(:disabled) {
-  background: rgba(74,108,247,0.2);
-  border-color: rgba(74,108,247,0.7);
+  background: rgba(74,108,247,0.18);
+  border-color: rgba(74,108,247,0.65);
   color: #fff;
   transform: translateY(-1px);
 }
@@ -5927,16 +6235,17 @@ function getWidgetCaption(widget: Widget): string {
 /* ── Version history button ─────────────────────────────────────────────── */
 .version-topbar-btn {
   display: flex; align-items: center; gap: 5px;
-  padding: 6px 11px; border: 1.5px solid rgba(99,102,241,0.35); border-radius: 8px;
-  background: rgba(99,102,241,0.08);
-  color: #a5b4fc; font-size: 12px; font-weight: 600; cursor: pointer;
+  padding: 7px 13px; border: 1.5px solid rgba(99,102,241,0.3); border-radius: 9px;
+  background: rgba(99,102,241,0.07);
+  color: #a5b4fc; font-size: 12px; font-weight: 700; cursor: pointer;
   transition: transform 0.15s, background 0.15s, border-color 0.15s, color 0.15s;
   font-family: var(--font-sans, sans-serif);
   white-space: nowrap;
+  letter-spacing: 0.1px;
 }
 .version-topbar-btn:hover:not(:disabled) {
-  background: rgba(99,102,241,0.18);
-  border-color: rgba(99,102,241,0.6);
+  background: rgba(99,102,241,0.16);
+  border-color: rgba(99,102,241,0.55);
   color: #fff;
   transform: translateY(-1px);
 }
@@ -5962,14 +6271,15 @@ function getWidgetCaption(widget: Widget): string {
 .ai-topbar-btn {
   position: relative;
   display: flex; align-items: center; gap: 5px;
-  padding: 6px 11px; border: none; border-radius: 8px;
+  padding: 7px 13px; border: none; border-radius: 9px;
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: #fff; font-size: 12px; font-weight: 600; cursor: pointer;
-  box-shadow: 0 3px 10px rgba(99,102,241,0.4);
+  color: #fff; font-size: 12px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.35);
   transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
   font-family: var(--font-sans, sans-serif);
   overflow: visible;
   white-space: nowrap;
+  letter-spacing: 0.1px;
 }
 .ai-topbar-btn:hover {
   transform: translateY(-1px);
@@ -5992,29 +6302,33 @@ function getWidgetCaption(widget: Widget): string {
 }
 .header-sep {
   width: 1px; height: 22px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.1);
   flex-shrink: 0;
+  margin: 0 2px;
 }
 
 .export-btn {
-  padding: 6px 10px;
-  background: rgba(var(--text-color-rgb, 255, 255, 255), 0.05);
-  border: 1px solid rgba(var(--text-color-rgb, 255, 255, 255), 0.1);
-  border-radius: 8px;
-  color: var(--text-color);
+  padding: 7px 12px;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 9px;
+  color: #111714;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 5px;
-  transition: all 0.2s;
+  transition: all 0.18s;
   white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
 .export-btn:hover:not(:disabled) {
-  background: rgba(var(--text-color-rgb, 255, 255, 255), 0.1);
-  border-color: rgba(var(--text-color-rgb, 255, 255, 255), 0.2);
+  background: rgba(255,255,255,0.95);
+  border-color: rgba(0,0,0,0.18);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 
 .export-btn.pdf:hover:not(:disabled) {
@@ -6028,29 +6342,32 @@ function getWidgetCaption(widget: Widget): string {
 }
 
 .save-btn {
-  padding: 6px 14px;
-  background: var(--primary-color);
+  padding: 7px 16px;
+  background: linear-gradient(135deg, #1B6B3A 0%, #15803D 100%);
   border: none;
-  border-radius: 8px;
+  border-radius: 9px;
   color: #fff;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: all 0.2s;
+  transition: all 0.18s;
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(27,107,58,0.3);
+  letter-spacing: 0.1px;
 }
 
 .save-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb, 16, 185, 129), 0.3);
+  box-shadow: 0 6px 20px rgba(27, 107, 58, 0.45);
+  background: linear-gradient(135deg, #1e7a43 0%, #16a34a 100%);
 }
 
 .canvas-grid {
   flex: 1;
-  padding: 32px;
+  padding: 28px;
   overflow-y: auto;
   position: relative;
   display: grid;
@@ -6058,24 +6375,25 @@ function getWidgetCaption(widget: Widget): string {
   grid-auto-rows: 80px;
   align-content: flex-start;
   /* gap et background-image sont injectés inline via dashSettings */
+  background-color: #F5F6F5;
 }
 
 .widget-card {
-  background: var(--card-bg, #0a1f1a);
-  border: 1px solid rgba(var(--primary-color-rgb, 16, 185, 129), 0.15);
-  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 18px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  transition:
-    all 0.3s ease,
-    border-color 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.04);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
   cursor: default;
 }
 
 .widget-card:hover {
-  border-color: rgba(var(--primary-color-rgb, 16, 185, 129), 0.4);
+  border-color: rgba(27,107,58,0.2);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.1), 0 24px 48px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
 }
 
 .widget-card[draggable='true'] {
@@ -6084,11 +6402,11 @@ function getWidgetCaption(widget: Widget): string {
 
 .widget-card.dragging {
   opacity: 0.5;
-  border: 2px dashed var(--primary-color);
+  border: 2px dashed #1B6B3A;
 }
 
 .widget-card.resizing {
-  border-color: var(--primary-color);
+  border-color: #1B6B3A;
   box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.3);
   z-index: 100;
 }
@@ -6112,7 +6430,7 @@ function getWidgetCaption(widget: Widget): string {
 .resize-icon {
   width: 8px;
   height: 8px;
-  border: 2px solid var(--primary-color);
+  border: 2px solid #1B6B3A;
   border-radius: 2px;
 }
 
@@ -6138,17 +6456,27 @@ function getWidgetCaption(widget: Widget): string {
 }
 
 .resize-handle:hover .resize-icon {
-  background: var(--primary-color);
+  background: #1B6B3A;
   transform: scale(1.2);
 }
 
 .widget-header {
-  padding: 10px 14px;
-  border-bottom: 1px solid rgba(16, 185, 129, 0.05);
+  padding: 12px 16px 11px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 6px;
+  background: #ffffff;
+  position: relative;
+}
+.widget-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(27,107,58,0.15) 0%, transparent 60%);
 }
 
 .widget-title-group {
@@ -6160,17 +6488,18 @@ function getWidgetCaption(widget: Widget): string {
 }
 
 .widget-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-color);
+  font-size: 12px;
+  font-weight: 700;
+  color: #111714;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: -0.1px;
 }
 
 .widget-description {
   font-size: 10px;
-  color: var(--color-text-muted, rgba(255,255,255,0.4));
+  color: var(--color-text-muted, #94A99A);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -6183,20 +6512,20 @@ function getWidgetCaption(widget: Widget): string {
   justify-content: center;
   gap: 5px;
   padding: 4px 12px 5px;
-  border-top: 1px solid rgba(255,255,255,0.04);
-  background: rgba(0,0,0,0.12);
+  border-top: 1px solid #F0F2F0;
+  background: #FAFBFA;
   flex-shrink: 0;
 }
 
 .widget-caption-icon {
   font-size: 9px;
-  color: rgba(255,255,255,0.25);
+  color: #C4CFC7;
   flex-shrink: 0;
 }
 
 .widget-caption-text {
   font-size: 10px;
-  color: rgba(255,255,255,0.35);
+  color: #94A99A;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -6207,12 +6536,12 @@ function getWidgetCaption(widget: Widget): string {
 
 /* Manual description: slightly brighter + not italic */
 .widget-caption--manual .widget-caption-text {
-  color: rgba(255,255,255,0.52);
+  color: #4B5E52;
   font-style: normal;
   font-weight: 500;
 }
 .widget-caption--manual .widget-caption-icon {
-  color: rgba(255,255,255,0.38);
+  color: #94A99A;
 }
 
 .widget-actions button {
@@ -6234,9 +6563,9 @@ function getWidgetCaption(widget: Widget): string {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(var(--text-color-rgb, 255, 255, 255), 0.01);
-  padding: 16px;
-  min-height: 0; /* Important for flex child with overflow */
+  background: #ffffff;
+  padding: 14px 16px 12px;
+  min-height: 0;
   width: 100%;
 }
 
@@ -6298,7 +6627,7 @@ function getWidgetCaption(widget: Widget): string {
   font-family: 'Syne', sans-serif;
   font-size: 18px;
   font-weight: 700;
-  color: var(--text-color);
+  color: #111714;
   opacity: 0.6;
   margin: 0;
 }
@@ -6320,17 +6649,17 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  background: rgba(var(--primary-color-rgb,16,185,129), 0.1);
-  border: 1px solid rgba(var(--primary-color-rgb,16,185,129), 0.25);
+  background: rgba(var(--primary-color-rgb, 27, 107, 58), 0.1);
+  border: 1px solid rgba(var(--primary-color-rgb, 27, 107, 58), 0.25);
   border-radius: 20px;
-  color: var(--primary-color);
+  color: #1B6B3A;
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
 }
 .quick-add-btn:hover {
-  background: rgba(var(--primary-color-rgb,16,185,129), 0.2);
+  background: rgba(var(--primary-color-rgb, 27, 107, 58), 0.2);
   transform: translateY(-1px);
 }
 
@@ -6349,19 +6678,19 @@ function getWidgetCaption(widget: Widget): string {
 .empty-hero-icon {
   width: 80px; height: 80px;
   border-radius: 24px;
-  background: rgba(var(--primary-color-rgb,16,185,129), 0.08);
-  border: 1px solid rgba(var(--primary-color-rgb,16,185,129), 0.15);
+  background: rgba(var(--primary-color-rgb, 27, 107, 58), 0.08);
+  border: 1px solid rgba(var(--primary-color-rgb, 27, 107, 58), 0.15);
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 24px;
   font-size: 36px;
-  color: rgba(var(--primary-color-rgb,16,185,129), 0.4);
+  color: rgba(var(--primary-color-rgb, 27, 107, 58), 0.4);
 }
 .empty-hero h2 {
   font-family: 'Syne', sans-serif;
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 12px;
-  color: var(--text-color);
+  color: #111714;
 }
 .empty-hero p {
   color: var(--text-muted);
@@ -6373,7 +6702,7 @@ function getWidgetCaption(widget: Widget): string {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--primary-color);
+  background: #1B6B3A;
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -6385,7 +6714,7 @@ function getWidgetCaption(widget: Widget): string {
 }
 .hero-create-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(var(--primary-color-rgb,16,185,129), 0.3);
+  box-shadow: 0 8px 24px rgba(var(--primary-color-rgb, 27, 107, 58), 0.3);
 }
 
 /* Modal */
@@ -6401,13 +6730,13 @@ function getWidgetCaption(widget: Widget): string {
 }
 
 .modal-content {
-  background: var(--card-bg, #0a1f1a);
-  border: 1px solid rgba(var(--primary-color-rgb, 16, 185, 129), 0.2);
+  background: var(--card-bg, #FFFFFF);
+  border: 1px solid rgba(var(--primary-color-rgb, 27, 107, 58), 0.2);
   padding: 32px;
   border-radius: 24px;
   width: 100%;
   max-width: 400px;
-  color: var(--text-color);
+  color: #111714;
 }
 
 .modal-content h3 {
@@ -6423,14 +6752,14 @@ function getWidgetCaption(widget: Widget): string {
 }
 .form-group label {
   font-size: 13px;
-  color: rgba(240, 253, 249, 0.4);
+  color: rgba(17, 23, 20, 0.4);
 }
 .form-group input {
-  background: rgba(var(--text-color-rgb, 255, 255, 255), 0.04);
-  border: 1px solid rgba(var(--text-color-rgb, 255, 255, 255), 0.1);
+  background: rgba(var(--text-color-rgb, 17, 23, 20), 0.04);
+  border: 1px solid rgba(var(--text-color-rgb, 17, 23, 20), 0.1);
   padding: 12px;
   border-radius: 10px;
-  color: var(--text-color);
+  color: #111714;
   outline: none;
 }
 
@@ -6447,11 +6776,11 @@ function getWidgetCaption(widget: Widget): string {
 .cancel-btn {
   background: none;
   border: none;
-  color: rgba(240, 253, 249, 0.4);
+  color: rgba(17, 23, 20, 0.4);
   cursor: pointer;
 }
 .confirm-btn {
-  background: var(--primary-color);
+  background: #1B6B3A;
   border: none;
   padding: 10px 24px;
   border-radius: 10px;
@@ -6481,7 +6810,7 @@ function getWidgetCaption(widget: Widget): string {
 
 .file-info {
   font-size: 12px;
-  color: rgba(240, 253, 249, 0.4);
+  color: rgba(17, 23, 20, 0.4);
 }
 
 .preview-body {
@@ -6494,7 +6823,7 @@ function getWidgetCaption(widget: Widget): string {
 .columns-info h4 {
   font-size: 14px;
   margin-bottom: 12px;
-  color: rgba(240, 253, 249, 0.6);
+  color: rgba(17, 23, 20, 0.6);
 }
 
 .column-tags {
@@ -6508,8 +6837,8 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(17,23,20,0.03);
+  border: 1px solid rgba(17,23,20,0.08);
   border-radius: 8px;
 }
 
@@ -6528,7 +6857,7 @@ function getWidgetCaption(widget: Widget): string {
 
 .col-type.number {
   background: rgba(52, 211, 153, 0.2);
-  color: #34d399;
+  color: #1B6B3A;
 }
 .col-type.date {
   background: rgba(96, 165, 250, 0.2);
@@ -6536,12 +6865,12 @@ function getWidgetCaption(widget: Widget): string {
 }
 .col-type.string {
   background: rgba(161, 161, 170, 0.2);
-  color: #a1a1aa;
+  color: #4B5E52;
 }
 
 .table-preview {
   overflow-x: auto;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(17,23,20,0.08);
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.2);
 }
@@ -6555,61 +6884,64 @@ function getWidgetCaption(widget: Widget): string {
 .table-preview th {
   text-align: left;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(240, 253, 249, 0.5);
+  background: rgba(17,23,20,0.02);
+  border-bottom: 1px solid rgba(17,23,20,0.08);
+  color: rgba(17, 23, 20, 0.5);
   font-weight: 600;
 }
 
 .table-preview td {
   padding: 10px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  color: rgba(240, 253, 249, 0.8);
+  border-bottom: 1px solid rgba(17,23,20,0.03);
+  color: rgba(17, 23, 20, 0.8);
 }
 
 .table-footer {
   padding: 10px 16px;
   font-size: 11px;
-  color: rgba(240, 253, 249, 0.3);
+  color: rgba(17, 23, 20, 0.3);
   text-align: center;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(17,23,20,0.02);
 }
 
 /* Widget type badge */
 .widget-type-badge {
-  width: 22px; height: 22px;
-  border-radius: 6px;
+  width: 24px; height: 24px;
+  border-radius: 7px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px;
+  font-size: 11px;
   flex-shrink: 0;
-  background: rgba(var(--primary-color-rgb,16,185,129), 0.12);
-  color: var(--primary-color);
-  border: 1px solid rgba(var(--primary-color-rgb,16,185,129), 0.2);
+  background: rgba(var(--primary-color-rgb, 27, 107, 58), 0.1);
+  color: #1B6B3A;
+  border: 1px solid rgba(var(--primary-color-rgb, 27, 107, 58), 0.18);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
 }
 .wtype-bar    { background: rgba(59,130,246,0.12);  color: #3b82f6;  border-color: rgba(59,130,246,0.25); }
 .wtype-line   { background: rgba(168,85,247,0.12);  color: #a855f7;  border-color: rgba(168,85,247,0.25); }
 .wtype-area   { background: rgba(168,85,247,0.1);   color: #a855f7;  border-color: rgba(168,85,247,0.2); }
 .wtype-pie    { background: rgba(245,158,11,0.12);  color: #f59e0b;  border-color: rgba(245,158,11,0.25); }
 .wtype-doughnut { background: rgba(245,158,11,0.1); color: #f59e0b;  border-color: rgba(245,158,11,0.2); }
-.wtype-kpi    { background: rgba(16,185,129,0.12);  color: #10b981;  border-color: rgba(16,185,129,0.25); }
+.wtype-kpi    { background: rgba(27,107,58,0.12);  color: #1B6B3A;  border-color: rgba(27,107,58,0.25); }
 .wtype-scatter{ background: rgba(236,72,153,0.12);  color: #ec4899;  border-color: rgba(236,72,153,0.25); }
 .wtype-radar  { background: rgba(6,182,212,0.12);   color: #06b6d4;  border-color: rgba(6,182,212,0.25); }
-.wtype-table  { background: rgba(161,161,170,0.12); color: #a1a1aa;  border-color: rgba(161,161,170,0.2); }
+.wtype-table  { background: rgba(161,161,170,0.12); color: #4B5E52;  border-color: rgba(161,161,170,0.2); }
 .wtype-gauge  { background: rgba(251,146,60,0.12);  color: #fb923c;  border-color: rgba(251,146,60,0.25); }
 .wtype-funnel  { background: rgba(167,139,250,0.12); color: #a78bfa;  border-color: rgba(167,139,250,0.25); }
 .wtype-boxplot { background: rgba(99,102,241,0.12);  color: #818cf8;  border-color: rgba(99,102,241,0.25); }
 .wtype-text    { background: rgba(148,163,184,0.12); color: #94a3b8;  border-color: rgba(148,163,184,0.25); }
 
 .wbtn-config, .wbtn-delete, .wbtn-labels, .wbtn-export {
-  width: 24px; height: 24px;
-  background: none; border: none;
-  border-radius: 6px;
+  width: 26px; height: 26px;
+  background: rgba(255,255,255,0.8); border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 7px;
   display: flex; align-items: center; justify-content: center;
   font-size: 11px;
   cursor: pointer;
-  color: var(--text-muted);
+  color: #6b7280;
   transition: all 0.15s;
   opacity: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  backdrop-filter: blur(4px);
 }
 .widget-card:hover .wbtn-config,
 .widget-card:hover .wbtn-delete,
@@ -6617,11 +6949,11 @@ function getWidgetCaption(widget: Widget): string {
 .widget-card:hover .wbtn-export { opacity: 1; }
 .wbtn-export:hover { background: rgba(59,130,246,0.15); color: #3b82f6; }
 /* Le bouton libellés reste visible quand actif même sans survol */
-.wbtn-labels.active { opacity: 1 !important; color: var(--primary-color); }
-.wbtn-config:hover  { background: rgba(var(--primary-color-rgb,16,185,129), 0.15); color: var(--primary-color); }
+.wbtn-labels.active { opacity: 1 !important; color: #1B6B3A; }
+.wbtn-config:hover  { background: rgba(var(--primary-color-rgb, 27, 107, 58), 0.15); color: #1B6B3A; }
 .wbtn-delete:hover  { background: rgba(239,68,68,0.15); color: #f87171; }
-.wbtn-labels:hover  { background: rgba(var(--primary-color-rgb,16,185,129), 0.12); color: var(--primary-color); }
-.wbtn-labels.active { background: rgba(var(--primary-color-rgb,16,185,129), 0.15); }
+.wbtn-labels:hover  { background: rgba(var(--primary-color-rgb, 27, 107, 58), 0.12); color: #1B6B3A; }
+.wbtn-labels.active { background: rgba(var(--primary-color-rgb, 27, 107, 58), 0.15); }
 
 /* ══════════════════════════════════════════════════════════════
    CONFIG DRAWER (widget config + dashboard settings)
@@ -6632,14 +6964,14 @@ function getWidgetCaption(widget: Widget): string {
   left: 280px; /* right next to left sidebar */
   width: 360px;
   height: 100vh;
-  background: var(--card-bg, #0d1f19);
-  border-right: 1px solid rgba(16,185,129,0.18);
-  border-left: 1px solid rgba(16,185,129,0.08);
+  background: var(--card-bg, #FFFFFF);
+  border-right: 1px solid rgba(27,107,58,0.18);
+  border-left: 1px solid rgba(27,107,58,0.08);
   display: flex;
   flex-direction: column;
   z-index: 200;
   box-shadow: 8px 0 40px rgba(0,0,0,0.4);
-  color: rgba(255,255,255,0.9);
+  color: #111714;
   font-family: 'DM Sans', sans-serif;
 }
 
@@ -6649,8 +6981,8 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   justify-content: space-between;
   padding: 16px 18px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  background: rgba(16,185,129,0.05);
+  border-bottom: 1px solid rgba(27,107,58,0.06);
+  background: rgba(27,107,58,0.05);
   flex-shrink: 0;
 }
 .cfg-header-left {
@@ -6664,29 +6996,29 @@ function getWidgetCaption(widget: Widget): string {
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: rgba(16,185,129,0.15);
-  border: 1px solid rgba(16,185,129,0.3);
+  background: rgba(27,107,58,0.15);
+  border: 1px solid rgba(27,107,58,0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #10b981;
+  color: #1B6B3A;
   flex-shrink: 0;
   font-size: 13px;
 }
 .cfg-title-input {
   flex: 1;
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 8px;
   padding: 6px 10px;
-  color: rgba(255,255,255,0.9);
+  color: #111714;
   font-size: 13px;
   font-weight: 600;
   font-family: inherit;
   outline: none;
   min-width: 0;
 }
-.cfg-title-input:focus { border-color: #10b981; }
+.cfg-title-input:focus { border-color: #1B6B3A; }
 .cfg-close {
   width: 28px; height: 28px;
   background: none; border: none;
@@ -6700,7 +7032,7 @@ function getWidgetCaption(widget: Widget): string {
 /* Tabs */
 .cfg-tabs {
   display: flex;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(27,107,58,0.06);
   background: rgba(0,0,0,0.15);
   flex-shrink: 0;
 }
@@ -6710,7 +7042,7 @@ function getWidgetCaption(widget: Widget): string {
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  color: rgba(255,255,255,0.35);
+  color: #94A99A;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
@@ -6723,9 +7055,9 @@ function getWidgetCaption(widget: Widget): string {
 }
 .cfg-tab:hover { color: rgba(255,255,255,0.7); }
 .cfg-tab.active {
-  color: var(--primary-color);
-  border-bottom-color: var(--primary-color);
-  background: rgba(var(--primary-color-rgb,16,185,129), 0.05);
+  color: #1B6B3A;
+  border-bottom-color: #1B6B3A;
+  background: rgba(var(--primary-color-rgb, 27, 107, 58), 0.05);
 }
 
 /* Body */
@@ -6744,7 +7076,7 @@ function getWidgetCaption(widget: Widget): string {
 /* Sections */
 .cfg-section {
   padding: 14px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(27,107,58,0.06);
 }
 .cfg-section:last-child { border-bottom: none; }
 .cfg-section-title {
@@ -6770,7 +7102,7 @@ function getWidgetCaption(widget: Widget): string {
   margin-bottom: 10px;
 }
 .pie-fields-banner svg { flex-shrink: 0; margin-top: 1px; color: #818cf8; opacity: 0.9; }
-.pie-fields-banner strong { color: rgba(255,255,255,0.8); font-weight: 600; }
+.pie-fields-banner strong { color: #111714; font-weight: 600; }
 
 /* ── Pie section descriptions ────────────────────────────────────────────── */
 .pie-info-banner {
@@ -6809,7 +7141,7 @@ function getWidgetCaption(widget: Widget): string {
   color: rgba(255,255,255,0.28);
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255,255,255,0.05);
+  border-top: 1px solid rgba(27,107,58,0.06);
   line-height: 1.4;
 }
 .pie-type-hint svg { flex-shrink: 0; opacity: 0.5; }
@@ -6826,7 +7158,7 @@ function getWidgetCaption(widget: Widget): string {
   color: rgba(255,255,255,0.5);
   font-weight: 500;
 }
-.cfg-field label strong { color: rgba(255,255,255,0.8); }
+.cfg-field label strong { color: #111714; }
 
 .cfg-row-2 {
   display: grid;
@@ -6836,25 +7168,25 @@ function getWidgetCaption(widget: Widget): string {
 }
 
 .cfg-input {
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 7px;
   padding: 7px 10px;
-  color: rgba(255,255,255,0.9);
+  color: #111714;
   font-size: 12px;
   font-family: inherit;
   outline: none;
   transition: border-color 0.15s;
   width: 100%;
 }
-.cfg-input:focus { border-color: #10b981; }
+.cfg-input:focus { border-color: #1B6B3A; }
 
 .cfg-textarea {
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 7px;
   padding: 8px 10px;
-  color: rgba(255,255,255,0.9);
+  color: #111714;
   font-size: 12px;
   font-family: inherit;
   outline: none;
@@ -6864,8 +7196,8 @@ function getWidgetCaption(widget: Widget): string {
   line-height: 1.55;
   min-height: 90px;
 }
-.cfg-textarea:focus { border-color: #10b981; }
-.cfg-textarea::placeholder { color: rgba(255,255,255,0.25); }
+.cfg-textarea:focus { border-color: #1B6B3A; }
+.cfg-textarea::placeholder { color: #C4CFC7; }
 
 .cfg-gauge-preview {
   margin-top: 8px;
@@ -6891,7 +7223,7 @@ function getWidgetCaption(widget: Widget): string {
   flex-basis: 100%;
 }
 .cfg-preset-btn {
-  background: rgba(255,255,255,0.06);
+  background: rgba(27,107,58,0.06);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 5px;
   padding: 3px 8px;
@@ -6902,14 +7234,14 @@ function getWidgetCaption(widget: Widget): string {
   font-family: inherit;
 }
 .cfg-preset-btn:hover {
-  background: rgba(16,185,129,0.15);
-  border-color: rgba(16,185,129,0.4);
-  color: #10b981;
+  background: rgba(27,107,58,0.15);
+  border-color: rgba(27,107,58,0.4);
+  color: #1B6B3A;
 }
 .cfg-preset-btn.active {
-  background: rgba(16,185,129,0.2);
-  border-color: #10b981;
-  color: #10b981;
+  background: rgba(27,107,58,0.2);
+  border-color: #1B6B3A;
+  color: #1B6B3A;
   font-weight: 600;
 }
 .cfg-detect-btn {
@@ -6945,9 +7277,9 @@ function getWidgetCaption(widget: Widget): string {
   color: #f87171;
 }
 .cfg-detect-msg--ok {
-  background: rgba(16,185,129,0.12);
-  border-color: rgba(16,185,129,0.3);
-  color: #34d399;
+  background: rgba(27,107,58,0.12);
+  border-color: rgba(27,107,58,0.3);
+  color: #1B6B3A;
 }
 .cfg-preset-reset {
   padding: 3px 6px;
@@ -6959,8 +7291,8 @@ function getWidgetCaption(widget: Widget): string {
   color: #ef4444;
 }
 .cfg-preset-reset.active {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.2);
+  background: rgba(17,23,20,0.08);
+  border-color: rgba(17,23,20,0.15);
   color: rgba(255,255,255,0.6);
   font-weight: 400;
 }
@@ -6972,8 +7304,8 @@ function getWidgetCaption(widget: Widget): string {
   gap: 8px;
   margin-top: 8px;
   padding: 7px 10px;
-  background: rgba(16,185,129,0.07);
-  border: 1px solid rgba(16,185,129,0.2);
+  background: rgba(27,107,58,0.07);
+  border: 1px solid rgba(27,107,58,0.2);
   border-radius: 8px;
 }
 .cup-label {
@@ -6984,7 +7316,7 @@ function getWidgetCaption(widget: Widget): string {
 .cup-value {
   font-size: 12px;
   font-weight: 700;
-  color: #10b981;
+  color: #1B6B3A;
   font-family: var(--font-mono, monospace);
 }
 .cup-value--lg {
@@ -6998,22 +7330,22 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   margin-left: 6px;
   padding: 1px 6px;
-  background: rgba(16,185,129,0.15);
-  border: 1px solid rgba(16,185,129,0.3);
+  background: rgba(27,107,58,0.15);
+  border: 1px solid rgba(27,107,58,0.3);
   border-radius: 4px;
   font-size: 9px;
   font-weight: 700;
-  color: #10b981;
+  color: #1B6B3A;
   font-family: var(--font-mono, monospace);
   letter-spacing: 0;
 }
 
 .cfg-select {
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 7px;
   padding: 7px 10px;
-  color: rgba(255,255,255,0.9);
+  color: #111714;
   font-size: 12px;
   font-family: inherit;
   outline: none;
@@ -7022,20 +7354,20 @@ function getWidgetCaption(widget: Widget): string {
   transition: border-color 0.15s;
   appearance: auto;
 }
-.cfg-select:focus { border-color: #10b981; }
-.cfg-select option { background: #0d1f19; color: rgba(255,255,255,0.9); }
+.cfg-select:focus { border-color: #1B6B3A; }
+.cfg-select option { background: #FFFFFF; color: #111714; }
 
 /* Range slider */
 .cfg-range {
   width: 100%;
-  accent-color: #10b981;
+  accent-color: #1B6B3A;
   cursor: pointer;
 }
 .cfg-range-marks {
   display: flex;
   justify-content: space-between;
   font-size: 9px;
-  color: rgba(255,255,255,0.25);
+  color: #C4CFC7;
   margin-top: 2px;
 }
 
@@ -7047,7 +7379,7 @@ function getWidgetCaption(widget: Widget): string {
 .cfg-btn-group button {
   flex: 1;
   padding: 6px 4px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 6px;
   color: rgba(255,255,255,0.5);
@@ -7060,14 +7392,14 @@ function getWidgetCaption(widget: Widget): string {
   gap: 4px;
 }
 .cfg-btn-group button.active {
-  background: rgba(16,185,129,0.2);
-  border-color: #10b981;
-  color: #10b981;
+  background: rgba(27,107,58,0.2);
+  border-color: #1B6B3A;
+  color: #1B6B3A;
   font-weight: 600;
 }
 .cfg-btn-group button:hover:not(.active) {
-  background: rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.8);
+  background: rgba(17,23,20,0.08);
+  color: #111714;
 }
 
 /* Checkbox column list (Table / Heatmap config) */
@@ -7079,8 +7411,8 @@ function getWidgetCaption(widget: Widget): string {
   overflow-y: auto;
   margin-top: 6px;
   padding: 4px 6px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(17,23,20,0.02);
+  border: 1px solid rgba(17,23,20,0.08);
   border-radius: 6px;
   scrollbar-width: thin;
 }
@@ -7095,11 +7427,11 @@ function getWidgetCaption(widget: Widget): string {
   border-radius: 4px;
   transition: background 0.12s;
 }
-.cfg-checkbox-item:hover { background: rgba(255,255,255,0.06); }
+.cfg-checkbox-item:hover { background: rgba(27,107,58,0.06); }
 .cfg-checkbox-item input[type="checkbox"] {
   width: 13px;
   height: 13px;
-  accent-color: #10b981;
+  accent-color: #1B6B3A;
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -7121,7 +7453,7 @@ function getWidgetCaption(widget: Widget): string {
   letter-spacing: 0.02em;
 }
 .col-type-number { background: rgba(74,108,247,0.18); color: #7a9cf9; border: 1px solid rgba(74,108,247,0.3); }
-.col-type-date   { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.25); }
+.col-type-date   { background: rgba(27,107,58,0.15); color: #1B6B3A; border: 1px solid rgba(27,107,58,0.25); }
 .col-type-category,
 .col-type-string,
 .col-type-boolean { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.22); }
@@ -7141,13 +7473,13 @@ function getWidgetCaption(widget: Widget): string {
   padding: 2px 7px;
   border-radius: 4px;
   border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.06);
+  background: rgba(27,107,58,0.06);
   color: rgba(255,255,255,0.6);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
   letter-spacing: 0.03em;
 }
-.cfg-micro-btn:hover:not(:disabled) { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9); }
+.cfg-micro-btn:hover:not(:disabled) { background: rgba(255,255,255,0.12); color: #111714; }
 .cfg-micro-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
 .cfg-col-type {
@@ -7184,8 +7516,8 @@ function getWidgetCaption(widget: Widget): string {
   margin-top: 4px;
 }
 .img-upload-zone:hover {
-  border-color: #10b981;
-  background: rgba(16,185,129,0.06);
+  border-color: #1B6B3A;
+  background: rgba(27,107,58,0.06);
   color: rgba(255,255,255,0.75);
 }
 .img-upload-zone .pi { font-size: 18px; margin-bottom: 4px; color: rgba(255,255,255,0.4); }
@@ -7242,7 +7574,7 @@ function getWidgetCaption(widget: Widget): string {
   font-size: 11px;
   color: rgba(255,255,255,0.75);
   cursor: pointer;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(27,107,58,0.06);
   transition: background 0.15s;
   line-height: 1.4;
 }
@@ -7258,7 +7590,7 @@ function getWidgetCaption(widget: Widget): string {
   width: 28px;
   height: 28px;
   border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgba(17,23,20,0.12);
   cursor: pointer;
   background: none;
   padding: 0;
@@ -7303,7 +7635,7 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   gap: 8px;
   margin: 8px 0;
-  color: rgba(255,255,255,0.2);
+  color: rgba(17,23,20,0.15);
   font-size: 10px;
 }
 .cfg-or-sep::before, .cfg-or-sep::after {
@@ -7331,11 +7663,11 @@ function getWidgetCaption(widget: Widget): string {
   flex-shrink: 0;
 }
 .cfg-pal-dot:hover { transform: scale(1.12); }
-.cfg-pal-dot.active { border-color: rgba(255,255,255,0.9); box-shadow: 0 0 0 1px rgba(0,0,0,0.5); }
+.cfg-pal-dot.active { border-color: #111714; box-shadow: 0 0 0 1px rgba(0,0,0,0.5); }
 .cfg-pal-dot .pi-check { font-size: 10px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
 .cfg-pal-custom {
-  background: rgba(255,255,255,0.08);
-  border: 1px dashed rgba(255,255,255,0.2);
+  background: rgba(17,23,20,0.08);
+  border: 1px dashed rgba(17,23,20,0.15);
   color: rgba(255,255,255,0.5);
   font-size: 12px;
   overflow: hidden;
@@ -7367,16 +7699,16 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   gap: 5px;
   padding: 8px 4px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(17,23,20,0.02);
+  border: 1px solid rgba(17,23,20,0.08);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
   font-size: 9px;
   color: rgba(255,255,255,0.4);
 }
-.cfg-style-btn:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); }
-.cfg-style-btn.active { border-color: #10b981; color: #10b981; background: rgba(16,185,129,0.1); }
+.cfg-style-btn:hover { border-color: rgba(17,23,20,0.15); color: rgba(255,255,255,0.7); }
+.cfg-style-btn.active { border-color: #1B6B3A; color: #1B6B3A; background: rgba(27,107,58,0.1); }
 .cfg-style-preview {
   width: 36px; height: 20px; border-radius: 4px;
   border: 1px solid rgba(255,255,255,0.1);
@@ -7407,7 +7739,7 @@ function getWidgetCaption(widget: Widget): string {
   flex-shrink: 0;
   transition: background 0.2s;
 }
-.cfg-toggle input:checked ~ .toggle-track { background: #10b981; }
+.cfg-toggle input:checked ~ .toggle-track { background: #1B6B3A; }
 .toggle-thumb {
   position: absolute;
   top: 2px; left: 2px;
@@ -7431,21 +7763,21 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   gap: 4px;
   padding: 8px 4px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(17,23,20,0.02);
+  border: 1px solid rgba(17,23,20,0.08);
   border-radius: 8px;
   cursor: pointer;
   font-size: 10px;
   color: rgba(255,255,255,0.4);
   transition: all 0.15s;
 }
-.cfg-icon-btn.active { border-color: #10b981; color: #10b981; background: rgba(16,185,129,0.1); }
+.cfg-icon-btn.active { border-color: #1B6B3A; color: #1B6B3A; background: rgba(27,107,58,0.1); }
 .cfg-icon-btn i { font-size: 16px; }
 
 /* Footer */
 .cfg-footer {
   padding: 12px 14px;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid rgba(27,107,58,0.06);
   display: flex;
   gap: 8px;
   background: rgba(0,0,0,0.2);
@@ -7454,7 +7786,7 @@ function getWidgetCaption(widget: Widget): string {
 .cfg-btn-cancel {
   flex: 1;
   padding: 9px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 8px;
   color: rgba(255,255,255,0.5);
@@ -7462,11 +7794,11 @@ function getWidgetCaption(widget: Widget): string {
   cursor: pointer;
   transition: all 0.15s;
 }
-.cfg-btn-cancel:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); }
+.cfg-btn-cancel:hover { background: rgba(17,23,20,0.08); color: #111714; }
 .cfg-btn-apply {
   flex: 2;
   padding: 9px;
-  background: linear-gradient(135deg, #059669, #10b981);
+  background: linear-gradient(135deg, #134E2A, #1B6B3A);
   border: none;
   border-radius: 8px;
   color: #fff;
@@ -7494,7 +7826,7 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   gap: 6px;
   background: none;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(17,23,20,0.08);
   border-radius: 10px;
   padding: 8px 4px;
   cursor: pointer;
@@ -7502,7 +7834,7 @@ function getWidgetCaption(widget: Widget): string {
   color: rgba(255,255,255,0.4);
   transition: all 0.15s;
 }
-.dash-theme-btn.active { border-color: #10b981; color: #10b981; }
+.dash-theme-btn.active { border-color: #1B6B3A; color: #1B6B3A; }
 .dash-theme-preview {
   width: 44px; height: 28px;
   border-radius: 6px;
@@ -7531,15 +7863,15 @@ function getWidgetCaption(widget: Widget): string {
 .share-url-input { font-size: 10px; font-family: monospace; }
 .share-copy-btn {
   padding: 7px 10px;
-  background: rgba(16,185,129,0.15);
-  border: 1px solid rgba(16,185,129,0.3);
+  background: rgba(27,107,58,0.15);
+  border: 1px solid rgba(27,107,58,0.3);
   border-radius: 7px;
-  color: #10b981;
+  color: #1B6B3A;
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.15s;
 }
-.share-copy-btn:hover { background: rgba(16,185,129,0.25); }
+.share-copy-btn:hover { background: rgba(27,107,58,0.25); }
 
 /* Drawer animation — slides in from left */
 .drawer-in-enter-active, .drawer-in-leave-active {
@@ -7564,7 +7896,7 @@ function getWidgetCaption(widget: Widget): string {
 }
 .filter-field label {
   font-size: 12px;
-  color: rgba(240,253,249,0.4);
+  color: #94A99A;
   font-weight: 500;
 }
 .range-filter {
@@ -7576,7 +7908,7 @@ function getWidgetCaption(widget: Widget): string {
 /* Icon button in header */
 .icon-btn {
   width: 36px; height: 36px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 9px;
   color: rgba(255,255,255,0.6);
@@ -7588,9 +7920,9 @@ function getWidgetCaption(widget: Widget): string {
   font-size: 14px;
 }
 .icon-btn:hover, .icon-btn.active {
-  background: rgba(16,185,129,0.15);
-  border-color: rgba(16,185,129,0.4);
-  color: #10b981;
+  background: rgba(27,107,58,0.15);
+  border-color: rgba(27,107,58,0.4);
+  color: #1B6B3A;
 }
 
 /* (ancienne animation slide-up — remplacée par drawer-in) */
@@ -7629,9 +7961,9 @@ function getWidgetCaption(widget: Widget): string {
   pointer-events: none;
 }
 .save-toast.success {
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  color: #6ee7b7;
+  background: rgba(27, 107, 58, 0.15);
+  border: 1px solid rgba(27, 107, 58, 0.4);
+  color: #1B6B3A;
 }
 .save-toast.error {
   background: rgba(239, 68, 68, 0.15);
@@ -7652,14 +7984,15 @@ function getWidgetCaption(widget: Widget): string {
 .fields-panel {
   width: 240px;
   flex-shrink: 0;
-  background: var(--sidebar-bg, #071a14);
-  border-left: 1px solid rgba(16,185,129,0.12);
+  background: #FFFFFF;
+  border-left: 1px solid #E4E8E4;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   transition: width 0.25s cubic-bezier(0.16,1,0.3,1), background 0.4s;
   position: relative;
   font-family: 'DM Sans', sans-serif;
+  box-shadow: -2px 0 12px rgba(17,23,20,0.04);
 }
 .fields-panel--collapsed {
   width: 36px;
@@ -7672,16 +8005,16 @@ function getWidgetCaption(widget: Widget): string {
   right: 8px;
   width: 24px; height: 24px;
   border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.04);
-  color: rgba(255,255,255,0.45);
+  border: 1px solid #E4E8E4;
+  background: #F5F6F5;
+  color: #94A99A;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
   flex-shrink: 0;
   z-index: 2;
 }
-.fields-toggle:hover { background: rgba(16,185,129,0.15); color: #10b981; }
+.fields-toggle:hover { background: rgba(27,107,58,0.15); color: #1B6B3A; }
 .fields-panel--collapsed .fields-toggle { right: 6px; top: 10px; }
 
 /* Collapsed vertical label */
@@ -7691,7 +8024,7 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   gap: 8px;
   padding-top: 52px;
-  color: rgba(255,255,255,0.3);
+  color: #94A99A;
 }
 .fields-collapsed-label i { font-size: 14px; }
 .fields-collapsed-label span {
@@ -7700,7 +8033,7 @@ function getWidgetCaption(widget: Widget): string {
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.25);
+  color: #94A99A;
 }
 
 /* Header */
@@ -7708,10 +8041,11 @@ function getWidgetCaption(widget: Widget): string {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 12px 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 14px 12px 12px;
+  border-bottom: 1px solid #E4E8E4;
   flex-shrink: 0;
-  padding-right: 40px; /* space for toggle button */
+  padding-right: 40px;
+  background: linear-gradient(180deg, rgba(27,107,58,0.03) 0%, transparent 100%);
 }
 .fields-header-left {
   flex: 1;
@@ -7725,11 +8059,11 @@ function getWidgetCaption(widget: Widget): string {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.8);
+  color: #111714;
 }
 .fields-panel-subtitle {
   font-size: 10px;
-  color: rgba(255,255,255,0.35);
+  color: #94A99A;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -7737,16 +8071,16 @@ function getWidgetCaption(widget: Widget): string {
 .fields-import-btn {
   width: 26px; height: 26px;
   border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(17,23,20,0.08);
   background: transparent;
-  color: rgba(255,255,255,0.4);
+  color: #94A99A;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   font-size: 11px;
   flex-shrink: 0;
   transition: background 0.15s, color 0.15s;
 }
-.fields-import-btn:hover { background: rgba(16,185,129,0.15); color: #10b981; }
+.fields-import-btn:hover { background: rgba(27,107,58,0.15); color: #1B6B3A; }
 
 /* Empty state */
 .fields-empty-state {
@@ -7759,43 +8093,44 @@ function getWidgetCaption(widget: Widget): string {
   padding: 20px 16px;
   text-align: center;
 }
-.fields-empty-icon { font-size: 28px; color: rgba(255,255,255,0.15); }
-.fields-empty-title { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.45); margin: 0; }
-.fields-empty-sub { font-size: 10px; color: rgba(255,255,255,0.25); line-height: 1.5; margin: 0; }
+.fields-empty-icon { font-size: 28px; color: rgba(17,23,20,0.12); }
+.fields-empty-title { font-size: 12px; font-weight: 600; color: #4B5E52; margin: 0; }
+.fields-empty-sub { font-size: 10px; color: #C4CFC7; line-height: 1.5; margin: 0; }
 .fields-empty-cta {
   margin-top: 6px;
   padding: 7px 14px;
   border-radius: 8px;
-  border: 1px solid rgba(16,185,129,0.35);
-  background: rgba(16,185,129,0.08);
-  color: #34d399;
+  border: 1px solid rgba(27,107,58,0.35);
+  background: rgba(27,107,58,0.08);
+  color: #1B6B3A;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   display: flex; align-items: center; gap: 6px;
   transition: background 0.15s;
 }
-.fields-empty-cta:hover { background: rgba(16,185,129,0.18); }
+.fields-empty-cta:hover { background: rgba(27,107,58,0.18); }
 
 /* Stats row */
 .fields-stats-row {
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 8px 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding: 10px 12px;
+  border-bottom: 1px solid #E4E8E4;
   flex-shrink: 0;
+  background: #FAFAFA;
 }
 .fields-stat {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
+  gap: 2px;
 }
-.fstat-val { font-size: 13px; font-weight: 700; color: #34d399; }
-.fstat-lbl { font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.04em; }
-.fstat-sep { width: 1px; height: 24px; background: rgba(255,255,255,0.07); margin: 0 4px; flex-shrink: 0; }
+.fstat-val { font-size: 14px; font-weight: 800; color: #1B6B3A; }
+.fstat-lbl { font-size: 9px; color: #94A99A; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+.fstat-sep { width: 1px; height: 24px; background: #E4E8E4; margin: 0 4px; flex-shrink: 0; }
 
 /* Hint bar */
 .fields-hint-bar {
@@ -7804,12 +8139,12 @@ function getWidgetCaption(widget: Widget): string {
   gap: 6px;
   padding: 7px 12px;
   font-size: 10px;
-  color: rgba(255,255,255,0.3);
-  background: rgba(255,255,255,0.02);
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: #94A99A;
+  background: #F5F6F5;
+  border-bottom: 1px solid #E4E8E4;
   flex-shrink: 0;
 }
-.fields-hint-bar i { font-size: 11px; color: rgba(16,185,129,0.5); }
+.fields-hint-bar i { font-size: 11px; color: #1B6B3A; }
 
 /* Field group */
 .fields-group {
@@ -7820,12 +8155,12 @@ function getWidgetCaption(widget: Widget): string {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px 4px;
+  padding: 10px 12px 4px;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
+  color: #94A99A;
 }
 .fgroup-icon {
   width: 16px; height: 16px;
@@ -7834,15 +8169,15 @@ function getWidgetCaption(widget: Widget): string {
   font-size: 9px; font-weight: 800;
   flex-shrink: 0;
 }
-.fgroup-icon--measure { background: rgba(16,185,129,0.2); color: #34d399; }
+.fgroup-icon--measure { background: rgba(27,107,58,0.2); color: #1B6B3A; }
 .fgroup-icon--dim     { background: rgba(99,102,241,0.2); color: #a5b4fc; }
 .fgroup-label { flex: 1; }
 .fgroup-count {
   font-size: 9px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(27,107,58,0.06);
   border-radius: 10px;
   padding: 1px 6px;
-  color: rgba(255,255,255,0.35);
+  color: #94A99A;
 }
 
 /* Field list */
@@ -7856,7 +8191,7 @@ function getWidgetCaption(widget: Widget): string {
 }
 .fields-list::-webkit-scrollbar { width: 3px; }
 .fields-list::-webkit-scrollbar-track { background: transparent; }
-.fields-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+.fields-list::-webkit-scrollbar-thumb { background: rgba(17,23,20,0.08); border-radius: 2px; }
 
 /* Field item */
 .field-item {
@@ -7871,16 +8206,16 @@ function getWidgetCaption(widget: Widget): string {
   position: relative;
 }
 .field-item:hover {
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.06);
+  background: rgba(27,107,58,0.06);
+  border-color: rgba(27,107,58,0.06);
 }
 .field-item:active { cursor: grabbing; transform: scale(0.98); }
 
-.field-item--measure:hover  { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.15); }
+.field-item--measure:hover  { background: rgba(27,107,58,0.08); border-color: rgba(27,107,58,0.15); }
 .field-item--dim:hover      { background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.15); }
 .field-item--active {
-  background: rgba(16,185,129,0.12) !important;
-  border-color: rgba(16,185,129,0.3) !important;
+  background: rgba(27,107,58,0.12) !important;
+  border-color: rgba(27,107,58,0.3) !important;
 }
 .field-item--dragging { opacity: 0.4; }
 
@@ -7891,20 +8226,20 @@ function getWidgetCaption(widget: Widget): string {
   font-size: 9px; font-weight: 700;
   flex-shrink: 0;
 }
-.fi-type--measure { background: rgba(16,185,129,0.2); color: #34d399; }
-.fi-type--dim     { background: rgba(99,102,241,0.18); color: #a5b4fc; font-size: 12px; }
+.fi-type--measure { background: rgba(27,107,58,0.2); color: #1B6B3A; }
+.fi-type--dim     { background: rgba(99,102,241,0.18); color: #6366f1; font-size: 12px; }
 
 .fi-name {
   flex: 1;
   font-size: 11px;
-  color: rgba(255,255,255,0.75);
+  color: #4B5E52;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .fi-axis-hint {
   font-size: 9px;
-  color: rgba(255,255,255,0.2);
+  color: #94A99A;
   opacity: 0;
   transition: opacity 0.15s;
 }
@@ -7915,8 +8250,8 @@ function getWidgetCaption(widget: Widget): string {
   padding: 1px 5px;
   border-radius: 4px;
 }
-.fi-axis-badge--x { background: rgba(99,102,241,0.25); color: #a5b4fc; }
-.fi-axis-badge--y { background: rgba(16,185,129,0.25); color: #34d399; }
+.fi-axis-badge--x { background: rgba(99,102,241,0.15); color: #6366f1; }
+.fi-axis-badge--y { background: rgba(27,107,58,0.25); color: #1B6B3A; }
 
 /* ════════════════════════════════════════════════════════════════
    AXIS WELLS  (field drop zones in config panel)
@@ -7929,16 +8264,16 @@ function getWidgetCaption(widget: Widget): string {
 }
 
 .axis-well {
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(17,23,20,0.08);
   border-radius: 10px;
-  background: rgba(255,255,255,0.02);
+  background: rgba(17,23,20,0.02);
   overflow: hidden;
   transition: border-color 0.15s, background 0.15s;
 }
 .axis-well--over {
-  border-color: rgba(16,185,129,0.5) !important;
-  background: rgba(16,185,129,0.05) !important;
-  box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+  border-color: rgba(27,107,58,0.5) !important;
+  background: rgba(27,107,58,0.05) !important;
+  box-shadow: 0 0 0 3px rgba(27,107,58,0.1);
 }
 
 .axis-well-header {
@@ -7946,8 +8281,8 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   gap: 6px;
   padding: 6px 10px;
-  background: rgba(255,255,255,0.02);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(17,23,20,0.02);
+  border-bottom: 1px solid rgba(27,107,58,0.06);
 }
 .axis-badge {
   width: 18px; height: 18px;
@@ -7957,22 +8292,22 @@ function getWidgetCaption(widget: Widget): string {
   flex-shrink: 0;
 }
 .axis-badge--x { background: rgba(99,102,241,0.25); color: #a5b4fc; }
-.axis-badge--y { background: rgba(16,185,129,0.25); color: #34d399; }
+.axis-badge--y { background: rgba(27,107,58,0.25); color: #1B6B3A; }
 
 .axis-well-label {
   flex: 1;
   font-size: 10px;
-  color: rgba(255,255,255,0.4);
+  color: #94A99A;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   font-weight: 600;
 }
 .axis-clear {
   width: 18px; height: 18px;
   border-radius: 4px;
   border: none;
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.35);
+  background: rgba(27,107,58,0.06);
+  color: #94A99A;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   font-size: 9px;
@@ -7998,7 +8333,7 @@ function getWidgetCaption(widget: Widget): string {
   max-width: 100%;
 }
 .axis-chip--dim     { background: rgba(99,102,241,0.18); border: 1px solid rgba(99,102,241,0.25); color: #c7d2fe; }
-.axis-chip--measure { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.25); color: #6ee7b7; }
+.axis-chip--measure { background: rgba(27,107,58,0.15); border: 1px solid rgba(27,107,58,0.25); color: #1B6B3A; }
 
 .aChip-icon { font-size: 11px; flex-shrink: 0; }
 .aChip-name {
@@ -8012,7 +8347,7 @@ function getWidgetCaption(widget: Widget): string {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: rgba(255,255,255,0.2);
+  color: rgba(17,23,20,0.15);
   font-size: 10px;
   font-style: italic;
   padding: 2px 4px;
@@ -8028,7 +8363,7 @@ function getWidgetCaption(widget: Widget): string {
   color: rgba(255,255,255,0.45);
   background: transparent;
   border: none;
-  border-top: 1px solid rgba(255,255,255,0.05);
+  border-top: 1px solid rgba(27,107,58,0.06);
   cursor: pointer;
   outline: none;
   appearance: none;
@@ -8038,7 +8373,7 @@ function getWidgetCaption(widget: Widget): string {
   padding-right: 22px;
 }
 .axis-fallback-select:focus { color: rgba(255,255,255,0.7); }
-.axis-fallback-select option { background: #0d1f19; color: rgba(255,255,255,0.8); }
+.axis-fallback-select option { background: #FFFFFF; color: #111714; }
 .axis-fallback-select optgroup { color: rgba(255,255,255,0.4); font-size: 9px; }
 
 .mb-10 { margin-bottom: 10px; }
@@ -8051,15 +8386,15 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   gap: 4px;
   padding: 6px 14px;
-  background: var(--card-bg, #0d1f19);
-  border-bottom: 1px solid rgba(16,185,129,0.12);
+  background: var(--card-bg, #FFFFFF);
+  border-bottom: 1px solid rgba(27,107,58,0.12);
   flex-shrink: 0;
   min-height: 42px;
   overflow-x: auto;
 }
 .format-toolbar::-webkit-scrollbar { height: 3px; }
 .format-toolbar::-webkit-scrollbar-track { background: transparent; }
-.format-toolbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+.format-toolbar::-webkit-scrollbar-thumb { background: rgba(17,23,20,0.08); border-radius: 2px; }
 
 .ftb-info {
   display: flex;
@@ -8076,7 +8411,7 @@ function getWidgetCaption(widget: Widget): string {
 .ftb-title {
   font-size: 12px;
   font-weight: 600;
-  color: rgba(255,255,255,0.8);
+  color: #111714;
   max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -8103,7 +8438,7 @@ function getWidgetCaption(widget: Widget): string {
   flex-shrink: 0;
 }
 .ftb-color:hover { transform: scale(1.15); }
-.ftb-color.active { border-color: rgba(255,255,255,0.8); }
+.ftb-color.active { border-color: #111714; }
 
 .ftb-btn {
   width: 28px; height: 28px;
@@ -8117,31 +8452,31 @@ function getWidgetCaption(widget: Widget): string {
   transition: background 0.12s, color 0.12s, border-color 0.12s;
   flex-shrink: 0;
 }
-.ftb-btn:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); }
-.ftb-btn.active { background: rgba(16,185,129,0.18); color: #34d399; border-color: rgba(16,185,129,0.3); }
+.ftb-btn:hover { background: rgba(17,23,20,0.08); color: #111714; }
+.ftb-btn.active { background: rgba(27,107,58,0.18); color: #1B6B3A; border-color: rgba(27,107,58,0.3); }
 .ftb-btn--danger:hover { background: rgba(239,68,68,0.15); color: #f87171; }
 
 .ftb-apply-btn {
   display: flex; align-items: center; gap: 5px;
   padding: 5px 12px;
   border-radius: 8px;
-  border: 1px solid rgba(16,185,129,0.4);
-  background: rgba(16,185,129,0.12);
-  color: #34d399;
+  border: 1px solid rgba(27,107,58,0.4);
+  background: rgba(27,107,58,0.12);
+  color: #1B6B3A;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s;
   flex-shrink: 0;
 }
-.ftb-apply-btn:hover { background: rgba(16,185,129,0.22); }
+.ftb-apply-btn:hover { background: rgba(27,107,58,0.22); }
 
 .ftb-close-btn {
   width: 24px; height: 24px;
   border-radius: 6px;
   border: none;
   background: transparent;
-  color: rgba(255,255,255,0.25);
+  color: #C4CFC7;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   font-size: 11px;
@@ -8175,8 +8510,8 @@ function getWidgetCaption(widget: Widget): string {
   min-width: 200px;
   max-width: 560px;
   flex-shrink: 0;
-  background: var(--sidebar-bg, #071a14);
-  border-left: 1px solid rgba(16,185,129,0.12);
+  background: var(--sidebar-bg, #FFFFFF);
+  border-left: 1px solid rgba(27,107,58,0.12);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -8202,7 +8537,7 @@ function getWidgetCaption(widget: Widget): string {
 }
 .pp-resize-handle:hover,
 .pp--resizing .pp-resize-handle {
-  background: rgba(16,185,129,0.25);
+  background: rgba(27,107,58,0.25);
 }
 
 /* Toggle */
@@ -8211,8 +8546,8 @@ function getWidgetCaption(widget: Widget): string {
   top: 12px; right: 8px;
   width: 22px; height: 22px;
   border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(17,23,20,0.08);
+  background: rgba(17,23,20,0.03);
   color: rgba(255,255,255,0.4);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
@@ -8220,7 +8555,7 @@ function getWidgetCaption(widget: Widget): string {
   z-index: 2;
   transition: background 0.15s, color 0.15s;
 }
-.pp-toggle:hover { background: rgba(16,185,129,0.15); color: #10b981; }
+.pp-toggle:hover { background: rgba(27,107,58,0.15); color: #1B6B3A; }
 
 /* Collapsed hint */
 .pp-collapsed-hint {
@@ -8229,7 +8564,7 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   gap: 8px;
   padding-top: 50px;
-  color: rgba(255,255,255,0.25);
+  color: #C4CFC7;
 }
 .pp-collapsed-hint i { font-size: 14px; }
 .pp-collapsed-hint span {
@@ -8245,12 +8580,12 @@ function getWidgetCaption(widget: Widget): string {
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(27,107,58,0.06);
   flex-shrink: 0;
   padding-right: 40px;
 }
 .pp-header--widget {
-  background: rgba(16,185,129,0.04);
+  background: rgba(27,107,58,0.04);
 }
 .pp-widget-badge {
   width: 26px; height: 26px;
@@ -8264,7 +8599,7 @@ function getWidgetCaption(widget: Widget): string {
   background: transparent;
   border: none;
   outline: none;
-  color: rgba(255,255,255,0.9);
+  color: #111714;
   font-size: 13px;
   font-weight: 600;
   font-family: inherit;
@@ -8275,7 +8610,7 @@ function getWidgetCaption(widget: Widget): string {
   width: 22px; height: 22px;
   border-radius: 5px;
   border: none;
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   color: rgba(255,255,255,0.3);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
@@ -8299,7 +8634,7 @@ function getWidgetCaption(widget: Widget): string {
 /* Tabs */
 .pp-tabs {
   display: flex;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(27,107,58,0.06);
   flex-shrink: 0;
 }
 .pp-tab {
@@ -8311,7 +8646,7 @@ function getWidgetCaption(widget: Widget): string {
   padding: 8px 4px;
   border: none;
   background: transparent;
-  color: rgba(255,255,255,0.35);
+  color: #94A99A;
   font-size: 9px;
   font-weight: 600;
   text-transform: uppercase;
@@ -8322,8 +8657,8 @@ function getWidgetCaption(widget: Widget): string {
   font-family: inherit;
 }
 .pp-tab i { font-size: 13px; }
-.pp-tab:hover { color: rgba(255,255,255,0.65); background: rgba(255,255,255,0.03); }
-.pp-tab.active { color: #34d399; border-bottom-color: #10b981; background: rgba(16,185,129,0.05); }
+.pp-tab:hover { color: rgba(255,255,255,0.65); background: rgba(17,23,20,0.02); }
+.pp-tab.active { color: #1B6B3A; border-bottom-color: #1B6B3A; background: rgba(27,107,58,0.05); }
 
 /* Body */
 .pp-body {
@@ -8333,11 +8668,11 @@ function getWidgetCaption(widget: Widget): string {
 }
 .pp-body::-webkit-scrollbar { width: 3px; }
 .pp-body::-webkit-scrollbar-track { background: transparent; }
-.pp-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+.pp-body::-webkit-scrollbar-thumb { background: rgba(17,23,20,0.08); border-radius: 2px; }
 
 /* Section (non-collapsible) */
 .pp-section {
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(17,23,20,0.03);
   padding: 12px;
 }
 .pp-section:last-child { border-bottom: none; }
@@ -8365,13 +8700,13 @@ function getWidgetCaption(widget: Widget): string {
   user-select: none;
   transition: background 0.12s;
 }
-.pp-section-toggle:hover { background: rgba(255,255,255,0.03); }
+.pp-section-toggle:hover { background: rgba(17,23,20,0.02); }
 .pp-section-toggle .pp-section-title { margin-bottom: 0; }
 .pp-section-toggle i { font-size: 10px; color: rgba(255,255,255,0.3); flex-shrink: 0; }
 
 .pp-section-body {
   padding: 4px 12px 12px;
-  border-top: 1px solid rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(17,23,20,0.03);
 }
 
 /* Footer */
@@ -8379,7 +8714,7 @@ function getWidgetCaption(widget: Widget): string {
   display: flex;
   gap: 8px;
   padding: 10px 12px;
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid rgba(17,23,20,0.08);
   flex-shrink: 0;
   background: rgba(0,0,0,0.1);
 }
@@ -8388,7 +8723,7 @@ function getWidgetCaption(widget: Widget): string {
 
 /* ── Champs — mesures calculées ─────────────────────────────────────── */
 .fields-group--calc {
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid rgba(27,107,58,0.06);
   margin-top: 4px;
 }
 
@@ -8403,7 +8738,7 @@ function getWidgetCaption(widget: Widget): string {
   width: 20px; height: 20px;
   border-radius: 5px;
   border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.04);
+  background: rgba(17,23,20,0.03);
   color: rgba(255,255,255,0.4);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
@@ -8465,14 +8800,14 @@ function getWidgetCaption(widget: Widget): string {
   padding: 5px 8px;
   border-radius: 6px;
   border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.04);
+  background: rgba(17,23,20,0.03);
   color: rgba(255,255,255,0.5);
   font-size: 11px;
   cursor: pointer;
   font-family: inherit;
   transition: background 0.15s;
 }
-.nm-cancel:hover { background: rgba(255,255,255,0.08); }
+.nm-cancel:hover { background: rgba(17,23,20,0.08); }
 .nm-create {
   flex: 2;
   padding: 5px 10px;
@@ -8506,7 +8841,7 @@ function getWidgetCaption(widget: Widget): string {
   border-radius: 4px;
   border: none;
   background: transparent;
-  color: rgba(255,255,255,0.2);
+  color: rgba(17,23,20,0.15);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   font-size: 8px;
@@ -8518,10 +8853,169 @@ function getWidgetCaption(widget: Widget): string {
 .nm-empty-hint {
   padding: 8px 12px;
   font-size: 10px;
-  color: rgba(255,255,255,0.25);
+  color: #C4CFC7;
   text-align: center;
 }
 .nm-empty-hint strong { color: rgba(245,158,11,0.6); }
 
 /* ── Light-theme overrides → see src/assets/main.css ── */
+
+/* ── Mobile ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .builder-layout {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 100% !important;
+    max-width: none;
+    min-width: 0;
+    height: auto;
+    max-height: 45vh;
+    overflow-y: auto;
+    border-right: none;
+    border-bottom: 1px solid #E4E8E4;
+  }
+
+  .sidebar-resize-handle { display: none; }
+
+  .canvas-container {
+    min-height: 55vh;
+    overflow-y: auto;
+  }
+
+  .canvas-header { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
+
+  .widget-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+}
+
+/* ── Mobile preview ─────────────────────────────────────── */
+.canvas-grid--mobile {
+  max-width: 390px;
+  margin: 0 auto;
+  grid-template-columns: repeat(4, 1fr) !important;
+  border: 2px solid #1B6B3A;
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: 0 0 0 6px rgba(27,107,58,0.08);
+}
+
+.mobile-preview-banner {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111714;
+  color: #F0F9F4;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 999;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* ── Auto-refresh menu ───────────────────────────────────── */
+.auto-refresh-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #E4E8E4);
+  border-radius: 10px;
+  padding: 6px;
+  z-index: 200;
+  min-width: 130px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+.arm-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--color-text-muted, #94A99A);
+  padding: 4px 8px 6px;
+}
+.arm-opt {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--color-text, #111714);
+}
+.arm-opt:hover { background: rgba(27,107,58,0.08); color: #1B6B3A; }
+.arm-opt.active { background: rgba(27,107,58,0.12); color: #1B6B3A; font-weight: 600; }
+
+/* ── Templates modal ─────────────────────────────────────── */
+.tpl-modal {
+  max-width: 760px;
+  width: 90vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 0;
+}
+.tpl-header {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--color-border, #E4E8E4);
+  position: relative;
+}
+.tpl-header h3 { font-size: 17px; font-weight: 700; margin: 0 0 6px; }
+.tpl-sub { font-size: 12px; color: var(--color-text-muted, #94A99A); margin: 0; line-height: 1.5; }
+.tpl-close {
+  position: absolute; top: 20px; right: 20px;
+  background: none; border: none; cursor: pointer;
+  color: var(--color-text-muted, #94A99A);
+  padding: 4px; border-radius: 6px;
+}
+.tpl-close:hover { background: rgba(0,0,0,0.06); }
+.tpl-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 20px;
+}
+.tpl-card {
+  border: 1px solid var(--color-border, #E4E8E4);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tpl-card:hover { border-color: #1B6B3A; background: rgba(27,107,58,0.04); }
+.tpl-name { font-size: 14px; font-weight: 700; color: var(--color-text, #111714); }
+.tpl-desc { font-size: 11px; color: var(--color-text-muted, #94A99A); line-height: 1.4; }
+.tpl-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.tpl-chip {
+  font-size: 10px; font-weight: 600;
+  background: rgba(27,107,58,0.1); color: #1B6B3A;
+  padding: 2px 7px; border-radius: 20px;
+}
+.tpl-apply-btn {
+  margin-top: 4px;
+  background: #1B6B3A; color: #fff;
+  border: none; border-radius: 8px;
+  padding: 8px 14px; font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.tpl-apply-btn:hover { background: #134E2A; }
 </style>
+
+
+
+
+
+
+

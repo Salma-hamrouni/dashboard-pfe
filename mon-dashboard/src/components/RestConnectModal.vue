@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="rest-overlay" @click.self="$emit('close')">
     <div class="rest-modal">
 
@@ -324,7 +324,7 @@ function formatCell(val: unknown): string {
 
 /* ── Modal ────────────────────────────────────────────────────── */
 .rest-modal {
-  background: var(--color-surface, #0a1f1a);
+  background: var(--color-surface, #EEF7F1);
   border: 1px solid var(--color-border, rgba(255,255,255,0.1));
   border-radius: 16px;
   width: 100%;
@@ -353,11 +353,11 @@ function formatCell(val: unknown): string {
   flex-shrink: 0;
 }
 .rest-header-title { margin: 0; font-size: 15px; font-weight: 600; color: var(--color-text, #f0fdf9); }
-.rest-header-sub   { margin: 2px 0 0; font-size: 11px; color: var(--color-text-muted, rgba(240,253,249,0.4)); }
+.rest-header-sub   { margin: 2px 0 0; font-size: 11px; color: var(--color-text-muted, #94A99A); }
 .rest-close {
   margin-left: auto;
   background: none; border: none; cursor: pointer;
-  color: var(--color-text-muted, rgba(240,253,249,0.4));
+  color: var(--color-text-muted, #94A99A);
   font-size: 14px; padding: 4px; border-radius: 6px;
   transition: color .15s, background .15s;
 }
@@ -385,15 +385,15 @@ function formatCell(val: unknown): string {
 .step-dot {
   width: 24px; height: 24px; border-radius: 50%;
   border: 2px solid var(--color-border, rgba(255,255,255,0.15));
-  background: var(--color-surface, #0a1f1a);
+  background: var(--color-surface, #EEF7F1);
   display: flex; align-items: center; justify-content: center;
   font-size: 10px; font-weight: 700;
-  color: var(--color-text-muted, rgba(240,253,249,0.4));
+  color: var(--color-text-muted, #94A99A);
   transition: all .2s; flex-shrink: 0;
 }
 .rest-step.active .step-dot { border-color: #7c3aed; color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,.2); }
 .rest-step.done   .step-dot { border-color: #7c3aed; background: #7c3aed; color: #fff; }
-.rest-step span { font-size: 11px; color: var(--color-text-muted, rgba(240,253,249,0.4)); }
+.rest-step span { font-size: 11px; color: var(--color-text-muted, #94A99A); }
 .rest-step.active span, .rest-step.done span { color: var(--color-text, #f0fdf9); font-weight: 500; }
 
 /* ── Body ─────────────────────────────────────────────────────── */
@@ -408,14 +408,14 @@ function formatCell(val: unknown): string {
 
 label {
   font-size: 11px; font-weight: 600;
-  color: var(--color-text-secondary, rgba(240,253,249,0.6));
+  color: var(--color-text-secondary, #4B5E52);
   letter-spacing: .03em; text-transform: uppercase;
 }
 .req        { color: #7c3aed; }
-.hint-label { color: var(--color-text-muted, rgba(240,253,249,0.35)); font-weight: 400; text-transform: none; letter-spacing: 0; }
+.hint-label { color: var(--color-text-muted, #94A99A); font-weight: 400; text-transform: none; letter-spacing: 0; }
 
 .rest-input, .rest-select {
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   border: 1px solid var(--color-border, rgba(255,255,255,0.1));
   border-radius: 8px;
   padding: 8px 12px;
@@ -434,7 +434,7 @@ label {
 
 .rest-hint {
   font-size: 10px;
-  color: var(--color-text-muted, rgba(240,253,249,0.4));
+  color: var(--color-text-muted, #94A99A);
   margin: 2px 0 0;
   display: flex; align-items: center; gap: 4px;
 }
@@ -442,7 +442,7 @@ label {
 /* ── Headers list ─────────────────────────────────────────────── */
 .rest-section-title {
   font-size: 11px; font-weight: 600;
-  color: var(--color-text-secondary, rgba(240,253,249,0.6));
+  color: var(--color-text-secondary, #4B5E52);
   letter-spacing: .05em; text-transform: uppercase;
   margin: 16px 0 8px;
 }
@@ -491,7 +491,7 @@ label {
   display: flex; align-items: center; justify-content: space-between;
   margin: 16px 0 8px;
 }
-.rest-preview-title { font-size: 11px; font-weight: 600; color: var(--color-text-secondary, rgba(240,253,249,0.6)); }
+.rest-preview-title { font-size: 11px; font-weight: 600; color: var(--color-text-secondary, #4B5E52); }
 .rest-preview-cols  {
   font-size: 10px;
   background: rgba(124,58,237,.1); color: #7c3aed;
@@ -507,7 +507,7 @@ label {
 .rest-table th {
   background: rgba(255,255,255,0.04);
   padding: 7px 10px; text-align: left;
-  color: var(--color-text-secondary, rgba(240,253,249,0.6)); font-weight: 600;
+  color: var(--color-text-secondary, #4B5E52); font-weight: 600;
   white-space: nowrap; position: sticky; top: 0;
   border-bottom: 1px solid var(--color-border, rgba(255,255,255,0.08));
 }
@@ -519,7 +519,7 @@ label {
 .rest-table tr:last-child td { border-bottom: none; }
 .rest-table tr:hover td { background: rgba(255,255,255,0.03); }
 .th-type { margin-right: 4px; font-size: 9px; }
-.th-type--number  { color: #10b981; }
+.th-type--number  { color: #1B6B3A; }
 .th-type--date    { color: #3b82f6; }
 .th-type--boolean { color: #8b5cf6; }
 
@@ -527,9 +527,9 @@ label {
 .rest-empty-state {
   display: flex; flex-direction: column; align-items: center; gap: 12px;
   padding: 40px 20px; text-align: center;
-  color: rgba(240,253,249,0.3); font-size: 13px;
+  color: #94A99A; font-size: 13px;
 }
-.rest-empty-state strong { color: rgba(240,253,249,0.6); }
+.rest-empty-state strong { color: #4B5E52; }
 
 /* ── Error ────────────────────────────────────────────────────── */
 .rest-error {
@@ -554,7 +554,7 @@ label {
 }
 .rest-btn:disabled { opacity: .4; cursor: not-allowed; }
 .rest-btn--ghost {
-  background: rgba(255,255,255,0.06);
+  background: rgba(27,107,58,0.06);
   color: var(--color-text-muted, rgba(240,253,249,0.5));
 }
 .rest-btn--ghost:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: var(--color-text, #f0fdf9); }
@@ -567,3 +567,5 @@ label {
 }
 .rest-btn--primary:hover:not(:disabled) { filter: brightness(1.1); }
 </style>
+
+

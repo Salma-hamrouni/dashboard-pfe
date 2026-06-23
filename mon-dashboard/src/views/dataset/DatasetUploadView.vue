@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <AppLayout>
     <div class="dataset-page">
 
@@ -32,7 +32,7 @@
 
         <div v-else class="file-selected">
           <div class="file-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1B6B3A" stroke-width="2">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <polyline points="14,2 14,8 20,8"/>
             </svg>
@@ -71,7 +71,7 @@
       <div v-if="uploadResult" class="result-section">
         <div class="result-header">
           <div class="result-badge">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B6B3A" stroke-width="2.5">
               <polyline points="20,6 9,17 4,12"/>
             </svg>
             Upload réussi
@@ -206,20 +206,20 @@ function reset() {
 .page-subtitle { font-size: .9rem; color: #6b7280; margin: 0; }
 
 .upload-zone {
-  border: 2px dashed rgba(16,185,129,.3); border-radius: 16px; padding: 3rem 2rem;
-  text-align: center; cursor: pointer; transition: all .2s; background: rgba(16,185,129,.03); margin-bottom: 1.25rem;
+  border: 2px dashed rgba(27,107,58,.3); border-radius: 16px; padding: 3rem 2rem;
+  text-align: center; cursor: pointer; transition: all .2s; background: rgba(27,107,58,.03); margin-bottom: 1.25rem;
 }
-.upload-zone:hover, .upload-zone.drag-over { border-color: rgba(16,185,129,.7); background: rgba(16,185,129,.07); }
+.upload-zone:hover, .upload-zone.drag-over { border-color: rgba(27,107,58,.7); background: rgba(27,107,58,.07); }
 .upload-zone.has-file { cursor: default; }
 .file-input { display: none; }
-.upload-icon { margin-bottom: 1rem; color: rgba(16,185,129,.6); }
-.upload-title { font-size: 1rem; font-weight: 600; color: #d1fae5; margin: 0 0 .4rem; }
+.upload-icon { margin-bottom: 1rem; color: rgba(27,107,58,.6); }
+.upload-title { font-size: 1rem; font-weight: 600; color: #C8D8CC; margin: 0 0 .4rem; }
 .upload-sub { font-size: .9rem; color: #6b7280; margin: 0 0 .6rem; }
-.upload-link { color: #10b981; text-decoration: underline; }
+.upload-link { color: #1B6B3A; text-decoration: underline; }
 .upload-hint { font-size: .78rem; color: #4b5563; margin: 0; }
 .file-selected { display: flex; align-items: center; gap: 1rem; justify-content: center; }
 .file-info { text-align: left; }
-.file-name { font-weight: 600; color: #d1fae5; margin: 0 0 .2rem; }
+.file-name { font-weight: 600; color: #C8D8CC; margin: 0 0 .2rem; }
 .file-size { font-size: .8rem; color: #6b7280; margin: 0; }
 .file-remove { margin-left: auto; background: rgba(239,68,68,.15); border: 1px solid rgba(239,68,68,.3); color: #f87171; border-radius: 8px; padding: .35rem .6rem; cursor: pointer; font-size: .85rem; transition: all .15s; }
 .file-remove:hover { background: rgba(239,68,68,.25); }
@@ -228,7 +228,7 @@ function reset() {
 .alert-error { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); color: #fca5a5; }
 
 .upload-actions { margin-bottom: 2rem; }
-.btn-upload { display: inline-flex; align-items: center; gap: .6rem; background: linear-gradient(135deg, #059669, #10b981); color: #fff; border: none; border-radius: 10px; padding: .75rem 1.75rem; font-size: .95rem; font-weight: 600; cursor: pointer; transition: opacity .2s; }
+.btn-upload { display: inline-flex; align-items: center; gap: .6rem; background: linear-gradient(135deg, #134E2A, #1B6B3A); color: #fff; border: none; border-radius: 10px; padding: .75rem 1.75rem; font-size: .95rem; font-weight: 600; cursor: pointer; transition: opacity .2s; }
 .btn-upload:disabled { opacity: .6; cursor: not-allowed; }
 .spinner-row { display: flex; align-items: center; gap: .5rem; }
 .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
@@ -236,26 +236,28 @@ function reset() {
 
 .result-section { margin-top: 1rem; }
 .result-header { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.75rem; flex-wrap: wrap; }
-.result-badge { display: inline-flex; align-items: center; gap: .45rem; background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.3); color: #6ee7b7; border-radius: 20px; padding: .4rem .9rem; font-size: .85rem; font-weight: 600; }
+.result-badge { display: inline-flex; align-items: center; gap: .45rem; background: rgba(27,107,58,.12); border: 1px solid rgba(27,107,58,.3); color: #1B6B3A; border-radius: 20px; padding: .4rem .9rem; font-size: .85rem; font-weight: 600; }
 .result-info { font-size: .9rem; color: #9ca3af; margin: 0; }
-.result-info strong { color: #d1fae5; }
+.result-info strong { color: #C8D8CC; }
 
 .section-title { font-size: .75rem; font-weight: 600; color: #6b7280; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 .75rem; }
 .columns-section { margin-bottom: 1.75rem; }
 .columns-grid { display: flex; flex-wrap: wrap; gap: .5rem; }
-.col-chip { display: inline-flex; align-items: center; gap: .4rem; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 20px; padding: .3rem .8rem; font-size: .82rem; color: #d1fae5; }
-.col-dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; }
+.col-chip { display: inline-flex; align-items: center; gap: .4rem; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 20px; padding: .3rem .8rem; font-size: .82rem; color: #C8D8CC; }
+.col-dot { width: 6px; height: 6px; border-radius: 50%; background: #1B6B3A; }
 
 .preview-section { margin-bottom: 2rem; }
 .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,.08); }
 .preview-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
-.preview-table th { background: rgba(16,185,129,.08); color: #6ee7b7; padding: .65rem 1rem; text-align: left; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,.08); white-space: nowrap; }
+.preview-table th { background: rgba(27,107,58,.08); color: #1B6B3A; padding: .65rem 1rem; text-align: left; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,.08); white-space: nowrap; }
 .preview-table td { padding: .55rem 1rem; color: #cbd5e1; border-bottom: 1px solid rgba(255,255,255,.05); white-space: nowrap; }
 .preview-table tr:last-child td { border-bottom: none; }
 
 .result-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
-.btn-secondary { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: #d1fae5; border-radius: 10px; padding: .7rem 1.4rem; font-size: .9rem; cursor: pointer; transition: all .15s; }
+.btn-secondary { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: #C8D8CC; border-radius: 10px; padding: .7rem 1.4rem; font-size: .9rem; cursor: pointer; transition: all .15s; }
 .btn-secondary:hover { background: rgba(255,255,255,.1); }
-.btn-primary { background: linear-gradient(135deg, #059669, #10b981); border: none; color: #fff; border-radius: 10px; padding: .7rem 1.6rem; font-size: .9rem; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+.btn-primary { background: linear-gradient(135deg, #134E2A, #1B6B3A); border: none; color: #fff; border-radius: 10px; padding: .7rem 1.6rem; font-size: .9rem; font-weight: 600; cursor: pointer; transition: opacity .15s; }
 .btn-primary:hover { opacity: .9; }
 </style>
+
+

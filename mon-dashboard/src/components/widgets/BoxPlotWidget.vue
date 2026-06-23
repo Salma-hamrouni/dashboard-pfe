@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="bp-wrap" ref="rootEl">
     <!-- Empty state -->
     <div v-if="!hasData" class="bp-empty">
@@ -353,7 +353,7 @@ function truncate(s: string, max: number): string {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: var(--color-text-muted, rgba(240,253,249,0.4));
+  color: var(--color-text-muted, #94A99A);
   font-size: 11px;
   text-align: center;
   padding: 0 16px;
@@ -366,14 +366,14 @@ function truncate(s: string, max: number): string {
 
 .bp-tick-label {
   font-size: 9px;
-  fill: rgba(240,253,249,0.45);
+  fill: #4B5E52;
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
   pointer-events: none;
 }
 
 .bp-x-label {
   font-size: 10px;
-  fill: rgba(240,253,249,0.55);
+  fill: rgba(17,23,20,0.55);
   font-family: var(--font-sans, 'DM Sans', sans-serif);
   pointer-events: none;
 }
@@ -381,7 +381,7 @@ function truncate(s: string, max: number): string {
 .bp-tt-label {
   font-size: 10px;
   font-weight: 600;
-  fill: rgba(240,253,249,0.9);
+  fill: #111714;
   font-family: var(--font-sans, sans-serif);
   pointer-events: none;
 }
@@ -389,11 +389,14 @@ function truncate(s: string, max: number): string {
 .bp-tt-row {
   font-size: 9.5px;
   font-family: var(--font-mono, monospace);
-  fill: rgba(240,253,249,0.7);
+  fill: rgba(17,23,20,0.70);
   pointer-events: none;
 }
 
 .bp-tt-key {
-  fill: rgba(240,253,249,0.4);
+  fill: #94A99A;
 }
 </style>
+
+
+

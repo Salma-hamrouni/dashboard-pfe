@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <!--
     isSharedView → standalone full-page layout sans sidebar
     !isSharedView → AppLayout habituel avec sidebar
@@ -40,7 +40,7 @@
 
       <!-- Not found -->
       <div v-else-if="!dashboard" class="state-center">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(16,185,129,.35)" stroke-width="1.5">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(27,107,58,.35)" stroke-width="1.5">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
         <p class="state-title">Dashboard introuvable</p>
@@ -445,7 +445,7 @@
 
           <!-- État vide -->
           <div v-if="!narrativeText && !narrativeLoading && !narrativeError" class="narrative-empty">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(16,185,129,.3)" stroke-width="1.5">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(27,107,58,.3)" stroke-width="1.5">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <polyline points="14 2 14 8 20 8"/>
               <line x1="16" y1="13" x2="8" y2="13"/>
@@ -649,6 +649,8 @@ import MapWidget from '@/components/widgets/MapWidget.vue'
 import type { BoxPlotPoint } from '@/types/index'
 import { generateWidgetDescription } from '@/utils/widgetDescription'
 import { dashboardService, type DashboardDetailDto } from '@/services/dashboardService'
+import { datasetService } from '@/services/datasetService'
+import { useDatasetStore } from '@/stores/dataset'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
@@ -656,6 +658,7 @@ import api from '@/services/api'
 const route = useRoute()
 const router = useRouter()
 const dashboardStore = useDashboardStore()
+const datasetStore   = useDatasetStore()
 const authStore      = useAuthStore()
 
 const dashboard   = ref<DashboardDetailDto | null>(null)
@@ -824,11 +827,26 @@ const filteredWidgets = computed(() => {
   return widgets
 })
 
+async function loadLinkedDataset(d: DashboardDetailDto | null) {
+  if (!d || !d.datasetId) return
+  try {
+    const res = await api.post(`/datasource/${d.datasetId}/preview`)
+    const raw = res.data as any
+    const cols = (raw.columns ?? []).map((c: any) => ({
+      name: c.name ?? c.Name ?? '',
+      type: c.type ?? c.Type ?? 'string',
+    }))
+    const rows = (raw.preview ?? raw.rows ?? []) as Record<string, string>[]
+    datasetStore.setDataset(raw.name ?? `Dataset #${d.datasetId}`, cols, rows, raw.dataSourceId ?? d.datasetId)
+  } catch { /* AI assistant stays disabled if datasource unavailable */ }
+}
+
 onMounted(async () => {
   try {
     // ── Route publique /share/:token ──────────────────────────────────
     if (route.name === 'SharedDashboard' && route.params.token) {
       dashboard.value = await dashboardService.getShared(route.params.token as string)
+      await loadLinkedDataset(dashboard.value)
       return
     }
 
@@ -839,6 +857,7 @@ onMounted(async () => {
     // Admin → accès direct sans passer par le store (le store ne contient que ses propres dashboards)
     if (authStore.user?.role === 'Admin') {
       dashboard.value = await dashboardService.getById(id)
+      await loadLinkedDataset(dashboard.value)
       return
     }
 
@@ -849,6 +868,7 @@ onMounted(async () => {
       // If getById fails (deleted/forbidden), fall through to null
       try {
         dashboard.value = await dashboardService.getById(id)
+        await loadLinkedDataset(dashboard.value)
         return
       } catch { /* fall through */ }
     }
@@ -859,6 +879,7 @@ onMounted(async () => {
     if (inStore) {
       try {
         dashboard.value = await dashboardService.getById(id)
+        await loadLinkedDataset(dashboard.value)
         return
       } catch { /* fall through */ }
     }
@@ -875,6 +896,7 @@ onMounted(async () => {
 
     // 4. List fetch failed (network error etc.) → last-resort attempt
     dashboard.value = await dashboardService.getById(id)
+    await loadLinkedDataset(dashboard.value)
   } catch {
     dashboard.value = null
   } finally {
@@ -1366,7 +1388,7 @@ async function scrollChat() {
 /* Insights */
 .insights-strip {
   background: var(--color-primary-light);
-  border: 1px solid rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(27, 107, 58, 0.15);
   border-radius: var(--radius-lg);
   padding: var(--space-4) var(--space-5);
   display: flex; gap: var(--space-4); align-items: flex-start; flex-wrap: wrap;
@@ -1379,9 +1401,9 @@ async function scrollChat() {
 }
 .insights-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .insight-chip {
-  font-size: var(--text-xs); color: #a7f3d0;
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.15);
+  font-size: var(--text-xs); color: #134E2A;
+  background: rgba(27, 107, 58, 0.10);
+  border: 1px solid rgba(27, 107, 58, 0.20);
   border-radius: var(--radius-full); padding: 3px 10px;
 }
 
@@ -1468,7 +1490,7 @@ async function scrollChat() {
 .vf-adv-btn:hover, .vf-adv-btn.active {
   border-color: var(--color-primary);
   color: var(--color-primary);
-  background: rgba(16,185,129,.06);
+  background: rgba(27,107,58,.06);
 }
 .vf-adv-count {
   background: var(--color-primary); color: #fff;
@@ -1550,13 +1572,13 @@ async function scrollChat() {
 .vf-tag {
   display: inline-flex; align-items: center;
   padding: 3px 10px; border-radius: 999px;
-  background: rgba(16,185,129,.08);
-  border: 1px solid rgba(16,185,129,.2);
+  background: rgba(27,107,58,.08);
+  border: 1px solid rgba(27,107,58,.2);
   color: var(--color-primary);
   font-size: 11.5px; cursor: pointer;
   transition: background .15s;
 }
-.vf-tag:hover { background: rgba(16,185,129,.16); }
+.vf-tag:hover { background: rgba(27,107,58,.16); }
 
 /* Transition panneau avancé */
 .vf-adv-enter-active, .vf-adv-leave-active { transition: opacity .2s, transform .2s; }
@@ -1672,9 +1694,9 @@ async function scrollChat() {
   border: 1px solid rgba(99, 102, 241, 0.2);
 }
 .ds-badge-green {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(27, 107, 58, 0.1);
   color: var(--color-primary);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(27, 107, 58, 0.2);
 }
 
 /* ── Shared standalone layout ───────────────────────────────────── */
@@ -1778,8 +1800,8 @@ async function scrollChat() {
   font-weight: 700;
   padding: 2px 8px;
   border-radius: var(--radius-full);
-  background: rgba(16,185,129,.1);
-  border: 1px solid rgba(16,185,129,.2);
+  background: rgba(27,107,58,.1);
+  border: 1px solid rgba(27,107,58,.2);
   color: var(--color-primary);
   letter-spacing: .04em;
 }
@@ -1912,14 +1934,14 @@ async function scrollChat() {
   color: var(--color-primary);
   margin: 1.4em 0 .6em;
   padding-bottom: .5em;
-  border-bottom: 1px solid rgba(16,185,129,.15);
+  border-bottom: 1px solid rgba(27,107,58,.15);
 }
 .narrative-text :deep(.nv-num) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 20px; height: 20px;
-  background: rgba(16,185,129,.12);
+  background: rgba(27,107,58,.12);
   border-radius: 50%;
   font-size: 10px;
   color: var(--color-primary);
@@ -1963,19 +1985,19 @@ async function scrollChat() {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: var(--color-primary, #10b981);
+  background: var(--color-primary, #1B6B3A);
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.45);
+  box-shadow: 0 4px 20px rgba(27, 107, 58, 0.45);
   transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
 }
 .chat-fab:hover {
   transform: scale(1.07);
-  box-shadow: 0 6px 28px rgba(16, 185, 129, 0.6);
+  box-shadow: 0 6px 28px rgba(27, 107, 58, 0.6);
 }
 .chat-fab.active {
   background: #0ea5e9;
@@ -2034,7 +2056,7 @@ async function scrollChat() {
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #1B6B3A, #134E2A);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2104,7 +2126,7 @@ async function scrollChat() {
   width: 26px;
   height: 26px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #1B6B3A, #134E2A);
   color: #fff;
   font-size: 10px;
   font-weight: 700;
@@ -2132,7 +2154,7 @@ async function scrollChat() {
   border-bottom-left-radius: 4px;
 }
 .chat-msg--user .chat-msg-bubble {
-  background: var(--color-primary, #10b981);
+  background: var(--color-primary, #1B6B3A);
   color: #fff;
   border-bottom-right-radius: 4px;
 }
@@ -2154,7 +2176,7 @@ async function scrollChat() {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--color-primary, #10b981);
+  background: var(--color-primary, #1B6B3A);
   animation: bounce 1.2s infinite;
 }
 .chat-msg-typing span:nth-child(2) { animation-delay: 0.2s; }
@@ -2184,9 +2206,9 @@ async function scrollChat() {
   transition: all 0.15s;
 }
 .chat-suggestion:hover {
-  border-color: var(--color-primary, #10b981);
-  color: var(--color-primary, #10b981);
-  background: rgba(16, 185, 129, 0.06);
+  border-color: var(--color-primary, #1B6B3A);
+  color: var(--color-primary, #1B6B3A);
+  background: rgba(27, 107, 58, 0.06);
 }
 
 /* Input zone */
@@ -2206,7 +2228,7 @@ async function scrollChat() {
   transition: border-color 0.2s;
 }
 .chat-input-wrapper:focus-within {
-  border-color: var(--color-primary, #10b981);
+  border-color: var(--color-primary, #1B6B3A);
 }
 .chat-input {
   flex: 1;
@@ -2228,7 +2250,7 @@ async function scrollChat() {
   height: 32px;
   border-radius: 8px;
   border: none;
-  background: var(--color-primary, #10b981);
+  background: var(--color-primary, #1B6B3A);
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -2238,7 +2260,7 @@ async function scrollChat() {
   transition: background 0.2s, transform 0.15s;
 }
 .chat-send-btn:hover:not(:disabled) {
-  background: #059669;
+  background: #134E2A;
   transform: scale(1.05);
 }
 .chat-send-btn:disabled {
@@ -2284,4 +2306,18 @@ async function scrollChat() {
 [data-theme="white"] .chat-input::placeholder { color: #94a3b8 !important; }
 [data-theme="white"] .chat-suggestion { color: #475569 !important; border-color: rgba(15,23,42,.1) !important; }
 [data-theme="white"] .chat-hint { color: #94a3b8 !important; }
+
+/* ── Mobile ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .viewer-page { padding: 1rem; }
+  .viewer-page--shared { padding: 1rem; }
+  .widgets-grid,
+  .widgets-grid--compact,
+  .widgets-grid--normal { grid-template-columns: 1fr; gap: var(--space-3); }
+  .shared-topbar { padding: 0 var(--space-4); }
+  .chat-panel { width: calc(100vw - 24px); right: 12px; bottom: 80px; }
+  .chat-fab { bottom: 20px; right: 16px; }
+}
 </style>
+
+

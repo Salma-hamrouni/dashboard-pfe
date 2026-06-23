@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="kpi-card" :style="{ '--kpi-color': resolvedColor }">
     <!-- Top accent bar -->
     <div class="kpi-accent"/>
@@ -284,8 +284,8 @@ const sparkLastPt = computed(() => {
 }
 .kpi-trend.up {
   color: var(--color-success);
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: rgba(27, 107, 58, 0.12);
+  border: 1px solid rgba(27, 107, 58, 0.2);
 }
 .kpi-trend.down {
   color: var(--color-danger);
@@ -307,3 +307,7 @@ const sparkLastPt = computed(() => {
   height: 100%;
 }
 </style>
+
+
+
+

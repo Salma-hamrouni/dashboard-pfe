@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="hm-widget" ref="el">
     <!-- Empty -->
     <div v-if="!hasData" class="hm-empty">
@@ -295,3 +295,6 @@ function truncate(s: string, n: number) {
   font-variant-numeric: tabular-nums;
 }
 </style>
+
+
+

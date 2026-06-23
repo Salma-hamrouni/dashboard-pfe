@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Teleport to="body">
     <Transition name="vh-backdrop">
       <div v-if="modelValue" class="vh-backdrop" @click.self="close" />
@@ -262,7 +262,7 @@ defineExpose({ loadVersions })
   width: 380px;
   height: 100vh;
   background: #0b1118;
-  border-left: 1px solid rgba(16,185,129,0.12);
+  border-left: 1px solid rgba(27,107,58,0.12);
   display: flex;
   flex-direction: column;
   z-index: 1001;
@@ -278,17 +278,17 @@ defineExpose({ loadVersions })
 .vh-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 16px 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(27,107,58,0.06);
   flex-shrink: 0;
 }
 .vh-header-left { display: flex; align-items: center; gap: 10px; }
 .vh-header-icon {
   width: 32px; height: 32px;
   border-radius: 8px;
-  background: rgba(16,185,129,0.12);
-  border: 1px solid rgba(16,185,129,0.2);
+  background: rgba(27,107,58,0.12);
+  border: 1px solid rgba(27,107,58,0.2);
   display: flex; align-items: center; justify-content: center;
-  color: #10b981;
+  color: #1B6B3A;
   flex-shrink: 0;
 }
 .vh-header-title { font-size: 13px; font-weight: 700; color: #e2e8f0; line-height: 1.3; }
@@ -306,7 +306,7 @@ defineExpose({ loadVersions })
 /* ── Save bar ────────────────────────────────────────────────────────────────── */
 .vh-save-bar {
   display: flex; gap: 8px; padding: 12px 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(27,107,58,0.06);
   flex-shrink: 0;
 }
 .vh-label-input {
@@ -318,19 +318,19 @@ defineExpose({ loadVersions })
   color: #e2e8f0; font-size: 12px;
   outline: none; transition: border-color .15s;
 }
-.vh-label-input:focus { border-color: rgba(16,185,129,0.4); }
+.vh-label-input:focus { border-color: rgba(27,107,58,0.4); }
 .vh-label-input::placeholder { color: #475569; }
 .vh-save-now-btn {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 6px 11px;
-  background: rgba(16,185,129,0.12);
-  border: 1px solid rgba(16,185,129,0.22);
+  background: rgba(27,107,58,0.12);
+  border: 1px solid rgba(27,107,58,0.22);
   border-radius: 7px;
-  color: #10b981; font-size: 11px; font-weight: 600;
+  color: #1B6B3A; font-size: 11px; font-weight: 600;
   cursor: pointer; white-space: nowrap;
   transition: background .15s, color .15s;
 }
-.vh-save-now-btn:hover:not(:disabled) { background: rgba(16,185,129,0.22); }
+.vh-save-now-btn:hover:not(:disabled) { background: rgba(27,107,58,0.22); }
 .vh-save-now-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 /* ── Body ─────────────────────────────────────────────────────────────────── */
@@ -359,7 +359,7 @@ defineExpose({ loadVersions })
   transition: background .12s;
 }
 .vh-item:hover { background: rgba(255,255,255,0.04); }
-.vh-item--active { background: rgba(16,185,129,0.08) !important; border-left: 2px solid #10b981; }
+.vh-item--active { background: rgba(27,107,58,0.08) !important; border-left: 2px solid #1B6B3A; }
 
 .vh-item-badge {
   width: 32px; height: 20px; flex-shrink: 0;
@@ -389,8 +389,8 @@ defineExpose({ loadVersions })
 
 /* ── Detail panel ────────────────────────────────────────────────────────────── */
 .vh-detail {
-  border-top: 1px solid rgba(16,185,129,0.12);
-  background: rgba(16,185,129,0.04);
+  border-top: 1px solid rgba(27,107,58,0.12);
+  background: rgba(27,107,58,0.04);
   flex-shrink: 0;
   max-height: 40vh;
   display: flex; flex-direction: column;
@@ -419,14 +419,14 @@ defineExpose({ loadVersions })
 .vh-restore-btn {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 6px 11px; flex-shrink: 0;
-  background: rgba(16,185,129,0.15);
-  border: 1px solid rgba(16,185,129,0.28);
+  background: rgba(27,107,58,0.15);
+  border: 1px solid rgba(27,107,58,0.28);
   border-radius: 7px;
-  color: #10b981; font-size: 11px; font-weight: 600;
+  color: #1B6B3A; font-size: 11px; font-weight: 600;
   cursor: pointer; white-space: nowrap;
   transition: background .15s;
 }
-.vh-restore-btn:hover:not(:disabled) { background: rgba(16,185,129,0.28); }
+.vh-restore-btn:hover:not(:disabled) { background: rgba(27,107,58,0.28); }
 .vh-restore-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 .vh-detail-loading {
@@ -447,10 +447,10 @@ defineExpose({ loadVersions })
 .vh-widget-type {
   font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
   padding: 2px 6px; border-radius: 4px;
-  background: rgba(16,185,129,0.1); color: #10b981;
+  background: rgba(27,107,58,0.1); color: #1B6B3A;
   flex-shrink: 0;
 }
-.vh-widget-type.wtype-bar   { background: rgba(16,185,129,0.1);  color: #10b981; }
+.vh-widget-type.wtype-bar   { background: rgba(27,107,58,0.1);  color: #1B6B3A; }
 .vh-widget-type.wtype-line  { background: rgba(99,102,241,0.1);  color: #818cf8; }
 .vh-widget-type.wtype-area  { background: rgba(6,182,212,0.1);   color: #22d3ee; }
 .vh-widget-type.wtype-pie,
@@ -464,3 +464,5 @@ defineExpose({ loadVersions })
 .spin { animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 </style>
+
+

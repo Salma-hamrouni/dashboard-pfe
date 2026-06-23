@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="tbl-widget">
     <!-- Empty -->
     <div v-if="!hasData" class="tbl-empty">
@@ -189,8 +189,8 @@ function fmtCell(v: string | number) {
 
 .tbl-search {
   flex: 1;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(27,107,58,0.06);
+  border: 1px solid rgba(17,23,20,0.10);
   border-radius: 6px;
   padding: 4px 8px;
   font-size: 10px;
@@ -198,7 +198,7 @@ function fmtCell(v: string | number) {
   outline: none;
   transition: border-color 0.2s;
 }
-.tbl-search::placeholder { color: rgba(255,255,255,0.25); }
+.tbl-search::placeholder { color: #C4CFC7; }
 .tbl-search:focus { border-color: var(--color-primary); }
 
 .tbl-count {
@@ -226,7 +226,7 @@ function fmtCell(v: string | number) {
 .tbl-th {
   position: sticky;
   top: 0;
-  background: rgba(255,255,255,0.06);
+  background: rgba(27,107,58,0.06);
   padding: 5px 8px;
   text-align: left;
   font-weight: 600;
@@ -236,7 +236,7 @@ function fmtCell(v: string | number) {
   font-size: 9px;
   cursor: pointer;
   white-space: nowrap;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(17,23,20,0.10);
   user-select: none;
   transition: color 0.15s;
 }
@@ -278,7 +278,7 @@ function fmtCell(v: string | number) {
   font-weight: 600;
   letter-spacing: 0.03em;
 }
-.badge-green { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.25); }
+.badge-green { background: rgba(27,107,58,0.15); color: #1B6B3A; border: 1px solid rgba(27,107,58,0.25); }
 .badge-red   { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
 .badge-gray  { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.12); }
 
@@ -292,8 +292,8 @@ function fmtCell(v: string | number) {
 }
 .pg-btn {
   width: 24px; height: 24px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(27,107,58,0.06);
+  border: 1px solid rgba(17,23,20,0.10);
   border-radius: 6px;
   color: var(--color-text);
   cursor: pointer;
@@ -305,3 +305,7 @@ function fmtCell(v: string | number) {
 .pg-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .pg-info { font-size: 10px; color: var(--color-text-muted); }
 </style>
+
+
+
+

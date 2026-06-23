@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="chart-container">
     <canvas ref="chartCanvas"></canvas>
   </div>
@@ -41,7 +41,7 @@ const initChart = () => {
         {
           label: 'Données',
           data: props.data.map((d: any) => ({ x: d.x, y: d.y })),
-          backgroundColor: props.color || '#10B981',
+          backgroundColor: props.color || '#1B6B3A',
         },
       ],
     }
@@ -54,9 +54,9 @@ const initChart = () => {
           data: props.data.map((d: any) => d.value),
           backgroundColor:
             props.type === 'pie' || props.type === 'doughnut' || props.type === 'radar'
-              ? [props.color || '#10B981', '#3b82f6', '#ec4899', '#f59e0b', '#6366f1', '#8b5cf6']
-              : props.color || '#10B981',
-          borderColor: props.color || '#10B981',
+              ? [props.color || '#1B6B3A', '#3b82f6', '#ec4899', '#f59e0b', '#6366f1', '#8b5cf6']
+              : props.color || '#1B6B3A',
+          borderColor: props.color || '#1B6B3A',
           borderWidth: 1,
           fill: props.type === 'area',
           tension: 0.4,
@@ -78,7 +78,7 @@ const initChart = () => {
           display: props.type === 'pie' || props.type === 'doughnut' || props.type === 'radar',
           position: 'bottom',
           labels: {
-            color: props.textColor || '#f0fdf9',
+            color: props.textColor || '#4B5E52',
             font: { size: 10 },
           },
         },
@@ -89,16 +89,16 @@ const initChart = () => {
           : {
               y: {
                 beginAtZero: true,
-                grid: { color: props.mutedColor || 'rgba(255, 255, 255, 0.05)' },
+                grid: { color: props.mutedColor || 'rgba(27,107,58,0.06)' },
                 ticks: {
-                  color: props.mutedColor || 'rgba(240, 253, 249, 0.5)',
+                  color: props.mutedColor || '#94A99A',
                   font: { size: 10 },
                 },
               },
               x: {
                 grid: { display: false },
                 ticks: {
-                  color: props.mutedColor || 'rgba(240, 253, 249, 0.5)',
+                  color: props.mutedColor || '#94A99A',
                   font: { size: 10 },
                 },
               },
@@ -130,3 +130,6 @@ onBeforeUnmount(() => {
   position: relative;
 }
 </style>
+
+
+

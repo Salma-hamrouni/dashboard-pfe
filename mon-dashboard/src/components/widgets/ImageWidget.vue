@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="img-widget" ref="el">
     <!-- Empty state -->
     <div v-if="!src" class="img-empty">
@@ -115,3 +115,6 @@ function onError() {
   border-radius: 6px;
 }
 </style>
+
+
+

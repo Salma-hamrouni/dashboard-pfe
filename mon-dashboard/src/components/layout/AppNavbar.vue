@@ -1,6 +1,12 @@
-<template>
+﻿<template>
   <header class="navbar">
     <div class="navbar-left">
+      <!-- Hamburger mobile -->
+      <button class="menu-toggle" @click="$emit('toggle-menu')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
       <div class="page-info">
         <h1 class="page-title">{{ title }}</h1>
         <span v-if="breadcrumb" class="page-breadcrumb">{{ breadcrumb }}</span>
@@ -128,7 +134,7 @@ const shortEmail = computed(() => {
 })
 
 const avatarColor = computed(() => {
-  const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#06b6d4']
+  const colors = ['#1B6B3A', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#06b6d4']
   const i = (authStore.user?.id ?? 0) % colors.length
   return colors[i]
 })
@@ -164,6 +170,21 @@ function handleLogout() {
   z-index: 50;
   flex-shrink: 0;
 }
+
+/* Hamburger */
+.menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.menu-toggle:hover { background: var(--color-surface-3); }
 
 .navbar-left { display: flex; align-items: center; gap: var(--space-4); }
 .page-info { display: flex; flex-direction: column; gap: 1px; }
@@ -261,4 +282,15 @@ function handleLogout() {
 /* Transition */
 .dropdown-enter-active, .dropdown-leave-active { transition: opacity 0.15s, transform 0.15s; }
 .dropdown-enter-from, .dropdown-leave-to { opacity: 0; transform: translateY(-6px); }
+
+/* ── Mobile ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .navbar { padding: 0 var(--space-3); gap: var(--space-2); }
+  .menu-toggle { display: flex; }
+  .date-chip { display: none; }
+  .page-breadcrumb { display: none; }
+  .user-info { display: none; }
+}
 </style>
+
+

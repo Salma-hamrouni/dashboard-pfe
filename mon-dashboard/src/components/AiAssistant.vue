@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <!-- Panel -->
   <Transition name="ai-anim">
     <div v-if="props.open" class="ai-panel">
@@ -149,7 +149,7 @@
                   <rect x="9" y="9" width="13" height="13" rx="2"/>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                 </svg>
-                <svg v-else width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6ee7b7" stroke-width="2.5">
+                <svg v-else width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1B6B3A" stroke-width="2.5">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
                 {{ narrativeCopied ? 'Copié' : 'Copier' }}
@@ -437,15 +437,15 @@ function downloadNarrativePdf() {
 
     /* Cover */
     .cover {
-      border-bottom: 3px solid #10b981;
+      border-bottom: 3px solid #1B6B3A;
       padding-bottom: 24px;
       margin-bottom: 32px;
     }
     .cover-tag {
       display: inline-block;
       background: #ecfdf5;
-      color: #059669;
-      border: 1px solid #a7f3d0;
+      color: #134E2A;
+      border: 1px solid #134E2A;
       border-radius: 4px;
       font-size: 10px;
       font-weight: 700;
@@ -468,7 +468,7 @@ function downloadNarrativePdf() {
       color: #64748b;
       margin-top: 14px;
     }
-    .cover-meta span::before { content: '• '; color: #10b981; }
+    .cover-meta span::before { content: '• '; color: #1B6B3A; }
 
     /* Corps */
     p { margin-bottom: 14px; color: #334155; }
@@ -481,10 +481,10 @@ function downloadNarrativePdf() {
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: .08em;
-      color: #059669;
+      color: #134E2A;
       margin: 28px 0 10px;
       padding-bottom: 8px;
-      border-bottom: 1px solid #d1fae5;
+      border-bottom: 1px solid #C8D8CC;
     }
     .num {
       display: inline-flex;
@@ -492,10 +492,10 @@ function downloadNarrativePdf() {
       justify-content: center;
       width: 20px; height: 20px;
       background: #ecfdf5;
-      border: 1px solid #a7f3d0;
+      border: 1px solid #134E2A;
       border-radius: 50%;
       font-size: 10px;
-      color: #059669;
+      color: #134E2A;
       flex-shrink: 0;
     }
 
@@ -529,7 +529,7 @@ function downloadNarrativePdf() {
 <body>
   <div class="cover">
     <div class="cover-tag">✨ Analyse IA — Gemini 2.5</div>
-    <h1>Rapport d'Analyse Narrative<br><span style="color:#059669">${dataset}</span></h1>
+    <h1>Rapport d'Analyse Narrative<br><span style="color:#134E2A">${dataset}</span></h1>
     <div class="cover-meta">
       <span>Généré le ${date}</span>
       <span>${cols} colonne${cols > 1 ? 's' : ''} analysée${cols > 1 ? 's' : ''}</span>
@@ -606,7 +606,7 @@ function cleanError(msg?: string): string {
   width: 420px;
   max-height: calc(100vh - 96px);
   min-height: 480px;
-  background: #0d1f1a;
+  background: #FFFFFF;
   border: 1px solid rgba(99,102,241,0.45);
   border-radius: 18px;
   box-shadow:
@@ -624,7 +624,7 @@ function cleanError(msg?: string): string {
   display: flex; align-items: center; gap: 8px;
   padding: 11px 14px 10px; flex-shrink: 0;
   background: linear-gradient(135deg, rgba(99,102,241,0.14), rgba(139,92,246,0.08));
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(27,107,58,0.06);
 }
 .ai-hdr-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); flex: 1; }
 .ai-hdr-badge {
@@ -648,7 +648,7 @@ function cleanError(msg?: string): string {
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
 .ai-tabs {
   display: flex; flex-shrink: 0;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(27,107,58,0.06);
 }
 .ai-tab {
   flex: 1; padding: 8px 4px; font-size: 11px; background: none; border: none;
@@ -668,10 +668,10 @@ function cleanError(msg?: string): string {
 }
 .ai-input {
   flex-shrink: 0; display: flex; gap: 8px; align-items: flex-end;
-  padding: 8px 12px 10px; border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 8px 12px 10px; border-top: 1px solid rgba(27,107,58,0.06);
 }
 .ai-textarea {
-  flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  flex: 1; background: rgba(27,107,58,0.06); border: 1px solid rgba(255,255,255,0.1);
   border-radius: 8px; color: rgba(255,255,255,0.88); font-size: 12px;
   padding: 8px 10px; resize: none; outline: none;
   font-family: var(--font-sans, sans-serif); transition: border-color 0.15s;
@@ -778,7 +778,7 @@ function cleanError(msg?: string): string {
 .ai-card-col  { font-size: 11px; color: rgba(255,255,255,0.45); }
 .ai-alt {
   padding: 1px 7px; font-size: 10px; border-radius: 4px;
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(27,107,58,0.06); border: 1px solid rgba(255,255,255,0.1);
   color: rgba(255,255,255,0.5);
 }
 .ai-pill {
@@ -790,11 +790,11 @@ function cleanError(msg?: string): string {
 .ai-add-btn {
   align-self: flex-start; margin-top: 2px;
   padding: 4px 10px; font-size: 10px; border-radius: 6px; cursor: pointer;
-  background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3);
-  color: #6ee7b7; transition: background 0.15s;
+  background: rgba(27,107,58,0.12); border: 1px solid rgba(27,107,58,0.3);
+  color: #1B6B3A; transition: background 0.15s;
   font-family: var(--font-sans, sans-serif);
 }
-.ai-add-btn:hover { background: rgba(16,185,129,0.24); }
+.ai-add-btn:hover { background: rgba(27,107,58,0.24); }
 
 /* ── Type badges ─────────────────────────────────────────────────────────── */
 .ai-badge {
@@ -803,7 +803,7 @@ function cleanError(msg?: string): string {
   background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.3); color: #a5b4fc;
 }
 .ai-type-bar    { background: rgba(59,130,246,0.18); border-color: rgba(59,130,246,0.3); color: #93c5fd; }
-.ai-type-line   { background: rgba(16,185,129,0.18); border-color: rgba(16,185,129,0.3); color: #6ee7b7; }
+.ai-type-line   { background: rgba(27,107,58,0.18); border-color: rgba(27,107,58,0.3); color: #1B6B3A; }
 .ai-type-pie,.ai-type-doughnut { background: rgba(245,158,11,0.18); border-color: rgba(245,158,11,0.3); color: #fcd34d; }
 .ai-type-kpi    { background: rgba(139,92,246,0.18); border-color: rgba(139,92,246,0.3); color: #c4b5fd; }
 .ai-type-scatter { background: rgba(236,72,153,0.18); border-color: rgba(236,72,153,0.3); color: #f9a8d4; }
@@ -866,7 +866,7 @@ function cleanError(msg?: string): string {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(27,107,58,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 5px;
   color: rgba(255,255,255,0.5);
@@ -940,13 +940,13 @@ function cleanError(msg?: string): string {
   gap: 6px;
   flex-wrap: wrap;
   padding: 8px 12px;
-  border-top: 1px solid rgba(255,255,255,0.05);
+  border-top: 1px solid rgba(27,107,58,0.06);
 }
 .ai-narr-chip {
   font-size: 9.5px;
   padding: 2px 8px;
   border-radius: 4px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   border: 1px solid rgba(255,255,255,0.08);
   color: rgba(255,255,255,0.4);
 }
@@ -956,3 +956,5 @@ function cleanError(msg?: string): string {
   color: #a5b4fc;
 }
 </style>
+
+

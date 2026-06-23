@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="line-chart-wrap">
     <!-- Empty state -->
     <div v-if="!hasData" class="line-empty">
@@ -48,16 +48,16 @@
             :key="`gl-${i}`"
             :x1="PAD_L" :y1="yPos(tick)"
             :x2="W - PAD_R" :y2="yPos(tick)"
-            stroke="rgba(255,255,255,0.06)"
+            stroke="rgba(27,107,58,0.06)"
             stroke-width="1"
             stroke-dasharray="3,4"
           />
 
           <!-- ── Axes ────────────────────────────────────────────── -->
           <line :x1="PAD_L" :y1="PAD_T" :x2="PAD_L" :y2="H-PAD_B"
-            stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            stroke="rgba(17,23,20,0.10)" stroke-width="1"/>
           <line :x1="PAD_L" :y1="H-PAD_B" :x2="W-PAD_R" :y2="H-PAD_B"
-            stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            stroke="rgba(17,23,20,0.10)" stroke-width="1"/>
 
           <!-- ── Area fill ───────────────────────────────────────── -->
           <path v-if="fill !== false" :d="areaPath" :fill="`url(#lg-${uid})`" stroke="none"/>
@@ -369,7 +369,7 @@ function truncate(str: string, max: number) {
 .line-tooltip {
   position: absolute;
   background: rgba(10, 16, 28, 0.96);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(17,23,20,0.10);
   border-radius: 8px;
   padding: 5px 9px;
   display: flex;
@@ -393,7 +393,7 @@ function truncate(str: string, max: number) {
   gap: 1px;
 }
 .tt-lbl { font-size: 9px;  color: rgba(255,255,255,0.4); line-height: 1.2; }
-.tt-val { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.92); letter-spacing: -0.01em; }
+.tt-val { font-size: 11px; font-weight: 700; color: #111714; letter-spacing: -0.01em; }
 
 /* X labels */
 .x-labels {
@@ -417,3 +417,7 @@ function truncate(str: string, max: number) {
 .tt-enter-active, .tt-leave-active { transition: opacity 0.12s; }
 .tt-enter-from, .tt-leave-to { opacity: 0; }
 </style>
+
+
+
+

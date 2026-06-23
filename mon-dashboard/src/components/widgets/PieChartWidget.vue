@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="pie-widget">
     <!-- ── Empty state ──────────────────────────────────────────── -->
     <div v-if="!hasData" class="pie-empty">
@@ -231,10 +231,10 @@ const props = withDefaults(defineProps<{
 }>(), {
   data:        () => [],
   colors:      () => [
-    '#6366f1', '#10b981', '#f59e0b', '#ef4444',
+    '#6366f1', '#1B6B3A', '#f59e0b', '#ef4444',
     '#3b82f6', '#ec4899', '#06b6d4', '#84cc16',
   ],
-  bgColor:     '#0a1f1a',
+  bgColor:     '#EEF7F1',
   legendPos:   'right',
   showLabels:  false,
   donut:       true,
@@ -459,12 +459,12 @@ function fullLabel(label: string): string {
 }
 .c-lbl {
   font-size: 8px; font-weight: 700; letter-spacing: 0.09em;
-  fill: rgba(255,255,255,0.3);
+  fill: #94A99A;
   font-family: var(--font-sans, sans-serif);
 }
 .c-count {
   font-size: 8px; font-weight: 500;
-  fill: rgba(255,255,255,0.2);
+  fill: rgba(17,23,20,0.15);
   font-family: var(--font-sans, sans-serif);
 }
 .c-cat {
@@ -496,7 +496,7 @@ function fullLabel(label: string): string {
 }
 .lbl-pct {
   font-size: 9px; font-weight: 600;
-  fill: rgba(255,255,255,0.55);
+  fill: #4B5E52;
   font-family: var(--font-sans, sans-serif);
   filter: drop-shadow(0 1px 3px rgba(0,0,0,0.95));
 }
@@ -518,7 +518,7 @@ function fullLabel(label: string): string {
   position: absolute;
   bottom: 6px; left: 50%; transform: translateX(-50%);
   background: rgba(8, 14, 24, 0.96);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(17,23,20,0.10);
   border-radius: 10px;
   display: flex; align-items: stretch;
   overflow: hidden;
@@ -538,9 +538,9 @@ function fullLabel(label: string): string {
   display: flex; align-items: baseline;
   justify-content: space-between; gap: 10px;
 }
-.pcard-label { font-size: 11px; color: rgba(255,255,255,0.55); }
+.pcard-label { font-size: 11px; color: #4B5E52; }
 .pcard-pct   { font-size: 13px; font-weight: 800; letter-spacing: -0.02em; }
-.pcard-val   { font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.92); letter-spacing: -0.02em; }
+.pcard-val   { font-size: 14px; font-weight: 800; color: #111714; letter-spacing: -0.02em; }
 
 .pcard-enter-active, .pcard-leave-active { transition: opacity 0.15s, transform 0.15s; }
 .pcard-enter-from, .pcard-leave-to { opacity: 0; transform: translateX(-50%) translateY(6px); }
@@ -584,7 +584,7 @@ function fullLabel(label: string): string {
   border: 1px solid transparent;
 }
 .leg-row.leg-active, .leg-row:hover {
-  background: rgba(255,255,255,0.05);
+  background: rgba(27,107,58,0.06);
   border-color: rgba(255,255,255,0.09);
 }
 .leg-row.leg-dim { opacity: 0.22; }
@@ -632,6 +632,10 @@ function fullLabel(label: string): string {
 }
 .leg-val {
   font-size: 10px; font-weight: 700;
-  color: rgba(255,255,255,0.55);
+  color: #4B5E52;
 }
 </style>
+
+
+
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="tm-widget" ref="el">
     <!-- Empty state -->
     <div v-if="!hasData" class="tm-empty">
@@ -194,7 +194,7 @@ const nodes = computed<TmNode[]>(() => {
 // ── Color palette ─────────────────────────────────────────────────────────────
 const palette = [
   '#4A6CF7', '#7C3AED', '#EC4899', '#F59E0B',
-  '#10B981', '#3B82F6', '#EF4444', '#8B5CF6',
+  '#1B6B3A', '#3B82F6', '#EF4444', '#8B5CF6',
   '#06B6D4', '#84CC16', '#F97316', '#14B8A6',
 ]
 
@@ -293,3 +293,6 @@ function tooltipY(node: TmNode): number {
   opacity: 0.6;
 }
 </style>
+
+
+

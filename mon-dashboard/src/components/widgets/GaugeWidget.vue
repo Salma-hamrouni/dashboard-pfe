@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="gauge-wrap">
     <!-- Empty state -->
     <div v-if="!hasValue" class="gauge-empty">
@@ -27,7 +27,7 @@
           <line
             :x1="tickPt(t.p, RO + 6).x" :y1="tickPt(t.p, RO + 6).y"
             :x2="tickPt(t.p, RO + 11).x" :y2="tickPt(t.p, RO + 11).y"
-            stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"
+            stroke="rgba(17,23,20,0.15)" stroke-width="1.5" stroke-linecap="round"
           />
         </g>
 
@@ -200,7 +200,7 @@ const ticks = [0, 0.25, 0.5, 0.75, 1].map(p => ({ p }))
 }
 
 .g-track {
-  fill: rgba(255,255,255,0.06);
+  fill: rgba(27,107,58,0.06);
 }
 
 .g-fill {
@@ -214,12 +214,12 @@ const ticks = [0, 0.25, 0.5, 0.75, 1].map(p => ({ p }))
 .g-val {
   font-size: 22px;
   font-weight: 700;
-  fill: rgba(255,255,255,0.92);
+  fill: #111714;
   font-family: var(--font-sans, sans-serif);
 }
 .g-pct {
   font-size: 10px;
-  fill: rgba(255,255,255,0.45);
+  fill: #94A99A;
   font-family: var(--font-sans, sans-serif);
   letter-spacing: 0.05em;
 }
@@ -232,7 +232,11 @@ const ticks = [0, 0.25, 0.5, 0.75, 1].map(p => ({ p }))
 }
 .g-range {
   font-size: 8.5px;
-  fill: rgba(255,255,255,0.3);
+  fill: #94A99A;
   font-family: var(--font-sans, sans-serif);
 }
 </style>
+
+
+
+

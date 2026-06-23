@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="map-widget">
     <div v-if="!hasData" class="map-empty">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">
@@ -170,3 +170,6 @@ onBeforeUnmount(() => { leafletMap?.remove(); leafletMap = null })
 }
 .map-tooltip::before { display: none !important; }
 </style>
+
+
+
